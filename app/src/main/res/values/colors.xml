@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Theme color -->
+    <color name="colorPrimaryDark">@color/white</color>
+    <color name="colorPrimary">@color/white</color>
+    <color name="colorAccent">@color/grapefruit</color>
+    <color name="textColorPrimary">@color/textColorBasic</color>
+
+    <color name="textColorBasic">#333333</color>
+    <color name="textColorSecondary">#7f7f7f</color>
+    <color name="background">#f5f5f5</color>
+    <color name="decoration">#e6e6e6</color>
+    <color name="activated">#E0E0E0</color>
+    <color name="unActivated">#ffffff</color>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="black_light">#212121</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="blue_aqua">#4fc1e9</color>
+    <color name="blue">#25c6fc</color>
+    <color name="gray_dark">#646464</color>
+    <color name="grey">#cccccc</color>
+    <color name="gray_light">#ffdbe4e7</color>
+    <color name="grapefruit">#ED5565</color>
+    <color name="tnt">#fffcf7</color>
+    <color name="mine_select_black">#ffeeeeee</color>
+
+</resources>

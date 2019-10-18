@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+
+def configInfo = rootProject.ext.android
+def library = rootProject.ext.dependencies
+
+android {
+    compileSdkVersion configInfo.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion configInfo.minSdkVersion
+        targetSdkVersion configInfo.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation library.material
+    implementation library.supportV4
+    implementation library.appcompat
+    implementation library.recyclerview
+    implementation library.glide
+}

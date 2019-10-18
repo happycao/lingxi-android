@@ -1,0 +1,90 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical"
+              tools:context=".module.member.LoginActivity">
+
+    <include layout="@layout/include_toolbar"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/img_login"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_16">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/username"
+            style="@style/AppTheme.EditText.OneLine"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_48"
+            android:drawableLeft="@drawable/ic_people"
+            android:drawableStart="@drawable/ic_people"
+            android:hint="@string/hint_username"
+            android:inputType="textPersonName"
+            tools:ignore="RtlHardcoded" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/password"
+            style="@style/AppTheme.EditText.OneLine"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_48"
+            android:drawableLeft="@drawable/ic_password"
+            android:drawableStart="@drawable/ic_password"
+            android:drawablePadding="16dp"
+            android:hint="@string/hint_pwd"
+            android:inputType="textPassword"
+            tools:ignore="RtlHardcoded" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_10"
+            android:onClick="login"
+            android:text="@string/action_login"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="@string/action_forget_pwd"
+                android:textColor="@color/blue"
+                android:focusable="true"
+                android:clickable="true"
+                android:onClick="updatePwd" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="28dp"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:text="@string/action_register"
+                android:textColor="@color/blue"
+                android:focusable="true"
+                android:clickable="true"
+                android:onClick="register"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

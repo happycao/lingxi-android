@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+
+def configInfo = rootProject.ext.android
+def library = rootProject.ext.dependencies
+
+android {
+    compileSdkVersion configInfo.compileSdkVersion
+
+    defaultConfig {
+        applicationId "me.cl.lingxi"
+        minSdkVersion configInfo.minSdkVersion
+        targetSdkVersion configInfo.targetSdkVersion
+        versionCode 196
+        versionName "1.2.3"
+
+        vectorDrawables.useSupportLibrary = true
+        flavorDimensions "versionCode"
+    }
+
+    productFlavors {
+        alpha {
+            applicationId "me.cl.lingxi.alpha"
+            manifestPlaceholders = [
+                    'APP_ID'  : "me.cl.lingxi.alpha",
+                    'APP_NAME': "@string/app_name_alpha"
+            ]
+        }
+        local {
+            applicationId "me.cl.lingxi.local"
+            manifestPlaceholders = [
+                    'APP_ID'  : "me.cl.lingxi.local",
+                    'APP_NAME': "@string/app_name_local"
+            ]
+        }
+        online {
+            applicationId "me.cl.lingxi"
+            manifestPlaceholders = [
+                    'APP_ID'  : "me.cl.lingxi",
+                    'APP_NAME': "@string/app_name"
+            ]
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+        disable 'GoogleAppIndexingWarning'
+    }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation library.material
+    implementation library.supportV4
+    implementation library.appcompat
+    //解决Glide找不到Android声明库问题
+    //annotationProcessor library.annotation
+    implementation library.recyclerview
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.github.bumptech.glide:glide:${glideVersion}"
+    annotationProcessor "com.github.bumptech.glide:compiler:${glideVersion}"
+    implementation "com.github.bumptech.glide:okhttp3-integration:${glideVersion}"
+    implementation "jp.wasabeef:glide-transformations:${glideTransformations}"
+    implementation 'me.iwf.photopicker:PhotoPicker:0.9.12@aar'
+    implementation 'id.zelory:compressor:2.1.0'
+    implementation "com.jakewharton:butterknife:${butterknifeVersion}"
+    annotationProcessor "com.jakewharton:butterknife-compiler:${butterknifeVersion}"
+    implementation project(':library')
+}

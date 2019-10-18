@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Theme color -->
+    <color name="colorPrimaryDark">@color/white</color>
+    <color name="colorPrimary">@color/white</color>
+    <color name="colorAccent">@color/grapefruit</color>
+
+</resources>

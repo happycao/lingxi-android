@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="me.cl.lingxi">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".module.LxApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="${APP_NAME}"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:theme="@style/AppTheme"
+        tools:targetApi="n">
+
+        <!-- 全面屏适配 -->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
+        <activity
+            android:name=".module.splash.SplashActivity"
+            android:theme="@style/AppTheme.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".module.member.LoginActivity" />
+        <activity
+            android:name=".module.member.RegisterActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".module.member.ResetPwdActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".module.main.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".module.feed.FeedActivity" />
+        <activity android:name=".module.feed.PublishActivity" />
+        <activity android:name=".module.mine.PersonalInfoActivity" />
+        <activity android:name=".module.mine.RelevantActivity" />
+        <activity android:name=".module.setting.AboutActivity" />
+        <activity android:name=".module.future.FutureActivity" />
+
+        <!-- 独立的web进程 -->
+        <activity
+            android:name=".module.webview.WebActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:hardwareAccelerated="true"
+            android:label="@string/open_the_app"
+            android:launchMode="singleTop"
+            android:process=":remote"
+            android:screenOrientation="unspecified">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.SEND" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".module.feed.ShareFeedActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:hardwareAccelerated="true"
+            android:label="@string/share_text">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.SEND" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".module.setting.PublicLicenseActivity" />
+        <activity
+            android:name=".module.member.UserActivity"
+            android:theme="@style/AppTheme.TransparentStatusBar" />
+        <activity android:name=".module.search.SearchActivity" />
+        <activity
+            android:name="me.cl.library.photo.PhotoActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.Fullscreen" />
+        <activity
+            android:name=".module.setting.SettingsActivity" />
+
+        <!-- PhotoPicker start -->
+        <activity
+            android:name="me.iwf.photopicker.PhotoPickerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/customTheme.PhotoPicker" />
+        <activity
+            android:name="me.iwf.photopicker.PhotoPagerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/customTheme.PhotoPreview" />
+        <!-- PhotoPicker end -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="me.happycao.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <meta-data
+            android:name="LINGCI_APP_KEY"
+            android:value="CqYt2014Xyz" />
+    </application>
+
+</manifest>

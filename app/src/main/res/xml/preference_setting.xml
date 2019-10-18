@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="open_tu_pics"
+        android:title="变更图源为图鉴"
+        android:summary="开启可能消耗更多流量" />
+
+</PreferenceScreen>

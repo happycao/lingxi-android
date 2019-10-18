@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- App -->
+    <string name="app_name">灵悉</string>
+    <string name="app_name_alpha">灵悉测试</string>
+    <string name="app_name_local">灵悉本地</string>
+    <string name="app_desc">心有灵犀一点通</string>
+    <string name="app_placeholder">占位符</string>
+    <string name="share_text">分享到灵悉</string>
+    <string name="open_the_app">用灵悉打开</string>
+    <string name="zero_num">0</string>
+
+    <!-- Button String -->
+    <string name="action_login">登录</string>
+    <string name="action_forget_pwd">忘记密码？</string>
+    <string name="action_register">沒有账号？前往注册</string>
+    <string name="action_pwd_modify">重置密码</string>
+    <string name="action_exit_login">退出登录</string>
+    <string name="action_send">发送</string>
+    <string name="action_positive">确认</string>
+    <string name="action_negative">取消</string>
+    <string name="action_contact">联系</string>
+    <string name="action_attention">关注</string>
+    <string name="action_give_up">放弃</string>
+    <string name="action_convey">传达</string>
+    <string name="action_settings">设置</string>
+    <string name="action_search">搜索</string>
+
+    <!-- Text hint -->
+    <string name="hint_username">用户名</string>
+    <string name="hint_pwd">密码</string>
+    <string name="hint_new_pwd">新密码</string>
+    <string name="hint_do_pwd">确认密码</string>
+    <string name="hint_phone">手机号码</string>
+    <string name="hint_register_agree">同意灵悉的注册邀请，因为没有其他的选择</string>
+    <string name="hint_share">写下今天的普通心情吧</string>
+    <string name="hint_comment">吐槽一下</string>
+    <string name="hint_attention">关注</string>
+    <string name="hint_fans">粉丝</string>
+    <string name="hint_signature_default">这个人很懒，什么也没留下&#8230;</string>
+    <string name="hint_feed">动态</string>
+    <string name="hint_all_feed">全部动态</string>
+    <string name="hint_confidential">保密</string>
+    <string name="hint_future">致未来的我：</string>
+    <string name="hint_future_mail">填入送达邮箱</string>
+    <string name="hint_search">输入搜索内容</string>
+    <string name="hint_picture_source">图源：Tujian</string>
+
+    <!-- Nav String -->
+    <string name="nav_home">首页</string>
+    <string name="nav_camera">圈子</string>
+    <string name="nav_message">消息</string>
+    <string name="nav_mine">我的</string>
+
+    <!-- Title String -->
+    <string name="title_bar_login">用户登录</string>
+    <string name="title_bar_reg">注册用户</string>
+    <string name="title_bar_reset_pwd">重置密码</string>
+    <string name="title_bar_home">首页</string>
+    <string name="title_bar_share">分享</string>
+    <string name="title_bar_mine">我的</string>
+    <string name="title_bar_future">未来的未来</string>
+    <string name="title_bar_feed_detail">动态详情</string>
+    <string name="title_bar_personal_info">个人信息</string>
+    <string name="title_bar_about">关于灵悉</string>
+    <string name="title_bar_my_reply">我的回复</string>
+    <string name="title_bar_relevant">与我相关</string>
+    <string name="title_bar_conversation">会话</string>
+    <string name="title_bar_public_license">开源许可</string>
+
+    <!-- Dialog String -->
+    <string name="dialog_loading">正在加载&#8230;</string>
+    <string name="dialog_loading_feed">正在加载动态&#8230;</string>
+    <string name="dialog_loading_login">正在登录&#8230;</string>
+    <string name="dialog_loading_reg">正在注册&#8230;</string>
+    <string name="dialog_loading_reset_wd">正在重置密码&#8230;</string>
+    <string name="dialog_loading_more">正在加载更更多&#8230;</string>
+    <string name="dialog_update_avatar">修改头像中&#8230;</string>
+    <string name="dialog_future_title">信件传达</string>
+    <string name="dialog_future_type">传达类型</string>
+    <string name="dialog_future_type_app">APP内展示</string>
+    <string name="dialog_future_type_mail">邮箱传达</string>
+    <string name="dialog_future_time">传达时间(不建议选择太久，APP不一定能存活)</string>
+    <string name="dialog_future_time_one">半年内</string>
+    <string name="dialog_future_time_two">半年到一年</string>
+    <string name="dialog_future_time_three">一年到两年</string>
+    <string name="dialog_future_time_other">自填时间</string>
+    <string name="dialog_future_time_bar">-</string>
+    <string name="dialog_future_time_month">个月</string>
+
+    <!-- Toast String -->
+    <string name="toast_login_null">请输入完整的登陆信息</string>
+    <string name="toast_pwd_error">用户名或密码错误</string>
+    <string name="toast_username_error">用户名错误</string>
+    <string name="toast_phone_error">手机号码错误</string>
+    <string name="toast_phone_format_error">手机号码格式不正确</string>
+    <string name="toast_reg_null">请确保信息全部填写</string>
+    <string name="toast_again_error">两次输入的密码不同</string>
+    <string name="toast_username_being">用户名已存在</string>
+    <string name="toast_phone_being">手机已被注册</string>
+    <string name="toast_reg_error">注册失败</string>
+    <string name="toast_reg_success">注册成功</string>
+    <string name="toast_login_error">登陆失败</string>
+    <string name="toast_login_success">登陆成功</string>
+    <string name="toast_reset_pwd_error">修改密码失败</string>
+    <string name="toast_reset_ped_success">修改密码成功</string>
+    <string name="toast_reset_pwd_user">用户名或手机号不对</string>
+    <string name="toast_get_feed_error">获取动态失败</string>
+    <string name="toast_again_exit">(ಥ _ ಥ)你难道要再按一次离开我么</string>
+    <string name="toast_search_none">没有找到任何内容╮(╯▽╰)╭</string>
+    <string name="toast_feature_dev">该功能紧张开发中</string>
+
+    <!-- Easter eggs -->
+    <string name="egg_open_code">666666</string>
+    <string name="egg_hidden_secrets">据说这APP隐藏着一个不为人知的秘密！</string>
+    <string name="egg_who_is_there">是谁，是谁在那里？</string>
+    <string name="egg_can_you_find">你能找到这个秘密吗</string>
+    <string name="egg_from_where">从哪里来到哪里去？你明白吗？</string>
+    <string name="egg_end">然而一切都指向大结局！</string>
+
+</resources>

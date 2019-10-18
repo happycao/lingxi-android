@@ -1,0 +1,111 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".module.member.RegisterActivity" >
+
+    <include layout="@layout/include_toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_16" >
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@null"
+            android:hint="@string/hint_username"
+            android:inputType="textPersonName"
+            android:maxLength="15"
+            android:maxLines="1"
+            android:lines="1"
+            android:padding="7dp"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#dcdcdc" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="5dp"
+            android:background="@null"
+            android:hint="@string/hint_pwd"
+            android:inputType="textPassword"
+            android:maxLength="15"
+            android:maxLines="1"
+            android:padding="7dp"
+            android:lines="1"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#dcdcdc" />
+
+        <EditText
+            android:id="@+id/do_password"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="5dp"
+            android:background="@null"
+            android:hint="@string/hint_do_pwd"
+            android:inputType="textPassword"
+            android:maxLength="15"
+            android:maxLines="1"
+            android:padding="7dp"
+            android:lines="1"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#dcdcdc" />
+
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="5dp"
+            android:background="@null"
+            android:hint="@string/hint_phone"
+            android:inputType="number"
+            android:maxLength="11"
+            android:maxLines="1"
+            android:padding="7dp"
+            android:lines="1"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#dcdcdc" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:padding="10dp"
+            android:text="@string/hint_register_agree"
+            android:textSize="12sp" />
+
+        <Button
+            style="@style/AppTheme.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:onClick="goRegister"
+            android:text="@string/title_bar_reg" />
+
+    </LinearLayout>
+
+</LinearLayout>

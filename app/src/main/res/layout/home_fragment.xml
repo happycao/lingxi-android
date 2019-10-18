@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical" >
+
+    <include layout="@layout/include_toolbar"/>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/spacing_10">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/home_card_shape">
+
+            <ImageView
+                android:id="@+id/random_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/app_placeholder"/>
+
+            <TextView
+                android:id="@+id/image_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_alignTop="@+id/random_image"
+                android:layout_alignRight="@+id/random_image"
+                android:textColor="@color/white"
+                android:layout_margin="@dimen/spacing_6"
+                android:text="@string/hint_picture_source"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:padding="@dimen/spacing_16"
+                android:orientation="vertical"
+                android:background="#7bffffff">
+
+                <TextView
+                    android:id="@+id/hitokoto_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:gravity="center_horizontal"
+                    android:paddingLeft="@dimen/spacing_48"
+                    android:paddingRight="@dimen/spacing_48"
+                    android:textColor="@color/textColorBasic"
+                    android:text="@string/app_placeholder"
+                    android:textSize="@dimen/font_18"
+                    android:layout_marginBottom="@dimen/spacing_16"/>
+
+                <TextView
+                    android:id="@+id/hitokoto_author"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:gravity="center_horizontal"
+                    android:text="@string/app_placeholder"
+                    android:layout_marginBottom="@dimen/spacing_8"/>
+
+                <TextView
+                    android:id="@+id/hitokoto_source"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:gravity="center_horizontal"
+                    android:text="@string/app_placeholder"
+                    android:layout_marginBottom="@dimen/spacing_8"/>
+
+            </LinearLayout>
+        </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>

@@ -1,0 +1,13 @@
+/.gradle
+/.idea
+/alpha
+/app/build
+/app/app.iml
+/build
+/captures
+/library/build
+/library/library.iml
+/online
+/lingcikey.jks
+/lingxi-android.iml
+/local.properties

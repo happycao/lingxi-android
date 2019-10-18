@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".module.feed.PublishActivity">
+
+    <include layout="@layout/include_toolbar"/>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/feed_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:gravity="top|left"
+        android:hint="@string/hint_share"
+        android:inputType="textMultiLine"
+        android:lineSpacingExtra="3dp"
+        android:maxHeight="233dp"
+        android:maxLength="240"
+        android:minHeight="123dp"
+        android:padding="7dp"
+        android:scrollHorizontally="false"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="公开的"/>
+
+        <ImageView
+            android:id="@+id/iv_submit"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="@dimen/spacing_10"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_skip"/>
+    </RelativeLayout>
+
+    <!--android:elevation="0dp"-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:padding="6dp"/>
+</LinearLayout>

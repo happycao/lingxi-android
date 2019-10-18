@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/tnt"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/spacing_16"
+    android:paddingRight="@dimen/spacing_16"
+    android:paddingTop="@dimen/spacing_16">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_4"
+        android:gravity="center"
+        android:text="@string/dialog_future_title"
+        android:textSize="@dimen/font_18" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:text="@string/dialog_future_type" />
+
+    <RadioGroup
+        android:id="@+id/future_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_4"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/future_type_app"
+            style="@style/AppTheme.FutureText.Check"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="@dimen/spacing_8"
+            android:text="@string/dialog_future_type_app" />
+
+        <RadioButton
+            android:id="@+id/future_type_mail"
+            style="@style/AppTheme.FutureText.Check"
+            android:layout_width="wrap_content"
+            android:text="@string/dialog_future_type_mail" />
+
+    </RadioGroup>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/future_mail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_future_mail"
+        android:maxLines="1"
+        android:visibility="gone" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:text="@string/dialog_future_time" />
+
+    <me.cl.lingxi.view.FlowRadioGroup
+        android:id="@+id/future_time_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_4">
+
+        <RadioButton
+            android:id="@+id/future_time_one"
+            style="@style/AppTheme.FutureText.Check"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_4"
+            android:layout_marginRight="@dimen/spacing_4"
+            android:text="@string/dialog_future_time_one" />
+
+        <RadioButton
+            android:id="@+id/future_time_two"
+            style="@style/AppTheme.FutureText.Check"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_4"
+            android:layout_marginRight="@dimen/spacing_4"
+            android:text="@string/dialog_future_time_two" />
+
+        <RadioButton
+            android:id="@+id/future_time_three"
+            style="@style/AppTheme.FutureText.Check"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_4"
+            android:layout_marginRight="@dimen/spacing_4"
+            android:text="@string/dialog_future_time_three" />
+
+        <RadioButton
+            android:id="@+id/future_time_other"
+            style="@style/AppTheme.FutureText.Check"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_4"
+            android:layout_marginRight="@dimen/spacing_4"
+            android:text="@string/dialog_future_time_other" />
+
+        <LinearLayout
+            android:id="@+id/future_time_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_4"
+            android:layout_marginRight="@dimen/spacing_4"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/future_time_start"
+                style="@style/AppTheme.FutureText.Edit"
+                android:layout_width="@dimen/spacing_36"
+                android:inputType="number"
+                android:maxLength="2"
+                android:maxLines="1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/spacing_32"
+                android:gravity="center"
+                android:paddingLeft="@dimen/spacing_4"
+                android:paddingRight="@dimen/spacing_4"
+                android:text="@string/dialog_future_time_bar" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/future_time_end"
+                style="@style/AppTheme.FutureText.Edit"
+                android:layout_width="@dimen/spacing_36"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="2"
+                android:maxLines="1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/spacing_32"
+                android:paddingLeft="@dimen/spacing_4"
+                android:text="@string/dialog_future_time_month" />
+        </LinearLayout>
+    </me.cl.lingxi.view.FlowRadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/future_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:text="@string/action_give_up" />
+
+        <Button
+            android:id="@+id/future_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:text="@string/action_convey" />
+
+    </LinearLayout>
+</LinearLayout>

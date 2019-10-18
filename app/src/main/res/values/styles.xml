@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 基础主题 -->
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- 背景色 -->
+        <item name="android:windowBackground">@color/background</item>
+        <!-- 文本颜色，textColor影响全局，不使用 -->
+        <!-- <item name="android:textColor">@color/textColorBasic</item> -->
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="titleTextColor">@color/textColorBasic</item>
+        <!-- 按钮默认 -->
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <!-- 水波纹 -->
+        <item name="colorControlHighlight">@color/transparent</item>
+        <!-- 引入SearchView的自定义样式 -->
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
+    </style>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="toolbarStyle">@style/AppTheme.Toolbar</item>
+    </style>
+
+    <style name="AppTheme.Fullscreen" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="AppTheme.TransparentStatusBar" parent="AppTheme" />
+
+    <style name="AppTheme.Search" parent="AppTheme.Base">
+        <item name="toolbarStyle">@style/AppTheme.Toolbar.None</item>
+    </style>
+
+    <!-- Toolbar start-->
+    <style name="AppTheme.Toolbar.Base" parent="Widget.AppCompat.Toolbar">
+        <!--<item name="contentInsetStart">0dp</item>-->
+        <item name="android:background">?attr/colorPrimary</item>
+        <!--<item name="android:textColor">@color/textColorBasic</item>-->
+        <!--<item name="android:textColorPrimary">@color/textColorBasic</item>-->
+        <!--<item name="android:gravity">center_vertical</item>-->
+        <item name="titleTextAppearance">@style/AppTheme.Toolbar.TextAppearance</item>
+        <item name="popupTheme">@style/Theme.AppCompat.Light</item>
+    </style>
+
+    <style name="AppTheme.Toolbar" parent="AppTheme.Toolbar.Base" />
+
+    <style name="AppTheme.Toolbar.TextAppearance">
+        <item name="android:textSize">@dimen/font_18</item>
+        <item name="android:textColor">@color/textColorBasic</item>
+    </style>
+
+    <style name="AppTheme.Toolbar.None" parent="AppTheme.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetLeft">0dp</item>
+        <!-- NavigationIcon和标题之间的距离 -->
+        <item name="contentInsetStartWithNavigation">0dp</item>
+    </style>
+    <!-- Toolbar end -->
+
+    <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+        <!-- 搜索框提示文字 -->
+        <item name="defaultQueryHint">@string/hint_search</item>
+        <!-- 打开搜索框的搜索按钮的图标 -->
+        <item name="searchIcon">@drawable/ic_search</item>
+        <!-- 搜索框左边的搜索按钮图标 -->
+        <item name="searchHintIcon">@null</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance">
+        <item name="android:textSize">@dimen/font_18</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Medium">
+        <item name="android:textSize">@dimen/font_16</item>
+    </style>
+
+    <style name="AppTheme.EditText">
+        <item name="android:textSize">@dimen/font_16</item>
+    </style>
+
+    <style name="AppTheme.EditText.OneLine">
+        <item name="android:drawablePadding">@dimen/spacing_16</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:lines">1</item>
+        <item name="android:textColor">@color/textColorBasic</item>
+        <item name="android:textSize">@dimen/font_16</item>
+    </style>
+
+    <style name="AppTheme.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/font_16</item>
+    </style>
+
+    <style name="AppTheme.MoreEntry">
+        <item name="android:background">@drawable/more_entry_selector</item>
+        <item name="android:drawablePadding">@dimen/spacing_16</item>
+        <item name="android:paddingRight">@dimen/spacing_16</item>
+        <item name="android:paddingLeft">@dimen/spacing_16</item>
+        <item name="android:textSize">@dimen/font_16</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="AppTheme.Dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="AppTheme.Dialog.unDim" parent="AppTheme.Dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+
+    <!-- Future start -->
+    <style name="AppTheme.FutureText">
+        <item name="android:layout_height">@dimen/spacing_32</item>
+        <item name="android:paddingLeft">@dimen/spacing_6</item>
+        <item name="android:paddingRight">@dimen/spacing_6</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="AppTheme.FutureText.Check" parent="AppTheme.FutureText">
+        <item name="android:button">@color/transparent</item>
+        <item name="android:background">@drawable/future_selector</item>
+        <item name="android:textColor">@color/future_selector</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="AppTheme.FutureText.Edit" parent="AppTheme.FutureText">
+        <item name="android:background">@drawable/future_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/font_14</item>
+    </style>
+    <!-- Future end -->
+
+    <!--PhotoPicker start-->
+    <style name="actionBarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="actionBarSize">@dimen/spacing_48</item>
+    </style>
+
+    <style name="customTheme.PhotoPicker" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="actionBarTheme">@style/actionBarTheme</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="actionBarSize">@dimen/spacing_48</item>
+    </style>
+
+    <style name="customTheme.PhotoPreview" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="actionBarTheme">@style/actionBarTheme</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="actionBarSize">@dimen/spacing_48</item>
+    </style>
+    <!--PhotoPicker end-->
+</resources>

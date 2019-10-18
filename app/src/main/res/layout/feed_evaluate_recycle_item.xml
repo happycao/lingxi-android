@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/spacing_8"
+              android:paddingRight="@dimen/spacing_8"
+              android:paddingTop="@dimen/spacing_8">
+
+    <RelativeLayout
+        android:id="@+id/evaluate_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/user_img"
+            android:layout_width="@dimen/spacing_44"
+            android:layout_height="@dimen/spacing_44"
+            android:layout_marginRight="@dimen/spacing_10"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_user"/>
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_3"
+            android:layout_toRightOf="@id/user_img"
+            android:text="@string/app_name"
+            android:textSize="@dimen/font_14"/>
+
+        <TextView
+            android:id="@+id/evaluate_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_name"
+            android:layout_marginTop="@dimen/spacing_3"
+            android:layout_toRightOf="@id/user_img"
+            android:text="@string/app_name"
+            android:textSize="@dimen/font_12"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/evaluate_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/evaluate_time"
+            android:layout_marginTop="@dimen/spacing_3"
+            android:layout_toRightOf="@id/user_img"
+            android:lineSpacingExtra="@dimen/spacing_3"
+            android:text="@string/app_placeholder"
+            android:textSize="@dimen/font_16"/>
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/spacing_60"
+        android:layout_marginStart="@dimen/spacing_60"
+        android:layout_marginTop="@dimen/spacing_3"
+        android:overScrollMode="never"
+        android:scrollbars="none"/>
+</LinearLayout>

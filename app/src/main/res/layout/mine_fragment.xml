@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <include layout="@layout/include_toolbar"/>
+
+    <me.cl.lingxi.view.JellyScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/mine_top"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/img_mine_bc">
+
+                <LinearLayout
+                    android:id="@+id/user_body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_centerInParent="true">
+
+                    <ImageView
+                        android:id="@+id/user_img"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/img_user"/>
+
+                    <TextView
+                        android:id="@+id/user_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="@string/app_name"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"/>
+
+                    <TextView
+                        android:id="@+id/user_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:gravity="center"
+                        android:textColor="#ffffff"
+                        android:paddingLeft="@dimen/spacing_16"
+                        android:paddingRight="@dimen/spacing_16"
+                        android:text="签名：暂无签名"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/action_reply"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                style="@style/AppTheme.MoreEntry"
+                android:drawableLeft="@drawable/ic_favorite"
+                android:drawableRight="@drawable/ic_more"
+                android:text="@string/title_bar_my_reply"/>
+
+            <TextView
+                android:id="@+id/action_relevant"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="1dp"
+                style="@style/AppTheme.MoreEntry"
+                android:drawableLeft="@drawable/ic_eit"
+                android:drawableRight="@drawable/ic_more"
+                android:text="@string/title_bar_relevant"/>
+
+            <TextView
+                android:id="@+id/action_setting"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                style="@style/AppTheme.MoreEntry"
+                android:drawableLeft="@drawable/ic_setup"
+                android:drawableRight="@drawable/ic_more"
+                android:text="@string/action_settings"/>
+
+            <TextView
+                android:id="@+id/action_about"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                style="@style/AppTheme.MoreEntry"
+                android:drawableLeft="@drawable/ic_accessory"
+                android:drawableRight="@drawable/ic_more"
+                android:text="@string/title_bar_about"/>
+
+            <TextView
+                android:id="@+id/action_sign_out"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="6dp"
+                style="@style/AppTheme.MoreEntry"
+                android:drawableLeft="@drawable/ic_delete"
+                android:drawableRight="@drawable/ic_more"
+                android:text="@string/action_exit_login"/>
+        </LinearLayout>
+    </me.cl.lingxi.view.JellyScrollView>
+
+</LinearLayout>

@@ -1,0 +1,47 @@
+<resources>
+    <string name="lib_name">library</string>
+    <string name="lib_dialog_loading">请稍等&#8230;</string>
+    <string name="lib_load_more">正在加载&#8230;</string>
+    <string name="lib_load_pull_to">上拉加载</string>
+    <string name="lib_load_none">没有更多</string>
+    <string name="lib_load_end">加载完成</string>
+
+    <color name="lib_load_text">#00ddff</color>
+
+
+    <style name="Lib">
+
+    </style>
+
+    <style name="Lib.AppTextAppearance">
+
+    </style>
+
+    <style name="Lib.PhotoText">
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_marginBottom">48dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/photo_text_shape</item>
+    </style>
+
+    <style name="Lib.Dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <!-- photo browser start -->
+    <string name="photo_index">%1$d/%2$d</string>s
+    <string name="photo_save">保存</string>
+    <string name="photo_save_success">图片保存成功</string>
+    <string name="photo_save_error">图片保存失败</string>
+    <string name="photo_save_exists">图片已保存</string>
+
+</resources>

@@ -1,0 +1,47 @@
+buildscript {
+    repositories {
+        google()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        jcenter()
+    }
+}
+
+ext {
+    materialVersion = "1.0.0"
+    androidxVersion = "1.0.0"
+    butterknifeVersion = "10.1.0"
+    okhttpVersion = "3.8.1"
+    glideVersion = "4.1.1"
+    glideTransformations = "3.0.1"
+    gsonVersion = "2.8.0"
+
+    android = [
+            compileSdkVersion: 28,
+            minSdkVersion    : 21,
+            targetSdkVersion : 28
+    ]
+
+    dependencies = [
+            material     : "com.google.android.material:material:${materialVersion}",
+            supportV4    : "androidx.legacy:legacy-support-v4:${androidxVersion}",
+            appcompat    : "androidx.appcompat:appcompat:${androidxVersion}",
+            recyclerview : "androidx.recyclerview:recyclerview:${androidxVersion}",
+            annotation   : "androidx.annotation:annotation:${androidxVersion}",
+            glide        : "com.github.bumptech.glide:glide:${glideVersion}"
+    ]
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

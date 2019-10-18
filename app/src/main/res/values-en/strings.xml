@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- App -->
+    <string name="app_name">LingXi</string>
+    <string name="app_name_alpha">LingXi Test</string>
+    <string name="app_name_local">LingXi Local</string>
+    <string name="app_desc">Touches your Heart</string>
+    <string name="app_placeholder">Placeholder characters</string>
+    <string name="share_text">Share to LingXi</string>
+    <string name="open_the_app">Open in LingXi</string>
+    <string name="zero_num">0</string>
+
+    <!-- Button String -->
+    <string name="action_login">Sign In</string>
+    <string name="action_forget_pwd">Forget password?</string>
+    <string name="action_register">Sign up here</string>
+    <string name="action_pwd_modify">Reset Password</string>
+    <string name="action_exit_login">Sign Out</string>
+    <string name="action_send">Send</string>
+    <string name="action_positive">Confirm</string>
+    <string name="action_negative">Cancel</string>
+    <string name="action_contact">Contact</string>
+    <string name="action_attention">Concern</string>
+    <string name="action_give_up">Give Up</string>
+    <string name="action_convey">Convey</string>
+    <string name="action_settings">Setting</string>
+    <string name="action_search">Search</string>
+
+    <!-- Text hint -->
+    <string name="hint_username">username</string>
+    <string name="hint_pwd">password</string>
+    <string name="hint_new_pwd">new password</string>
+    <string name="hint_do_pwd">Confirm Password</string>
+    <string name="hint_phone">phone</string>
+    <string name="hint_register_agree">同意灵悉的注册邀请，因为没有其他的选择</string>
+    <string name="hint_share">写下今天的普通心情吧</string>
+    <string name="hint_comment">吐槽一下</string>
+    <string name="hint_attention">Concern</string>
+    <string name="hint_fans">Fans</string>
+    <string name="hint_signature_default">This man is lazy and has left nothing behind&#8230;</string>
+    <string name="hint_feed">feed</string>
+    <string name="hint_all_feed">all feed</string>
+    <string name="hint_confidential">Confidential</string>
+    <string name="hint_future">To the future of me:</string>
+    <string name="hint_future_mail">Fill in delivery email</string>
+    <string name="hint_search">Enter to search</string>
+    <string name="hint_picture_source">Picture source：Tujian</string>
+
+    <!-- Nav String -->
+    <string name="nav_home">Home</string>
+    <string name="nav_camera">Feed</string>
+    <string name="nav_message">Message</string>
+    <string name="nav_mine">Me</string>
+
+    <!-- Title String -->
+    <string name="title_bar_login">Sign in</string>
+    <string name="title_bar_reg">Sign up</string>
+    <string name="title_bar_reset_pwd">Reset password</string>
+    <string name="title_bar_home">Home</string>
+    <string name="title_bar_share">Share</string>
+    <string name="title_bar_mine">Me</string>
+    <string name="title_bar_future">Future</string>
+    <string name="title_bar_feed_detail">Feed details</string>
+    <string name="title_bar_personal_info">Personal information</string>
+    <string name="title_bar_about">About LingXi</string>
+    <string name="title_bar_my_reply">My reply</string>
+    <string name="title_bar_relevant">Related to Me</string>
+    <string name="title_bar_conversation">Session</string>
+    <string name="title_bar_public_license">Public license</string>
+
+    <!-- Dialog String -->
+    <string name="dialog_loading">正在加载&#8230;</string>
+    <string name="dialog_loading_feed">正在加载动态&#8230;</string>
+    <string name="dialog_loading_login">正在登录&#8230;</string>
+    <string name="dialog_loading_reg">正在注册&#8230;</string>
+    <string name="dialog_loading_reset_wd">正在重置密码&#8230;</string>
+    <string name="dialog_loading_more">正在加载更更多&#8230;</string>
+    <string name="dialog_update_avatar">修改头像中&#8230;</string>
+    <string name="dialog_future_title">信件传达</string>
+    <string name="dialog_future_type">传达类型</string>
+    <string name="dialog_future_type_app">APP内展示</string>
+    <string name="dialog_future_type_mail">邮箱传达</string>
+    <string name="dialog_future_time">传达时间(不建议选择太久，APP不一定能存活)</string>
+    <string name="dialog_future_time_one">半年内</string>
+    <string name="dialog_future_time_two">半年到一年</string>
+    <string name="dialog_future_time_three">一年到两年</string>
+    <string name="dialog_future_time_other">自填时间</string>
+    <string name="dialog_future_time_bar">-</string>
+    <string name="dialog_future_time_month">个月</string>
+
+    <!-- Toast String -->
+    <string name="toast_login_null">Please enter the full login information</string>
+    <string name="toast_pwd_error">User name or password error</string>
+    <string name="toast_username_error">User name Error</string>
+    <string name="toast_phone_error">Wrong phone number</string>
+    <string name="toast_phone_format_error">The phone number is incorrectly formatted</string>
+    <string name="toast_reg_null">Please make sure that all information is filled in</string>
+    <string name="toast_again_error">The password entered is different</string>
+    <string name="toast_username_being">User name already exists</string>
+    <string name="toast_phone_being">Mobile phone has been registered</string>
+    <string name="toast_reg_error">Sign up failed</string>
+    <string name="toast_reg_success">Sign up success</string>
+    <string name="toast_login_error">Sign in failed</string>
+    <string name="toast_login_success">Sign in success</string>
+    <string name="toast_reset_pwd_error">Failed to modify password</string>
+    <string name="toast_reset_ped_success">Modified Password succeeded</string>
+    <string name="toast_reset_pwd_user">Wrong username or mobile phone</string>
+    <string name="toast_get_feed_error">Get feed failure</string>
+    <string name="toast_again_exit">Click Exit again</string>
+    <string name="toast_search_none">No content found</string>
+    <string name="toast_feature_dev">Features are being developed</string>
+
+    <!-- painted eggshell -->
+    <string name="egg_open_code">666666</string>
+    <string name="egg_hidden_secrets">据说这APP隐藏着一个不为人知的秘密！</string>
+    <string name="egg_who_is_there">是谁，是谁在那里？</string>
+    <string name="egg_can_you_find">你能找到这个秘密吗</string>
+    <string name="egg_from_where">从哪里来到哪里去？你明白吗？</string>
+    <string name="egg_end">然而一切都指向大结局！</string>
+
+</resources>
