@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.lingxi.R;
@@ -14,6 +15,7 @@ import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.common.result.Result;
+import me.cl.lingxi.common.util.Utils;
 import me.cl.lingxi.module.main.MainActivity;
 import me.cl.lingxi.module.member.LoginActivity;
 import me.cl.library.view.MoeToast;
@@ -42,6 +44,7 @@ public class SplashActivity extends BaseActivity {
         if (x == 5) {
             MoeToast.makeText(this, R.string.egg_end);
         }
+        Log.i(TAG, "init: " + Utils.getIMEI(this));
 
         isLogin = SPUtil.build().getBoolean(Constants.SP_BEEN_LOGIN);
         String token = SPUtil.build().getString(Api.X_APP_TOKEN);

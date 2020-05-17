@@ -29,6 +29,7 @@
     <string name="action_convey">Convey</string>
     <string name="action_settings">Setting</string>
     <string name="action_search">Search</string>
+    <string name="action_to_future">To the future of me</string>
 
     <!-- Text hint -->
     <string name="hint_username">username</string>
@@ -110,6 +111,7 @@
     <string name="toast_reset_ped_success">Modified Password succeeded</string>
     <string name="toast_reset_pwd_user">Wrong username or mobile phone</string>
     <string name="toast_get_feed_error">Get feed failure</string>
+    <string name="toast_get_future_error">Get message failure</string>
     <string name="toast_again_exit">Click Exit again</string>
     <string name="toast_search_none">No content found</string>
     <string name="toast_feature_dev">Features are being developed</string>

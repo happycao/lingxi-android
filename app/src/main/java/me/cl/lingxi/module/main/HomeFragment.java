@@ -5,9 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,6 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -173,6 +174,7 @@ public class HomeFragment extends BaseFragment {
     private void getTuPicsData() {
         // Tujian
 		// old API https://api.dpic.dev/ | new API https://v2.api.dailypics.cn/
+        // 图片访问 s1.images.dailypics.cn | s2.images.dailypics.cn
         OkUtil.get()
                 .url("https://v2.api.dailypics.cn/random?op=mobile")
                 .execute(new ResultCallback<ArrayList<RandomPicture>>() {
@@ -234,15 +236,16 @@ public class HomeFragment extends BaseFragment {
         SPUtil.build().putString(RandomPicture.class.getName(), GsonUtil.toJson(picture));
         // 图
         mImageSource.setVisibility(View.VISIBLE);
-        String pLink = picture.getLocal_url();
+        String pLink = picture.getNativePath();
         if (TextUtils.isEmpty(pLink)) {
             mRandomImage.setEnabled(false);
         } else {
             mRandomImage.setEnabled(true);
+            pLink = "https://s1.images.dailypics.cn" + pLink;
             // 2560 * 1440
             int width = picture.getWidth();
             if (width > 1440) {
-                mImageUrl = pLink + "?w=1080";
+                mImageUrl = pLink + "!w1080";
             } else {
                 mImageUrl = pLink;
             }
@@ -256,7 +259,7 @@ public class HomeFragment extends BaseFragment {
     private void getDefaultData() {
         // 一言
         OkUtil.get()
-                .url("https://api.lwl12.com/hitokoto/v1?encode=realjson")
+                .url("https://hitoapi.cc/sp")
                 .setLoadDelay()
                 .execute(new ResultCallback<Hitokoto>() {
                     @Override
@@ -272,7 +275,7 @@ public class HomeFragment extends BaseFragment {
 
         // 一图
         OkUtil.get()
-                .url("https://acg.toubiec.cn/random?return=json")
+                .url("http://img.xjh.me/random_img.php?return=json")
                 .execute(new ResultCallback<RandomImage>() {
                     @Override
                     public void onSuccess(RandomImage response) {
@@ -314,14 +317,17 @@ public class HomeFragment extends BaseFragment {
 
     private void loadImage(RandomImage randomImage) {
         if (randomImage != null) {
-            String acgUrl = randomImage.getAcgurl();
-            if (TextUtils.isEmpty(acgUrl)) {
+            String img = randomImage.getImg();
+            if (img.startsWith("//")) {
+                img = "http:" + img;
+            }
+            if (TextUtils.isEmpty(img)) {
                 mRandomImage.setEnabled(false);
             } else {
                 mRandomImage.setEnabled(true);
-                mImageUrl = acgUrl;
+                mImageUrl = img;
                 GlideApp.with(this)
-                        .load(acgUrl)
+                        .load(img)
                         .centerInside()
                         .into(mRandomImage);
             }
@@ -359,12 +365,46 @@ public class HomeFragment extends BaseFragment {
      */
     class Hitokoto {
 
-        // 一言主体文本
+        /**
+         * id : 2098/1495
+         * uid : 2098
+         * catname : 收藏
+         * text : 真正的危机不是机器人像人一样思考，而是人像机器一样思考。
+         * author : 5454554a@2980.com
+         * source : 凉宫春日的忧郁
+         * date : 2014.10.18 11:04:52
+         */
+        private String id;
+        private int uid;
+        private String catname;
         private String text;
-        //  一言在原出处中的作者
         private String author;
-        // 一言的来源
         private String source;
+        private String date;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public int getUid() {
+            return uid;
+        }
+
+        public void setUid(int uid) {
+            this.uid = uid;
+        }
+
+        public String getCatname() {
+            return catname;
+        }
+
+        public void setCatname(String catname) {
+            this.catname = catname;
+        }
 
         public String getText() {
             return text;
@@ -389,6 +429,14 @@ public class HomeFragment extends BaseFragment {
         public void setSource(String source) {
             this.source = source;
         }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
     }
 
     /**
@@ -396,50 +444,32 @@ public class HomeFragment extends BaseFragment {
      */
     class RandomImage {
 
-        private String code;
-        private String acgurl;
-        private String width;
-        private String height;
-        private String size;
+        private Integer result;
+        private String img;
+        private Integer error;
 
-        public String getCode() {
-            return code;
+        public Integer getResult() {
+            return result;
         }
 
-        public void setCode(String code) {
-            this.code = code;
+        public void setResult(Integer result) {
+            this.result = result;
         }
 
-        public String getAcgurl() {
-            return acgurl;
+        public String getImg() {
+            return img;
         }
 
-        public void setAcgurl(String acgurl) {
-            this.acgurl = acgurl;
+        public void setImg(String img) {
+            this.img = img;
         }
 
-        public String getWidth() {
-            return width;
+        public Integer getError() {
+            return error;
         }
 
-        public void setWidth(String width) {
-            this.width = width;
-        }
-
-        public String getHeight() {
-            return height;
-        }
-
-        public void setHeight(String height) {
-            this.height = height;
-        }
-
-        public String getSize() {
-            return size;
-        }
-
-        public void setSize(String size) {
-            this.size = size;
+        public void setError(Integer error) {
+            this.error = error;
         }
     }
 
@@ -466,6 +496,18 @@ public class HomeFragment extends BaseFragment {
         private String local_url;
         private String TID;
         private String p_date;
+        /**
+         * theme_color : #2c261b
+         * text_color : #ffffff
+         * T_NAME : 摄影
+         * level : 1
+         * nativePath : /202001/ad36bd3b7213bb1ff652df96713ac808.jpg
+         */
+        private String theme_color;
+        private String text_color;
+        private String T_NAME;
+        private int level;
+        private String nativePath;
 
         public String getPID() {
             return PID;
@@ -545,6 +587,46 @@ public class HomeFragment extends BaseFragment {
 
         public void setP_date(String p_date) {
             this.p_date = p_date;
+        }
+
+        public String getTheme_color() {
+            return theme_color;
+        }
+
+        public void setTheme_color(String theme_color) {
+            this.theme_color = theme_color;
+        }
+
+        public String getText_color() {
+            return text_color;
+        }
+
+        public void setText_color(String text_color) {
+            this.text_color = text_color;
+        }
+
+        public String getT_NAME() {
+            return T_NAME;
+        }
+
+        public void setT_NAME(String T_NAME) {
+            this.T_NAME = T_NAME;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(int level) {
+            this.level = level;
+        }
+
+        public String getNativePath() {
+            return nativePath;
+        }
+
+        public void setNativePath(String nativePath) {
+            this.nativePath = nativePath;
         }
     }
 }

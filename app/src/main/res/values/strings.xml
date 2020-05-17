@@ -29,6 +29,7 @@
     <string name="action_convey">传达</string>
     <string name="action_settings">设置</string>
     <string name="action_search">搜索</string>
+    <string name="action_to_future">致未来</string>
 
     <!-- Text hint -->
     <string name="hint_username">用户名</string>
@@ -63,7 +64,7 @@
     <string name="title_bar_home">首页</string>
     <string name="title_bar_share">分享</string>
     <string name="title_bar_mine">我的</string>
-    <string name="title_bar_future">未来的未来</string>
+    <string name="title_bar_future">时间邮局</string>
     <string name="title_bar_feed_detail">动态详情</string>
     <string name="title_bar_personal_info">个人信息</string>
     <string name="title_bar_about">关于灵悉</string>
@@ -110,6 +111,7 @@
     <string name="toast_reset_ped_success">修改密码成功</string>
     <string name="toast_reset_pwd_user">用户名或手机号不对</string>
     <string name="toast_get_feed_error">获取动态失败</string>
+    <string name="toast_get_future_error">获取动态失败</string>
     <string name="toast_again_exit">(ಥ _ ಥ)你难道要再按一次离开我么</string>
     <string name="toast_search_none">没有找到任何内容╮(╯▽╰)╭</string>
     <string name="toast_feature_dev">该功能紧张开发中</string>

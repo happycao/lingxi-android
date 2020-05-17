@@ -3,15 +3,16 @@ package me.cl.lingxi.module.main;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +124,7 @@ public class FeedFragment extends BaseFragment {
         ItemDecoration itemDecoration = new ItemDecoration(ItemDecoration.VERTICAL, 10, Color.parseColor("#f2f2f2"));
         // 隐藏最后一个item的分割线
         itemDecoration.setGoneLast(true);
-        mRecyclerView.addItemDecoration(itemDecoration);
+        // mRecyclerView.addItemDecoration(itemDecoration);
         mAdapter = new FeedAdapter(mList);
         mRecyclerView.setAdapter(mAdapter);
 

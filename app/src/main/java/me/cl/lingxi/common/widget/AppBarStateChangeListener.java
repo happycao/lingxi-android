@@ -3,11 +3,11 @@ package me.cl.lingxi.common.widget;
 import com.google.android.material.appbar.AppBarLayout;
 
 /**
- * author : Bafs
- * e-mail : bafs.jy@live.com
- * time   : 2017/09/17
- * desc   :
- * version: 1.0
+ * @author : happyc
+ * e-mail  : bafs.jy@live.com
+ * time    : 2017/09/17
+ * desc    :
+ * version : 1.0
  */
 public abstract class AppBarStateChangeListener implements AppBarLayout.OnOffsetChangedListener {
 

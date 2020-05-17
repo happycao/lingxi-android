@@ -1,5 +1,7 @@
 package me.cl.lingxi.common.util;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -8,9 +10,13 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.core.app.ActivityCompat;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -36,7 +42,7 @@ public class Utils {
     /**
      * px2dp
      */
-    public static int px2dp(float pxValue){
+    public static int px2dp(float pxValue) {
         float scale = Resources.getSystem().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
@@ -88,7 +94,8 @@ public class Utils {
             if (i == 3) break;
             likeStr.append("{").append(likes.get(i).getUsername()).append("、}");
         }
-        if (likes.size() > 0) likeStr = new StringBuilder(likeStr.substring(0, likeStr.length() - 2) + "}");
+        if (likes.size() > 0)
+            likeStr = new StringBuilder(likeStr.substring(0, likeStr.length() - 2) + "}");
         return likeStr.toString();
     }
 
@@ -165,7 +172,7 @@ public class Utils {
     // qq临时会话，仅用于开通了qq推广的用户
     public static boolean wpaQQ(Context context, String key) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mqqwpa://im/chat?chat_type=wpa&uin=" + key));
-        if (context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null){
+        if (context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
             context.startActivity(intent);
             return true;
         } else {
@@ -186,12 +193,30 @@ public class Utils {
         intent.setData(Uri.parse("mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26k%3D" + key));
         // 此Flag可根据具体产品需要自定义，如设置，则在加群界面按返回，返回手Q主界面，不设置，按返回会返回到呼起产品界面
         // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        if (context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null){
+        if (context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
             context.startActivity(intent);
             return true;
         } else {
             // 未安装手Q或安装的版本不支持
             return false;
         }
+    }
+
+    /**
+     * 获取手机IMEI号((International Mobile Equipment Identity,国际移动身份识别码)
+     */
+    @SuppressLint("HardwareIds")
+    public static String getIMEI(Context context) {
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String deviceId = null;
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            deviceId = telephonyManager.getDeviceId();
+        }
+        //android 10以上已经获取不了imei了 用 android id代替
+        if(TextUtils.isEmpty(deviceId)){
+            deviceId = Settings.System.getString(
+                    context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        }
+        return  deviceId;
     }
 }

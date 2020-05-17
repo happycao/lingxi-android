@@ -9,6 +9,10 @@ Glide版本4.1.1，与之对应PhotoPicker版本0.9.12、glide-transformations�
 体验请直接点击下载打包版本[点击下载测试版](http://47.100.245.128/download/lingxi-test.apk)  
 如果不是用于测试，欢迎来正式版一起玩耍[点击下载正式版](http://47.100.245.128/download/lingxi.apk)  
   
+**[20/05/17]**  
+1、修复首页一图一言数据源，变更部分界面样式  
+2、写给未来变更为未来日记，支持查看今天到以前的日记  
+  
 **[19/10/18]**  
 1、移除历史提交，移除了exoPlayer，仅保留灵悉本体功能  
 2、迁移至androidx，minSdkVersion变更为21  
@@ -43,7 +47,7 @@ Glide版本4.1.1，与之对应PhotoPicker版本0.9.12、glide-transformations�
 ![我的页](screenshot/Screenshot_mine.jpg)
   
 ## 反馈与建议  
-- 微博：[iHappyCL](http://weibo.com/374845241)  
+- 微博：[iHappyCL](https://weibo.com/u/5348934206)  
 - QQ：986417980  
 - 交流群：387355490  
   

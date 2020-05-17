@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/spacing_8"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_show_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center_horizontal"
+        android:text="@string/app_name"/>
+
+    <ImageView
+        android:id="@+id/iv_postbox"
+        android:layout_width="40dp"
+        android:layout_height="64dp"
+        android:layout_below="@id/tv_show_time"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_postbox"/>
+
+    <TextView
+        android:id="@+id/tv_future_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_show_time"
+        android:layout_toEndOf="@id/iv_postbox"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/img_future_bg"
+        android:text="@string/app_name"
+        android:textSize="16sp"/>
+
+</RelativeLayout>

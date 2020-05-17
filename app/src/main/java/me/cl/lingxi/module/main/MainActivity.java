@@ -4,19 +4,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AlertDialog;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,12 +43,30 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.bottom_navigation)
     BottomNavigationView mBottomNavigation;
+    @BindView(R.id.rl_home)
+    RelativeLayout mRlHome;
+    @BindView(R.id.rl_feed)
+    RelativeLayout mRlFeed;
+    @BindView(R.id.rl_msg)
+    RelativeLayout mRlMsg;
+    @BindView(R.id.rl_mine)
+    RelativeLayout mRlMine;
+    @BindView(R.id.iv_home)
+    ImageView mIvHome;
+    @BindView(R.id.iv_feed)
+    ImageView mIvFeed;
+    @BindView(R.id.iv_msg)
+    ImageView mIvMsg;
+    @BindView(R.id.iv_mine)
+    ImageView mIvMine;
 
     private FragmentManager mFragmentManager;
     private HomeFragment mHomeFragment;
     private FeedFragment mFeedFragment;
     private MessageFragment mMessageFragment;
     private MineFragment mMineFragment;
+
+    private Integer currentIndex = 0;
 
     private String mExit = "MM";
     private long mExitTime = 0;
@@ -61,8 +81,16 @@ public class MainActivity extends BaseActivity {
         init();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        switchPage();
+    }
+
     private void init() {
         initFragment();
+        initNavigation();
+
         initBottomNavigation();
 
         initBadge();
@@ -72,43 +100,90 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private void initNavigation() {
+        switchNavigation(mIvHome);
+        mRlHome.setOnClickListener(v -> {
+            currentIndex = 0;
+            switchPage();
+        });
+        mRlFeed.setOnClickListener(v -> {
+            currentIndex = 1;
+            switchPage();
+        });
+        mRlMsg.setOnClickListener(v -> {
+            currentIndex = 2;
+            switchPage();
+        });
+        mRlMine.setOnClickListener(v -> {
+            currentIndex = 3;
+            switchPage();
+        });
+    }
+
+    private void switchPage() {
+        switch (currentIndex) {
+            case 0 :
+                switchNavigation(mIvHome);
+                switchFragment(mHomeFragment);
+                break;
+            case 1 :
+                switchNavigation(mIvFeed);
+                switchFragment(mFeedFragment);
+                break;
+            case 2 :
+                switchNavigation(mIvMsg);
+                switchFragment(mMessageFragment);
+                break;
+            case 3 :
+                switchNavigation(mIvMine);
+                switchFragment(mMineFragment);
+                break;
+        }
+    }
+
+    private ImageView currentImageView;
+
+    private void switchNavigation(ImageView imageView) {
+        if (currentImageView != null) {
+            currentImageView.setSelected(false);
+        }
+        imageView.setSelected(true);
+        currentImageView = imageView;
+    }
+
     private void initFragment() {
         mFragmentManager = getSupportFragmentManager();
         mHomeFragment = HomeFragment.newInstance("home");
         mFeedFragment = FeedFragment.newInstance("home");
         mMessageFragment = new MessageFragment();
         mMineFragment = new MineFragment();
-        switchFragment(mHomeFragment);
     }
 
     //底部导航
     private void initBottomNavigation() {
-        mBottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_home:
-                        switchFragment(mHomeFragment);
-                        return true;
-                    case R.id.navigation_camera:
-                        switchFragment(mFeedFragment);
-                        return true;
-                    case R.id.navigation_interactive:
-                        switchFragment(mMessageFragment);
-                        return true;
-                    case R.id.navigation_mine:
-                        switchFragment(mMineFragment);
-                        return true;
-                }
-                return false;
+        mBottomNavigation.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    switchFragment(mHomeFragment);
+                    return true;
+                case R.id.navigation_camera:
+                    switchFragment(mFeedFragment);
+                    return true;
+                case R.id.navigation_interactive:
+                    switchFragment(mMessageFragment);
+                    return true;
+                case R.id.navigation_mine:
+                    switchFragment(mMineFragment);
+                    return true;
             }
+            return false;
         });
     }
 
     private void initBadge() {
         Intent intent = getIntent();
         if (intent == null) return;
-        Integer num = intent.getIntExtra(Constants.PASSED_UNREAD_NUM, 0);
+        int num = intent.getIntExtra(Constants.PASSED_UNREAD_NUM, 0);
         BottomNavigationMenuView menuView = (BottomNavigationMenuView) mBottomNavigation.getChildAt(0);
         BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(3);
         View badge = LayoutInflater.from(this).inflate(R.layout.main_menu_badge, menuView, false);
@@ -122,13 +197,13 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void goneBadge(){
+    public void goneBadge() {
         if (badgeView != null) {
             badgeView.setVisibility(View.GONE);
         }
     }
 
-    public void visibleBadge(){
+    public void visibleBadge() {
         if (badgeView != null) {
             badgeView.setVisibility(View.VISIBLE);
         }
@@ -213,7 +288,7 @@ public class MainActivity extends BaseActivity {
     }
 
     // 保存updateFlag
-    private void saveUpdateFlag(){
+    private void saveUpdateFlag() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd", Locale.SIMPLIFIED_CHINESE);
         int dateInt = Integer.parseInt(sdf.format(new Date()));
         SPUtil.build().putInt(Constants.SP_UPDATE_FLAG, (dateInt + 1));
@@ -264,7 +339,7 @@ public class MainActivity extends BaseActivity {
     }
 
     // 调起浏览器下载
-    private void gotoDownload(String url){
+    private void gotoDownload(String url) {
         Intent intent = new Intent();
         intent.setData(Uri.parse(url));
         intent.setAction(Intent.ACTION_VIEW);

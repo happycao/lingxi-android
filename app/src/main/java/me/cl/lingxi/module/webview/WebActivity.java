@@ -3,13 +3,14 @@ package me.cl.lingxi.module.webview;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.appcompat.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,7 +40,6 @@ public class WebActivity extends BaseActivity {
     private String mTittle;
     private String mUrl;
 
-    private MoeWebClient mWebClient;
     private MoeChromeClient mChromeClient;
 
     @Override
@@ -69,7 +69,7 @@ public class WebActivity extends BaseActivity {
                 } else {
                     mTittle = "分享内容";
                 }
-                mUrl = mUrl.substring(i, mUrl.length());
+                mUrl = mUrl.substring(i);
             } else {
                 mTittle = bundle.getString("tittle");
                 mUrl = bundle.getString("url");
@@ -82,7 +82,7 @@ public class WebActivity extends BaseActivity {
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
                 .build();
 
-        mWebClient = new MoeWebClient();
+        MoeWebClient webClient = new MoeWebClient();
         mChromeClient = new MoeChromeClient(mVideoView, new MoeChromeClient.onChangedListener() {
             @Override
             public void onFullscreen(boolean fullscreen) {
@@ -94,7 +94,7 @@ public class WebActivity extends BaseActivity {
                 setFullscreen(fullscreen);
             }
         });
-        mWebView.setWebViewClient(mWebClient);
+        mWebView.setWebViewClient(webClient);
         mWebView.setWebChromeClient(mChromeClient);
 
         mWebView.loadUrl(mUrl);

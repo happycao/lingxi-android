@@ -3,9 +3,10 @@ package me.cl.library.photo;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.widget.AppCompatTextView;
 import android.view.View;
+
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 
@@ -97,6 +98,9 @@ public class PhotoActivity extends BaseActivity {
                 String url = mPhotoUrlList.get(currentPosition);
                 if (url.contains("?")) {
                     url = url.split("\\?")[0];
+                }
+                if (url.contains("!")) {
+                    url = url.split("!")[0];
                 }
                 PhotoDownloadService service = new PhotoDownloadService(getApplicationContext(), url, new PhotoListener.OnDownLoadListener() {
                     @Override

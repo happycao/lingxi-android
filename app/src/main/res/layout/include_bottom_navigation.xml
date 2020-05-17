@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/spacing_56"
+    android:background="@drawable/nav_bg"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="@dimen/nav_spacing"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_home"
+            android:layout_width="@dimen/spacing_36"
+            android:layout_height="@dimen/spacing_36"
+            android:background="@drawable/nav_item_bg_selector"
+            android:clickable="false"
+            android:padding="@dimen/spacing_8"
+            android:src="@drawable/ic_home" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_feed"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_feed"
+            android:layout_width="@dimen/spacing_36"
+            android:layout_height="@dimen/spacing_36"
+            android:background="@drawable/nav_item_bg_selector"
+            android:clickable="false"
+            android:padding="@dimen/spacing_8"
+            android:src="@drawable/ic_photo" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_msg"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_msg"
+            android:layout_width="@dimen/spacing_36"
+            android:layout_height="@dimen/spacing_36"
+            android:background="@drawable/nav_item_bg_selector"
+            android:clickable="false"
+            android:padding="@dimen/spacing_8"
+            android:src="@drawable/ic_comment" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_mine"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_mine"
+            android:layout_width="@dimen/spacing_36"
+            android:layout_height="@dimen/spacing_36"
+            android:background="@drawable/nav_item_bg_selector"
+            android:clickable="false"
+            android:padding="@dimen/spacing_8"
+            android:src="@drawable/ic_user" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="@dimen/nav_spacing"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

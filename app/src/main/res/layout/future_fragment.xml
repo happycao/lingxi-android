@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/background"
+        android:paddingStart="@dimen/spacing_8"
+        android:paddingEnd="@dimen/spacing_8"
+        tools:context=".module.main.FutureFragment" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_8">
+
+        <TextView
+            android:id="@+id/tv_to_future"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_to_future"
+            android:gravity="center"
+            android:padding="@dimen/spacing_8"
+            android:background="@drawable/home_card_shape"/>
+    </RelativeLayout>
+</LinearLayout>

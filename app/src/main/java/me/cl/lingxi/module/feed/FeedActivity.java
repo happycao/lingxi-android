@@ -3,12 +3,6 @@ package me.cl.lingxi.module.feed;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -20,6 +14,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,6 @@ import butterknife.OnClick;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.photo.PhotoBrowser;
 import me.cl.library.util.ToolbarUtil;
-import me.cl.library.view.LoadingDialog;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.EvaluateAdapter;
 import me.cl.lingxi.adapter.FeedAdapter;
@@ -103,7 +103,6 @@ public class FeedActivity extends BaseActivity {
     private String toUid;
     private InputMethodManager imm;
     private EvaluateAdapter mAdapter;
-    private LoadingDialog loadingProgress;
 
     private Feed feed;
 
@@ -266,14 +265,14 @@ public class FeedActivity extends BaseActivity {
                 switch (MSG_MODE) {
                     case MSG_EVALUATE:
                         //评论
-                        loadingProgress = new LoadingDialog(FeedActivity.this, "评论中...");
+                        setLoading("评论中...");
                         addEvaluate(mFeedId, saveId, toUid, msg);
                         mEditTuCao.setText(null);
                         hideSoftInput(mEditTuCao);
                         break;
                     case MSG_REPLY:
                         //回复
-                        loadingProgress = new LoadingDialog(FeedActivity.this, "回复中...");
+                        setLoading("回复中...");
                         addReply(mFeedId, mCommentId, saveId, toUid, msg);
                         mEditTuCao.setText(null);
                         hideSoftInput(mEditTuCao);
@@ -299,7 +298,7 @@ public class FeedActivity extends BaseActivity {
                     @Override
                     public void onSuccess(Result response) {
                         showToast("评论成功");
-                        mFeedCommentNum.setText(String.valueOf(Integer.valueOf(mFeedCommentNum.getText().toString()) + 1));
+                        mFeedCommentNum.setText(String.valueOf(Integer.parseInt(mFeedCommentNum.getText().toString()) + 1));
 
                         getEvaluateList(mFeedId);
                     }

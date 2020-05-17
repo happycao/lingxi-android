@@ -22,7 +22,7 @@ import id.zelory.compressor.Compressor;
 import me.cl.lingxi.BuildConfig;
 
 /**
- * author : Bafs
+ * @author : happyc
  * e-mail : bafs.jy@live.com
  * time   : 2018/05/26
  * desc   : 图片工具类，压缩使用https://github.com/zetbaitsu/Compressor

@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/feed_card"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#ffffff"
-    android:descendantFocusability="blocksDescendants"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
 
-    <include layout="@layout/feed_info_include"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <LinearLayout
+        android:id="@+id/feed_card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="@dimen/spacing_16"
-        android:paddingRight="@dimen/spacing_16"
-        android:overScrollMode="never"
-        android:scrollbars="none"/>
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="vertical">
 
-    <include layout="@layout/feed_action_include"/>
+        <include layout="@layout/feed_info_include"/>
 
-    <include layout="@layout/feed_like_include"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/spacing_16"
+            android:paddingRight="@dimen/spacing_16"
+            android:overScrollMode="never"
+            android:scrollbars="none"/>
 
-</LinearLayout>
+        <include layout="@layout/feed_action_include"/>
+
+        <include layout="@layout/feed_like_include"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

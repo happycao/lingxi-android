@@ -19,7 +19,10 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme"
-        tools:targetApi="n">
+        android:launchMode="singleInstance"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="n"
+        tools:ignore="RtlEnabled">
 
         <!-- 全面屏适配 -->
         <meta-data
@@ -44,7 +47,9 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".module.main.MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+            android:launchMode="singleTask"/>
         <activity android:name=".module.feed.FeedActivity" />
         <activity android:name=".module.feed.PublishActivity" />
         <activity android:name=".module.mine.PersonalInfoActivity" />
@@ -106,7 +111,7 @@
         <!-- PhotoPicker end -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="me.happycao.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

@@ -126,6 +126,10 @@ public class Api {
      */
     public static String saveFuture = baseUrl + "/future/save";
     /**
+     * 未来日记
+     */
+    public static String pageFuture = baseUrl + "/future/page";
+    /**
      * 资源采集
      */
     public static String incApi = baseUrl + "/inc/parse/api";
