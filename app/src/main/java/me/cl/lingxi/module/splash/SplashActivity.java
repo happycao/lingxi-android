@@ -1,10 +1,13 @@
 package me.cl.lingxi.module.splash;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.tbruyelle.rxpermissions3.RxPermissions;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.lingxi.R;
@@ -33,9 +36,20 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_activity);
-        init();
+		requestPermission();
     }
 
+    private void requestPermission() {
+        final RxPermissions rxPermissions = new RxPermissions(this); // where this is an Activity or Fragment instance
+        //只有SDK版本小于19的时候需要申请权限，这里我们用小于Android6.0(23)判断
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        rxPermissions
+                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(granted -> {
+                    init();
+                });
+//        }
+    }
     /**
      * 初始化
      */

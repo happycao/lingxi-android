@@ -80,4 +80,7 @@ dependencies {
     implementation "com.jakewharton:butterknife:${butterknifeVersion}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${butterknifeVersion}"
     implementation project(':library')
+	
+	//权限申请
+	implementation 'com.github.tbruyelle:rxpermissions:0.12'
 }
