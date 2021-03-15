@@ -3,16 +3,19 @@ package me.cl.lingxi.module.member;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import com.google.android.material.appbar.AppBarLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +37,6 @@ import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ContentUtil;
-import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.User;
@@ -70,9 +72,7 @@ public class UserActivity extends BaseActivity {
     TextView mFeedNum;
 
     private boolean isPostUser = true;
-    private String saveUserId;
     private String mUserId;
-    private String mUsername;
     private List<Feed> mFeedList = new ArrayList<>();
     private FeedAdapter mAdapter;
 
@@ -95,8 +95,6 @@ public class UserActivity extends BaseActivity {
                 .setBack()
                 .build();
 
-        saveUserId = SPUtil.build().getString(Constants.SP_USER_ID);
-
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         String username = intent.getStringExtra(Constants.PASSED_USER_NAME);
@@ -117,7 +115,7 @@ public class UserActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new ItemAnimator());
-        ItemDecoration itemDecoration = new ItemDecoration(ItemDecoration.VERTICAL, 10, Color.parseColor("#f2f2f2"));
+        ItemDecoration itemDecoration = new ItemDecoration(LinearLayoutCompat.VERTICAL, 10, Color.parseColor("#f2f2f2"));
         // 隐藏最后一个item的分割线
         itemDecoration.setGoneLast(true);
         mRecyclerView.addItemDecoration(itemDecoration);
@@ -153,9 +151,10 @@ public class UserActivity extends BaseActivity {
     private void initUser(UserInfo userInfo) {
         boolean isRc = false;
         String avatar = "";
+        String username;
         if (userInfo != null) {
             mUserId = userInfo.getId();
-            mUsername = userInfo.getUsername();
+            username = userInfo.getUsername();
             avatar = userInfo.getAvatar();
             if (!TextUtils.isEmpty(userInfo.getImToken())) {
                 isRc = true;
@@ -163,11 +162,11 @@ public class UserActivity extends BaseActivity {
             initEvent();
             pageFeed(mPageNum, mPageSize);
         } else {
-            mUsername = "未知用户";
-            showToast(mUsername);
+            username = "未知用户";
+            showToast(username);
         }
-        mTitleName.setText(mUsername);
-        mUserName.setText(mUsername);
+        mTitleName.setText(username);
+        mUserName.setText(username);
         if (!isRc) {
             mContact.setVisibility(View.GONE);
         }
@@ -284,7 +283,6 @@ public class UserActivity extends BaseActivity {
                 .addParam("pageNum", pageNum)
                 .addParam("pageSize", pageSize)
                 .addParam("searchUserId", mUserId)
-                .addParam("userId", saveUserId)
                 .execute(new ResultCallback<Result<PageInfo<Feed>>>() {
                     @Override
                     public void onSuccess(Result<PageInfo<Feed>> response) {

@@ -38,7 +38,7 @@
     <string name="hint_do_pwd">确认密码</string>
     <string name="hint_phone">手机号码</string>
     <string name="hint_register_agree">同意灵悉的注册邀请，因为没有其他的选择</string>
-    <string name="hint_share">写下今天的普通心情吧</string>
+    <string name="hint_share">记录今天的心情吧</string>
     <string name="hint_comment">吐槽一下</string>
     <string name="hint_attention">关注</string>
     <string name="hint_fans">粉丝</string>
@@ -115,6 +115,8 @@
     <string name="toast_again_exit">(ಥ _ ಥ)你难道要再按一次离开我么</string>
     <string name="toast_search_none">没有找到任何内容╮(╯▽╰)╭</string>
     <string name="toast_feature_dev">该功能紧张开发中</string>
+    <string name="toast_get_topic_error">获取话题失败</string>
+    <string name="toast_get_user_error">获取用户失败</string>
 
     <!-- Easter eggs -->
     <string name="egg_open_code">666666</string>

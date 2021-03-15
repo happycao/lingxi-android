@@ -1,15 +1,13 @@
 package me.cl.lingxi.module.future;
 
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MenuItem;
+
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,6 +21,7 @@ import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.common.util.Utils;
 import me.cl.lingxi.dialog.FutureDialog;
 import okhttp3.Call;
 
@@ -105,24 +104,11 @@ public class FutureActivity extends BaseActivity {
      */
     private void showSendDialog() {
         String tag = "sendFuture";
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        // 清除已经存在的，同样的fragment
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        Fragment fragment = fragmentManager.findFragmentByTag(tag);
-        if (fragment != null) {
-            transaction.remove(fragment);
-        }
-        transaction.addToBackStack(null);
         // 展示dialog
         FutureDialog futureDialog = FutureDialog.newInstance();
-        futureDialog.show(transaction, tag);
+        futureDialog.show(Utils.fragmentTransaction(getSupportFragmentManager(), tag), tag);
         futureDialog.setCancelable(false);
-        futureDialog.setOnSendClickListener(new FutureDialog.OnSendClickListener() {
-            @Override
-            public void onSend(int type, String mail, Integer startTime, Integer endTime) {
-                postSaveFuture(type, mail, startTime, endTime);
-            }
-        });
+        futureDialog.setOnSendClickListener(this::postSaveFuture);
     }
 
     /**

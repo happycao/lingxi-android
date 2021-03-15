@@ -23,7 +23,7 @@ import me.cl.lingxi.common.glide.GlideApp;
 import me.cl.lingxi.entity.Like;
 
 /**
- * author : Bafs
+ * @author : happyc
  * e-mail : bafs.jy@live.com
  * time   : 2018/05/29
  * desc   : 内容管理

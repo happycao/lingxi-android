@@ -1,58 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".module.feed.PublishActivity">
+    android:background="@color/white"
+    tools:context=".module.feed.PublishActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <include layout="@layout/include_toolbar"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/feed_info"
+        <include layout="@layout/include_toolbar"/>
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/feed_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:gravity="top|start"
+            android:hint="@string/hint_share"
+            android:inputType="textMultiLine"
+            android:lineSpacingExtra="3dp"
+            android:maxHeight="233dp"
+            android:maxLength="240"
+            android:minHeight="123dp"
+            android:padding="7dp"
+            android:scrollHorizontally="false"/>
+
+        <!--android:elevation="0dp"-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:padding="6dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:gravity="top|left"
-        android:hint="@string/hint_share"
-        android:inputType="textMultiLine"
-        android:lineSpacingExtra="3dp"
-        android:maxHeight="233dp"
-        android:maxLength="240"
-        android:minHeight="123dp"
-        android:padding="7dp"
-        android:scrollHorizontally="false"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:padding="@dimen/spacing_12"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="公开的"/>
+        android:layout_gravity="bottom">
 
         <ImageView
-            android:id="@+id/iv_submit"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="@dimen/spacing_10"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/ic_skip"/>
-    </RelativeLayout>
+            android:id="@+id/iv_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_8"
+            app:srcCompat="@drawable/ic_camera"
+            app:tint="@color/white"
+            android:background="@drawable/nav_item_bg"/>
 
-    <!--android:elevation="0dp"-->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:overScrollMode="never"
-        android:scrollbars="none"
-        android:padding="6dp"/>
-</LinearLayout>
+        <ImageView
+            android:id="@+id/iv_eit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_8"
+            android:layout_marginStart="@dimen/spacing_8"
+            app:srcCompat="@drawable/ic_eit"
+            app:tint="@color/white"
+            android:background="@drawable/nav_item_bg"/>
+
+        <ImageView
+            android:id="@+id/iv_topic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_8"
+            android:layout_marginStart="@dimen/spacing_8"
+            app:srcCompat="@drawable/ic_topic"
+            app:tint="@color/white"
+            android:background="@drawable/nav_item_bg"/>
+
+        <ImageView
+            android:id="@+id/iv_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_8"
+            android:layout_marginStart="@dimen/spacing_8"
+            app:srcCompat="@drawable/ic_accessory"
+            app:tint="@color/white"
+            android:background="@drawable/nav_item_bg"/>
+    </LinearLayout>
+</FrameLayout>

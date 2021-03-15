@@ -16,23 +16,23 @@ public class Api {
     /**
      * 收束gradle的flavor控制，将url变量在此接管
      */
-    private static String baseUrl = "http://47.100.245.128/lingxi";
-    public static String rssUrl = "http://47.100.245.128/rss/lingxi";
+    private static String baseUrl = "http://42.192.229.55/lingxi";
+    public static String rssUrl = "http://42.192.229.55/rss/lingxi";
 
     static {
         String flavor = BuildConfig.FLAVOR;
         switch (flavor) {
             case "alpha":
-                baseUrl = "http://47.100.245.128/lingxi-test";
-                rssUrl = "http://47.100.245.128/rss/lingxi-test";
+                baseUrl = "http://42.192.229.55/lingxi-test";
+                rssUrl = "http://42.192.229.55/rss/lingxi-test";
                 break;
             case "local":
-                baseUrl = "http://192.168.21.103:8090/lingxi";
-                rssUrl = "http://192.168.21.103/rss/lingxi-test";
+                baseUrl = "http://192.168.137.1:8090/lingxi";
+                rssUrl = "http://192.168.137.1/rss/lingxi-test";
                 break;
             case "online":
-                baseUrl = "http://47.100.245.128/lingxi";
-                rssUrl = "http://47.100.245.128/rss/lingxi";
+                baseUrl = "http://42.192.229.55/lingxi";
+                rssUrl = "http://42.192.229.55/rss/lingxi";
                 break;
         }
     }
@@ -58,9 +58,13 @@ public class Api {
      */
     public static String userInfo = baseUrl + "/user/info";
     /**
-     * 查询用户信息
+     * 精准查询用户信息
      */
     public static String searchUser = baseUrl + "/user/search";
+    /**
+     * 查询用户信息
+     */
+    public static String queryUser = baseUrl + "/user/query";
     /**
      * 融云用户列表
      */
@@ -130,7 +134,11 @@ public class Api {
      */
     public static String pageFuture = baseUrl + "/future/page";
     /**
-     * 资源采集
+     * 动态删除
      */
-    public static String incApi = baseUrl + "/inc/parse/api";
+    public static String removeFeed = baseUrl + "/feed/remove";
+    /**
+     * 话题查询
+     */
+    public static String queryTopic = baseUrl + "/feed/topic/query";
 }

@@ -38,8 +38,8 @@
     <string name="hint_do_pwd">Confirm Password</string>
     <string name="hint_phone">phone</string>
     <string name="hint_register_agree">同意灵悉的注册邀请，因为没有其他的选择</string>
-    <string name="hint_share">写下今天的普通心情吧</string>
-    <string name="hint_comment">吐槽一下</string>
+    <string name="hint_share">Record your feelings today.</string>
+    <string name="hint_comment">Comment</string>
     <string name="hint_attention">Concern</string>
     <string name="hint_fans">Fans</string>
     <string name="hint_signature_default">This man is lazy and has left nothing behind&#8230;</string>
@@ -115,6 +115,8 @@
     <string name="toast_again_exit">Click Exit again</string>
     <string name="toast_search_none">No content found</string>
     <string name="toast_feature_dev">Features are being developed</string>
+    <string name="toast_get_topic_error">Get topic failure</string>
+    <string name="toast_get_user_error">Get user failure</string>
 
     <!-- painted eggshell -->
     <string name="egg_open_code">666666</string>

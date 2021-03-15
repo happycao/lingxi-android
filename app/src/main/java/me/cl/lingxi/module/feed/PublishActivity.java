@@ -1,8 +1,17 @@
 package me.cl.lingxi.module.feed;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatEditText;
@@ -10,8 +19,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +37,7 @@ import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ImageUtil;
-import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.common.util.Utils;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.module.main.MainActivity;
 import me.iwf.photopicker.PhotoPicker;
@@ -38,17 +49,29 @@ public class PublishActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.feed_info)
-    AppCompatEditText mMoodInfo;
-    @BindView(R.id.iv_submit)
-    ImageView mIvSubmit;
+    AppCompatEditText mEtFeedInfo;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+    @BindView(R.id.iv_camera)
+    ImageView mIvCamera;
+    @BindView(R.id.iv_eit)
+    ImageView mIvEit;
+    @BindView(R.id.iv_topic)
+    ImageView mIvTopic;
+    @BindView(R.id.iv_link)
+    ImageView mIvLink;
 
     private PhotoSelAdapter mPhotoSelAdapter;
     private List<String> mPhotos = new ArrayList<>();
 
-    private String mUid;
     private String mInfo = "";
+    private boolean showAdd = false;
+
+    // 话题与艾特相关
+    private StringBuilder mFeedInfoSb = new StringBuilder();
+    private List<String> mActionList = new ArrayList<>();
+    private List<ForegroundColorSpan> mColorSpans = new ArrayList<>();
+    private boolean isInAfter = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,16 +86,119 @@ public class PublishActivity extends BaseActivity {
                 .setTitle("发布新动态")
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
+                .setMenu(R.menu.send_menu, new Toolbar.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_send:
+                                mInfo = mEtFeedInfo.getText().toString().trim();
+                                if (TextUtils.isEmpty(mInfo)) {
+                                    showToast("好歹写点什么吧！");
+                                    break;
+                                }
+                                if (mPhotos.isEmpty()) {
+                                    postSaveFeed(mPhotos);
+                                } else {
+                                    postUpload(mPhotos);
+                                }
+                                break;
+                        }
+                        return false;
+                    }
+                })
                 .build();
 
-        mUid = SPUtil.build().getString(Constants.SP_USER_ID);
         setLoading("发布中...");
+        initTextChangeListener();
         initRecycleView();
+    }
+
+    private void initTextChangeListener() {
+        mEtFeedInfo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (TextUtils.isEmpty(s)) {
+                    return;
+                }
+                // 查找话题和@
+                String content = s.toString();
+                mActionList.clear();
+                mActionList.addAll(Utils.findAction(content));
+                // 首先移除之前设置的colorSpan
+                Editable editable = mEtFeedInfo.getText();
+                if (editable == null) {
+                    return;
+                }
+                for (ForegroundColorSpan mColorSpan : mColorSpans) {
+                    editable.removeSpan(mColorSpan);
+                }
+                mColorSpans.clear();
+                // 设置前景色colorSpan
+                int findPos = 0;
+                for (String topic : mActionList) {
+                    findPos = content.indexOf(topic, findPos);
+                    if (findPos != -1) {
+                        ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.rgb(3, 169, 244));
+                        editable.setSpan(colorSpan, findPos, findPos = findPos + topic.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        mColorSpans.add(colorSpan);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        mEtFeedInfo.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN && isInAfter) {
+                    int selectionStart = mEtFeedInfo.getSelectionStart();
+                    int selectionEnd = mEtFeedInfo.getSelectionEnd();
+                    // 如果光标起始和结束在同一位置,说明是选中效果,直接返回 false 交给系统执行删除动作
+                    if (selectionStart != selectionEnd) {
+                        return false;
+                    }
+                    Editable editable = mEtFeedInfo.getText();
+                    if (editable == null) {
+                        return false;
+                    }
+                    String content = editable.toString();
+                    int lastPos = 0;
+                    // 遍历判断光标的位置
+                    for (String action : mActionList) {
+                        lastPos = content.indexOf(action, lastPos);
+                        if (lastPos != -1) {
+                            if (selectionStart != 0 && selectionStart >= lastPos && selectionStart <= (lastPos + action.length())) {
+                                //选中话题
+                                mEtFeedInfo.setSelection(lastPos, lastPos + action.length());
+                                return true;
+                            }
+                        }
+                        lastPos += action.length();
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    // 设置文字和光标
+    private void setText() {
+        mEtFeedInfo.setText(mInfo);
+        mEtFeedInfo.setSelection(mInfo.length());
     }
 
     private void initRecycleView() {
         mRecyclerView.setLayoutManager(new GridLayoutManager(PublishActivity.this, 3));
-        mPhotoSelAdapter = new PhotoSelAdapter(mPhotos);
+        mPhotoSelAdapter = new PhotoSelAdapter(mPhotos, false);
         mRecyclerView.setAdapter(mPhotoSelAdapter);
         mPhotoSelAdapter.setOnItemClickListener(new PhotoSelAdapter.OnItemClickListener() {
             @Override
@@ -99,28 +225,50 @@ public class PublishActivity extends BaseActivity {
             @Override
             public void onDelete(int position) {
                 mPhotos.remove(position);
-                mPhotoSelAdapter.setPhotos(mPhotos);
+                mPhotoSelAdapter.setPhotos(mPhotos, showAdd);
             }
         });
     }
 
-    @OnClick(R.id.iv_submit)
-    public void onClick() {
-        mInfo = mMoodInfo.getText().toString().trim();
-        if (TextUtils.isEmpty(mInfo)) {
-            showToast("好歹写点什么吧！");
-            return;
+    @OnClick({R.id.iv_camera, R.id.iv_eit, R.id.iv_topic, R.id.iv_link})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_camera:
+                photoPicker();
+                break;
+            case R.id.iv_eit:
+                gotoTopicEit(TopicEitActivity.Type.EIT);
+                break;
+            case R.id.iv_topic:
+                gotoTopicEit(TopicEitActivity.Type.TOPIC);
+                break;
+            case R.id.iv_link:
+                showToast("紧张开发中");
+                break;
         }
-        if (mPhotos.size() <= 1) {
-            postSaveFeed(mPhotos);
-        } else {
-            postUpload(mPhotos);
-        }
+    }
+
+    private void gotoTopicEit(TopicEitActivity.Type type){
+        Intent intent = new Intent(this, TopicEitActivity.class);
+        intent.putExtra(TopicEitActivity.TYPE, type);
+        startActivityForResult(intent, TopicEitActivity.REQUEST_CODE);
+    }
+
+    // 图片选择
+    private void photoPicker() {
+        PhotoPicker.builder()
+                .setPhotoCount(6)
+                .setShowCamera(true)
+                .setShowGif(true)
+                .setSelected((ArrayList<String>) mPhotos)
+                .setPreviewEnabled(false)
+                .start(this, PhotoPicker.REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult: requestCode " + requestCode + ",resultCode " + resultCode);
         if (resultCode == RESULT_OK) {
             if (data != null) {
                 switch (requestCode) {
@@ -128,10 +276,35 @@ public class PublishActivity extends BaseActivity {
                     case PhotoPreview.REQUEST_CODE:
                         mPhotos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
                         break;
+                    case TopicEitActivity.REQUEST_CODE:
+                        Serializable type = data.getSerializableExtra(TopicEitActivity.TYPE);
+                        ArrayList<String> msgList = data.getStringArrayListExtra(TopicEitActivity.MSG);
+                        Log.i(TAG, "onActivityResult: type " + type + ",msgList " + msgList);
+                        if (msgList == null || msgList.isEmpty()) {
+                            return;
+                        }
+                        mInfo = Objects.requireNonNull(mEtFeedInfo.getText()).toString();
+                        if (TopicEitActivity.Type.TOPIC == type) {
+                            StringBuilder sb = new StringBuilder();
+                            for (String eit : msgList) {
+                                sb.append("#").append(eit).append("# ");
+                            }
+                            mInfo = mInfo + sb.toString();
+                            setText();
+                        }
+                        if (TopicEitActivity.Type.EIT == type) {
+                            StringBuilder sb = new StringBuilder();
+                            for (String eit : msgList) {
+                                sb.append("@").append(eit).append(" ");
+                            }
+                            mInfo = mInfo + sb.toString();
+                            setText();
+                        }
+                        break;
                 }
             }
         }
-        mPhotoSelAdapter.setPhotos(mPhotos);
+        mPhotoSelAdapter.setPhotos(mPhotos, showAdd);
     }
 
     // 上传图片
@@ -175,7 +348,6 @@ public class PublishActivity extends BaseActivity {
         removePhotoAdd(uploadImg);
         OkUtil.post()
                 .url(Api.saveFeed)
-                .addParam("userId", mUid)
                 .addParam("feedInfo", mInfo)
                 .addUrlParams("photoList", uploadImg)
                 .execute(new ResultCallback<Result<Feed>>() {
@@ -188,7 +360,7 @@ public class PublishActivity extends BaseActivity {
                             addPhotoAdd(mPhotos);
                             return;
                         }
-                        mMoodInfo.setText(null);
+                        mEtFeedInfo.setText(null);
                         showToast("发布成功");
                         onBackPressed();
                     }
@@ -203,15 +375,15 @@ public class PublishActivity extends BaseActivity {
     }
 
     // 添加添加图片按钮
-    private void addPhotoAdd(List<String> photList) {
-        if (!photList.contains(PhotoSelAdapter.mPhotoAdd)) {
-            photList.add(PhotoSelAdapter.mPhotoAdd);
+    private void addPhotoAdd(List<String> photoList) {
+        if (showAdd && !photoList.contains(PhotoSelAdapter.mPhotoAdd)) {
+            photoList.add(PhotoSelAdapter.mPhotoAdd);
         }
     }
 
     // 去除添加图片按钮
-    private void removePhotoAdd(List<String> photList) {
-        photList.remove(PhotoSelAdapter.mPhotoAdd);
+    private void removePhotoAdd(List<String> photoList) {
+        photoList.remove(PhotoSelAdapter.mPhotoAdd);
     }
 
     @Override

@@ -65,9 +65,10 @@
                         android:layout_gravity="bottom"
                         android:background="#f2f2f2"
                         android:gravity="center_vertical"
-                        android:paddingLeft="@dimen/spacing_16"
+                        android:paddingStart="@dimen/spacing_16"
                         android:text="全部评论"
-                        app:layout_collapseMode="pin"/>
+                        app:layout_collapseMode="pin"
+                        tools:ignore="RtlSymmetry" />
 
                 </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -120,7 +121,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/spacing_36"
             android:layout_gravity="bottom"
-            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:background="@drawable/btn_publish_selector"
             android:text="@string/action_send"
             android:textColor="@color/selector_text"

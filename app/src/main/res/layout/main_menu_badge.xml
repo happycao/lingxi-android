@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
 
@@ -9,12 +10,13 @@
         android:layout_width="@dimen/spacing_8"
         android:layout_height="@dimen/spacing_8"
         android:layout_gravity="center"
-        android:layout_marginLeft="@dimen/spacing_10"
+        android:layout_marginStart="@dimen/spacing_10"
         android:layout_marginTop="@dimen/spacing_8"
         android:background="@drawable/shape_badge"
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="@dimen/font_12"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:ignore="SpUsage" />
 
 </LinearLayout>

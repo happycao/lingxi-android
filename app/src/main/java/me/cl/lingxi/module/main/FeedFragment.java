@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +15,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,7 +89,7 @@ public class FeedFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.feed_fragment, container, false);
         ButterKnife.bind(this, view);
         init();
@@ -170,7 +168,7 @@ public class FeedFragment extends BaseFragment {
                 PhotoBrowser.builder()
                         .setPhotos(photos)
                         .setCurrentItem(position)
-                        .start(Objects.requireNonNull(getActivity()));
+                        .start(requireActivity());
             }
         });
 

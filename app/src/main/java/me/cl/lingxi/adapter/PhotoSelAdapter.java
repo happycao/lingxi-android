@@ -38,9 +38,9 @@ public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoV
         void onDelete(int position);
     }
 
-    public PhotoSelAdapter(List<String> photos) {
+    public PhotoSelAdapter(List<String> photos, boolean showAdd) {
         this.mPhotos = photos;
-        if (mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
+        if (showAdd && mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
     }
 
     @NonNull
@@ -60,9 +60,9 @@ public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoV
         return mPhotos.size();
     }
 
-    public void setPhotos(List<String> photos) {
+    public void setPhotos(List<String> photos, boolean showAdd) {
         this.mPhotos = photos;
-        if (mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
+        if (showAdd && mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
         notifyDataSetChanged();
     }
 

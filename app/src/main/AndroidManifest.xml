@@ -16,13 +16,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="${APP_NAME}"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme"
         android:launchMode="singleInstance"
         android:usesCleartextTraffic="true"
-        tools:targetApi="n"
-        tools:ignore="RtlEnabled">
+        tools:targetApi="n">
 
         <!-- 全面屏适配 -->
         <meta-data
@@ -98,6 +96,8 @@
             android:theme="@style/AppTheme.Fullscreen" />
         <activity
             android:name=".module.setting.SettingsActivity" />
+        <activity
+            android:name=".module.feed.TopicEitActivity" />
 
         <!-- PhotoPicker start -->
         <activity
@@ -111,7 +111,7 @@
         <!-- PhotoPicker end -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
+            android:authorities="${applicationId}.provider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

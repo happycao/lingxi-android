@@ -1,10 +1,6 @@
 package me.cl.lingxi.dialog;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.fragment.app.DialogFragment;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -23,7 +22,7 @@ import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.Utils;
 
 /**
- * @author : Bafs
+ * @author : happyc
  * e-mail : bafs.jy@live.com
  * time   : 2018/10/12
  * desc   : 写给未来设置
@@ -94,9 +93,8 @@ public class FutureDialog extends DialogFragment {
         super.onStart();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         View view = inflater.inflate(R.layout.future_dialog, container, false);
         ButterKnife.bind(this, view);

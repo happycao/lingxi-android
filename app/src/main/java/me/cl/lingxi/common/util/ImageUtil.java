@@ -189,7 +189,7 @@ public class ImageUtil {
      */
     public static Uri getFileUri(Context context, File file) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return FileProvider.getUriForFile(context, "me.happycao.fileprovider", file);
+            return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
         } else {
             return Uri.fromFile(file);
         }

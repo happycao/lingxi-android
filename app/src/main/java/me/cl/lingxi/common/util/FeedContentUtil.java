@@ -24,7 +24,7 @@ import me.cl.lingxi.view.textview.NoLineClickableSpan;
 import me.cl.lingxi.module.member.UserActivity;
 
 /**
- * author : happyc
+ * @author : happyc
  * e-mail : bafs.jy@live.com
  * time   : 2018/05/27
  * desc   : SpannableString,话题等处理

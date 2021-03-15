@@ -68,8 +68,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="6dp"
                 style="@style/AppTheme.MoreEntry"
-                android:drawableLeft="@drawable/ic_favorite"
-                android:drawableRight="@drawable/ic_more"
+                android:drawableStart="@drawable/ic_favorite"
+                android:drawableEnd="@drawable/ic_more"
                 android:text="@string/title_bar_my_reply"/>
 
             <TextView
@@ -78,8 +78,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="1dp"
                 style="@style/AppTheme.MoreEntry"
-                android:drawableLeft="@drawable/ic_eit"
-                android:drawableRight="@drawable/ic_more"
+                android:drawableStart="@drawable/ic_eit"
+                android:drawableEnd="@drawable/ic_more"
                 android:text="@string/title_bar_relevant"/>
 
             <TextView
@@ -88,8 +88,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="6dp"
                 style="@style/AppTheme.MoreEntry"
-                android:drawableLeft="@drawable/ic_setup"
-                android:drawableRight="@drawable/ic_more"
+                android:drawableStart="@drawable/ic_setup"
+                android:drawableEnd="@drawable/ic_more"
                 android:text="@string/action_settings"/>
 
             <TextView
@@ -98,8 +98,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="6dp"
                 style="@style/AppTheme.MoreEntry"
-                android:drawableLeft="@drawable/ic_accessory"
-                android:drawableRight="@drawable/ic_more"
+                android:drawableStart="@drawable/ic_accessory"
+                android:drawableEnd="@drawable/ic_more"
                 android:text="@string/title_bar_about"/>
 
             <TextView
@@ -108,8 +108,8 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="6dp"
                 style="@style/AppTheme.MoreEntry"
-                android:drawableLeft="@drawable/ic_delete"
-                android:drawableRight="@drawable/ic_more"
+                android:drawableStart="@drawable/ic_delete"
+                android:drawableEnd="@drawable/ic_more"
                 android:text="@string/action_exit_login"/>
         </LinearLayout>
     </me.cl.lingxi.view.JellyScrollView>

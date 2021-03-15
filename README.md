@@ -6,9 +6,13 @@
 网络为OkHttp，只做了简单的get及post请求封装，如有更多需求请选择更好的轮子  
 Glide版本4.1.1，与之对应PhotoPicker版本0.9.12、glide-transformations版本3.0.1  
 调试请使用alpha版本，local版本为本人本地使用，online版本为发布打包版本  
-体验请直接点击下载打包版本[点击下载测试版](http://47.100.245.128/download/lingxi-test.apk)  
-如果不是用于测试，欢迎来正式版一起玩耍[点击下载正式版](http://47.100.245.128/download/lingxi.apk)  
-  
+体验请直接点击下载打包版本[点击下载测试版](http://42.192.229.55/download/lingxi-test.apk)
+如果不是用于测试，欢迎来正式版一起玩耍[点击下载正式版](http://42.192.229.55/download/lingxi.apk)
+
+**[2021/03/15]**
+1、迁移服务器，旧版本将无法使用，请尽快升级
+2、发布动态时支持查询添加话题和@人
+
 **[20/05/17]**  
 1、修复首页一图一言数据源，变更部分界面样式  
 2、写给未来变更为未来日记，支持查看今天到以前的日记  
@@ -46,8 +50,7 @@ Glide版本4.1.1，与之对应PhotoPicker版本0.9.12、glide-transformations�
 ![发布页](screenshot/Screenshot_publish.jpg)
 ![我的页](screenshot/Screenshot_mine.jpg)
   
-## 反馈与建议  
-- 微博：[iHappyCL](https://weibo.com/u/5348934206)  
+## 反馈与建议
 - QQ：986417980  
 - 交流群：387355490  
   

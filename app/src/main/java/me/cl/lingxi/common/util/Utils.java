@@ -17,7 +17,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,6 +75,25 @@ public class Utils {
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(mail);
         return m.matches();
+    }
+
+    // 正则表达式,一定要和服务器以及 iOS 端统一
+    private static final String TOPIC = "#([^#]+?)#";
+    private static final String AT = "@[\\w\\p{InCJKUnifiedIdeographs}-]{1,26} ";
+    private static final String ALL = "(" + AT + ")" + "|" + "(" + TOPIC + ")";
+
+    /**
+     * 查询艾特和话题事件
+     */
+    public static ArrayList<String> findAction(String s) {
+        Pattern p = Pattern.compile(ALL);
+        Matcher m = p.matcher(s);
+
+        ArrayList<String> list = new ArrayList<>();
+        while (m.find()) {
+            list.add(m.group());
+        }
+        return list;
     }
 
     /**
@@ -218,5 +241,16 @@ public class Utils {
                     context.getContentResolver(), Settings.Secure.ANDROID_ID);
         }
         return  deviceId;
+    }
+
+    public static FragmentTransaction fragmentTransaction(FragmentManager fragmentManager, String tag) {
+        // 清除已经存在的，同样的fragment
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        Fragment fragment = fragmentManager.findFragmentByTag(tag);
+        if (fragment != null) {
+            transaction.remove(fragment);
+        }
+        transaction.addToBackStack(null);
+        return transaction;
     }
 }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/spacing_56"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/nav_bg"
     android:orientation="horizontal">
 
@@ -25,7 +26,7 @@
             android:background="@drawable/nav_item_bg_selector"
             android:clickable="false"
             android:padding="@dimen/spacing_8"
-            android:src="@drawable/ic_home" />
+            app:srcCompat="@drawable/ic_home" />
 
     </RelativeLayout>
 
@@ -46,7 +47,7 @@
             android:background="@drawable/nav_item_bg_selector"
             android:clickable="false"
             android:padding="@dimen/spacing_8"
-            android:src="@drawable/ic_photo" />
+            app:srcCompat="@drawable/ic_photo" />
 
     </RelativeLayout>
 
@@ -67,7 +68,7 @@
             android:background="@drawable/nav_item_bg_selector"
             android:clickable="false"
             android:padding="@dimen/spacing_8"
-            android:src="@drawable/ic_comment" />
+            app:srcCompat="@drawable/ic_comment" />
 
     </RelativeLayout>
 
@@ -88,7 +89,7 @@
             android:background="@drawable/nav_item_bg_selector"
             android:clickable="false"
             android:padding="@dimen/spacing_8"
-            android:src="@drawable/ic_user" />
+            app:srcCompat="@drawable/ic_user" />
 
     </RelativeLayout>
 

@@ -4,11 +4,11 @@ import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import androidx.annotation.ColorInt;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.annotation.ColorInt;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * author : Bafs
@@ -29,7 +29,7 @@ public class ItemDecoration extends RecyclerView.ItemDecoration {
 
     private final Rect mBounds = new Rect();
 
-    public ItemDecoration(@LinearLayoutCompat.OrientationMode int orientation, int decoration, @ColorInt int color) {
+    public ItemDecoration(int orientation, int decoration, @ColorInt int color) {
         setOrientation(orientation);
         setDecoration(decoration);
         setDrawable(color);
