@@ -12,33 +12,35 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.PublicLicenseAdapter;
+import me.cl.lingxi.databinding.PublicLicenseActivityBinding;
 import me.cl.lingxi.entity.PublicLicense;
 import me.cl.lingxi.module.webview.WebActivity;
 
 public class PublicLicenseActivity extends BaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    private PublicLicenseActivityBinding mActivityBinding;
 
-    private List<PublicLicense> mData = new ArrayList<>();
+    private Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
+
+    private final List<PublicLicense> mData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.public_license_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = PublicLicenseActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mRecyclerView = mActivityBinding.includeRecyclerView.recyclerView;
+
         ToolbarUtil.init(mToolbar, this)
                 .setTitle(R.string.title_bar_public_license)
                 .setBack()

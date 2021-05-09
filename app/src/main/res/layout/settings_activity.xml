@@ -4,9 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="me.cl.lingxi.module.setting.SettingsActivity">
+    tools:context=".module.setting.SettingsActivity">
 
-    <include layout="@layout/include_toolbar"/>
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar"/>
 
     <FrameLayout
         android:id="@+id/fragment_container"

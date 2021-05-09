@@ -1,6 +1,6 @@
 package me.cl.lingxi.adapter;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,13 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import me.cl.library.loadmore.LoadMord;
-import me.cl.library.loadmore.LoadMoreViewHolder;
-import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.ContentUtil;
+import me.cl.lingxi.databinding.FeedEvaluateRecycleItemBinding;
 import me.cl.lingxi.entity.Comment;
 import me.cl.lingxi.entity.Reply;
 import me.cl.lingxi.entity.User;
@@ -28,9 +23,8 @@ import me.cl.lingxi.entity.User;
 /**
  * Evaluate Adapter
  */
-public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class EvaluateAdapter extends RecyclerView.Adapter<EvaluateAdapter.EvaluateViewHolder> {
 
-    private Context mContext;
     private List<Comment> mList;
 
     private static final int TYPE_FOOTER = -1;
@@ -47,51 +41,25 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.mOnItemListener = onItemListener;
     }
 
-    public EvaluateAdapter(Context context, List<Comment> list) {
-        this.mContext = context;
+    public EvaluateAdapter(List<Comment> list) {
         this.mList = list;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        // 最后一个item设置为footerView
-        if (position + 1 == getItemCount()) {
-            return TYPE_FOOTER;
-        } else {
-            return position;
-        }
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_FOOTER) {
-            View view = View.inflate(parent.getContext(), R.layout.lib_load_more, null);
-            return new LoadMoreViewHolder(view);
-        } else {
-            View view = View.inflate(parent.getContext(), R.layout.feed_evaluate_recycle_item, null);
-            return new EvaluateViewHolder(view);
-        }
+    public EvaluateViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        FeedEvaluateRecycleItemBinding binding = FeedEvaluateRecycleItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new EvaluateViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof LoadMoreViewHolder) {
-            LoadMoreViewHolder loadMoreViewHolder = (LoadMoreViewHolder) holder;
-            loadMoreViewHolder.bindItem(LoadMord.LOAD_END);
-        } else {
-            EvaluateViewHolder evaluateViewHolder = (EvaluateViewHolder) holder;
-            evaluateViewHolder.bindItem(mContext, mList.get(position));
-        }
+    public void onBindViewHolder(@NonNull EvaluateViewHolder holder, int position) {
+        holder.bindItem(mList.get(position));
     }
 
     @Override
     public int getItemCount() {
         return mList.size() + 1;
-    }
-
-    public void updateLoadStatus(int status) {
-        notifyDataSetChanged();
     }
 
     public void setDate(List<Comment> data) {
@@ -104,30 +72,32 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    class EvaluateViewHolder extends RecyclerView.ViewHolder {
+    class EvaluateViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.evaluate_body)
-        RelativeLayout mEvaluateBody;
-        @BindView(R.id.user_img)
-        ImageView mUserImg;
-        @BindView(R.id.user_name)
-        TextView mUserName;
-        @BindView(R.id.evaluate_time)
-        TextView mEvaluateTime;
-        @BindView(R.id.evaluate_info)
-        AppCompatTextView mEvaluateInfo;
-        @BindView(R.id.recycler_view)
-        RecyclerView mRecyclerView;
+        private final ImageView mUserImg;
+        private final TextView mUserName;
+        private final TextView mEvaluateTime;
+        private final AppCompatTextView mEvaluateInfo;
+        private final RecyclerView mRecyclerView;
         private Comment mComment;
 
-        public EvaluateViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        public EvaluateViewHolder(FeedEvaluateRecycleItemBinding binding) {
+            super(binding.getRoot());
+            RelativeLayout evaluateBody = binding.evaluateBody;
+            mUserImg = binding.userImg;
+            mUserName = binding.userName;
+            mEvaluateTime = binding.evaluateTime;
+            mEvaluateInfo = binding.evaluateInfo;
+            mRecyclerView = binding.recyclerView;
+
+            mUserImg.setOnClickListener(this);
+            evaluateBody.setOnClickListener(this);
+
             LinearLayoutManager layoutManager = new LinearLayoutManager(itemView.getContext(), RecyclerView.VERTICAL, false);
             mRecyclerView.setLayoutManager(layoutManager);
         }
 
-        public void bindItem(Context context, Comment comment) {
+        public void bindItem(Comment comment) {
             mComment = comment;
             User user = comment.getUser();
 
@@ -136,7 +106,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mUserName.setText(user.getUsername());
             mEvaluateTime.setText(comment.getCreateTime());
             mEvaluateInfo.setText(comment.getCommentInfo());
-            ReplyAdapter adapter = new ReplyAdapter(context, comment.getReplyList());
+            ReplyAdapter adapter = new ReplyAdapter(comment.getReplyList());
             mRecyclerView.setAdapter(adapter);
 
             final String eid = comment.getId();
@@ -148,7 +118,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
         }
 
-        @OnClick({R.id.user_img, R.id.evaluate_body})
+        @Override
         public void onClick(View view) {
             if (mOnItemListener != null) mOnItemListener.onItemClick(view, mComment);
         }

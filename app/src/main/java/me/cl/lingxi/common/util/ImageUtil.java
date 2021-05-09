@@ -102,8 +102,8 @@ public class ImageUtil {
         // 缓存图片目录
         String imagePath = getImageCachePath(context);
         // 压缩分辨率阈值
-        Integer thresholdXxh = 1080;
-        Integer thresholdXh = 720;
+        int thresholdXxh = 1080;
+        int thresholdXh = 720;
         // 压缩设置
         Compressor compressor = new Compressor(context);
         compressor.setDestinationDirectoryPath(imagePath);
@@ -199,8 +199,8 @@ public class ImageUtil {
     private void getWH(String filePath){
         BitmapFactory.Options options = new BitmapFactory.Options();
         // 阈值
-        Integer thresholdXxh = 1920;
-        Integer thresholdXh = 1080;
+        int thresholdXxh = 1920;
+        int thresholdXh = 1080;
         // 关键项
         options.inJustDecodeBounds = true;
         // 此处返回的bitmap为null，但宽高可以从options获取

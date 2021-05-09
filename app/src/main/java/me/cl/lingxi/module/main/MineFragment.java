@@ -1,29 +1,24 @@
 package me.cl.lingxi.module.main;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.Objects;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.library.base.BaseFragment;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
@@ -34,6 +29,7 @@ import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ContentUtil;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.MineFragmentBinding;
 import me.cl.lingxi.dialog.LogoutDialog;
 import me.cl.lingxi.entity.UserInfo;
 import me.cl.lingxi.module.member.LoginActivity;
@@ -46,48 +42,43 @@ import okhttp3.Call;
 /**
  * 我的界面
  */
-public class MineFragment extends BaseFragment {
+public class MineFragment extends BaseFragment implements View.OnClickListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.user_img)
-    ImageView mUserImg;
-    @BindView(R.id.user_name)
-    TextView mUserName;
-    @BindView(R.id.user_description)
-    TextView mUserDescription;
-    @BindView(R.id.user_body)
-    LinearLayout mUserBody;
-    @BindView(R.id.mine_top)
-    RelativeLayout mMineTop;
-    @BindView(R.id.action_reply)
-    TextView mMineReply;
-    @BindView(R.id.action_relevant)
-    TextView mMineRelevant;
-    @BindView(R.id.action_setting)
-    TextView mMineSetting;
-    @BindView(R.id.action_about)
-    TextView mMineAbout;
-    @BindView(R.id.action_sign_out)
-    TextView mMineSignOut;
+    private MineFragmentBinding mFragmentBinding;
+
+    private Toolbar mToolbar;
+    private ImageView mUserImg;
+    private TextView mUserName;
+    private TextView mMineRelevant;
 
     private String mUserId;
     private OperateBroadcastReceiver receiver;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.mine_fragment, container, false);
-        ButterKnife.bind(this, view);
-        init(view);
+        mFragmentBinding = MineFragmentBinding.inflate(inflater, container, false);
+        init();
         initReceiver();
-        return view;
+        return mFragmentBinding.getRoot();
     }
 
-    private void init(View view) {
+    private void init() {
+        mToolbar = mFragmentBinding.includeToolbar.toolbar;
+        mUserImg = mFragmentBinding.userImg;
+        mUserName = mFragmentBinding.userName;
+        mMineRelevant = mFragmentBinding.actionRelevant;
+
         ToolbarUtil.init(mToolbar, getActivity())
                 .setTitle(R.string.nav_mine)
                 .setTitleCenter()
                 .build();
+
+        mFragmentBinding.userBody.setOnClickListener(this);
+        mFragmentBinding.actionReply.setOnClickListener(this);
+        mFragmentBinding.actionRelevant.setOnClickListener(this);
+        mFragmentBinding.actionSetting.setOnClickListener(this);
+        mFragmentBinding.actionAbout.setOnClickListener(this);
+        mFragmentBinding.actionSignOut.setOnClickListener(this);
 
         mUserId = SPUtil.build().getString(Constants.SP_USER_ID);
         // 获取用户信息
@@ -104,10 +95,8 @@ public class MineFragment extends BaseFragment {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action != null) {
-                switch (action) {
-                    case Constants.UPDATE_USER_IMG:
-                        postUserInfo(mUserId);
-                        break;
+                if (Constants.UPDATE_USER_IMG.equals(action)) {
+                    postUserInfo(mUserId);
                 }
             }
         }
@@ -117,7 +106,7 @@ public class MineFragment extends BaseFragment {
         receiver = new OperateBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.UPDATE_USER_IMG);
-        Objects.requireNonNull(getActivity()).registerReceiver(receiver, filter);
+        requireActivity().registerReceiver(receiver, filter);
     }
 
     private void postUserInfo(String id) {
@@ -151,7 +140,7 @@ public class MineFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        getActivity().unregisterReceiver(receiver);
+        requireActivity().unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -160,11 +149,12 @@ public class MineFragment extends BaseFragment {
         super.onStart();
         ContentUtil.setMoreBadge(mMineRelevant);
         if (Constants.isRead) {
-            ((MainActivity) getActivity()).goneBadge();
+            ((MainActivity) requireActivity()).goneBadge();
         }
     }
 
-    @OnClick({R.id.user_body, R.id.action_reply, R.id.action_relevant, R.id.action_setting, R.id.action_about, R.id.action_sign_out})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.user_body:

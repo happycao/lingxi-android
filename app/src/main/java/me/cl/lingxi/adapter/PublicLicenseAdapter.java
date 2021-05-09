@@ -1,5 +1,6 @@
 package me.cl.lingxi.adapter;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -9,9 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import me.cl.lingxi.R;
+import me.cl.lingxi.databinding.PublicLicenseRecycleItemBinding;
 import me.cl.lingxi.entity.PublicLicense;
 
 /**
@@ -42,8 +41,8 @@ public class PublicLicenseAdapter extends RecyclerView.Adapter<PublicLicenseAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.public_license_recycle_item, null);
-        return new ViewHolder(view);
+        PublicLicenseRecycleItemBinding binding = PublicLicenseRecycleItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -58,18 +57,19 @@ public class PublicLicenseAdapter extends RecyclerView.Adapter<PublicLicenseAdap
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.name)
-        TextView mName;
-        @BindView(R.id.author)
-        TextView mAuthor;
-        @BindView(R.id.desc)
-        TextView mDesc;
+        private final TextView mName;
+        private final TextView mAuthor;
+        private final TextView mDesc;
 
         private PublicLicense mLicense;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        public ViewHolder(PublicLicenseRecycleItemBinding binding) {
+            super(binding.getRoot());
+
+            mName = binding.name;
+            mAuthor = binding.author;
+            mDesc = binding.desc;
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

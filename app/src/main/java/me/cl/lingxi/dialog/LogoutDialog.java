@@ -1,5 +1,6 @@
 package me.cl.lingxi.dialog;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,12 +9,11 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.lingxi.R;
+import me.cl.lingxi.databinding.MineLogoutDialogBinding;
 
 /**
  * @author : happyc
@@ -22,14 +22,9 @@ import me.cl.lingxi.R;
  * desc   : 登出Dialog
  * version: 1.0
  */
-public class LogoutDialog extends DialogFragment {
+public class LogoutDialog extends DialogFragment implements View.OnClickListener {
 
-    @BindView(R.id.prompt_info)
-    TextView mPromptInfo;
-    @BindView(R.id.prompt_ok)
-    Button mPromptOk;
-    @BindView(R.id.prompt_cancel)
-    Button mPromptCancel;
+    private MineLogoutDialogBinding mBinding;
 
     public interface LogoutListener {
         void onLogout();
@@ -54,15 +49,21 @@ public class LogoutDialog extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        View view = inflater.inflate(R.layout.mine_logout_dialog, container, false);
-        ButterKnife.bind(this, view);
+        mBinding = MineLogoutDialogBinding.inflate(inflater, container, false);
         init();
-        return view;
+        return mBinding.getRoot();
     }
 
     private void init() {
+        TextView promptInfo = mBinding.promptInfo;
+        Button promptOk = mBinding.promptOk;
+        Button promptCancel = mBinding.promptCancel;
+
+        promptOk.setOnClickListener(this);
+        promptCancel.setOnClickListener(this);
+
         String content = "", certain = "", cancel = "";
         int x = (int) (Math.random() * 100) + 1;
         if (x == 100) {
@@ -90,13 +91,13 @@ public class LogoutDialog extends DialogFragment {
             certain = "举杯邀明月，对影成三人";
             cancel = "不醉不归!";
         }
-        mPromptInfo.setText(content);
-        mPromptOk.setText(certain);
-        mPromptCancel.setText(cancel);
+        promptInfo.setText(content);
+        promptOk.setText(certain);
+        promptCancel.setText(cancel);
     }
 
-
-    @OnClick({R.id.prompt_ok, R.id.prompt_cancel})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.prompt_ok:

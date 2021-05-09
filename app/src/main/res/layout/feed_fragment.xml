@@ -6,7 +6,9 @@
     android:orientation="vertical"
     tools:context=".module.main.FeedFragment">
 
-    <include layout="@layout/include_toolbar" />
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"

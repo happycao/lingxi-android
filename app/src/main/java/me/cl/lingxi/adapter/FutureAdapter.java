@@ -2,6 +2,7 @@ package me.cl.lingxi.adapter;
 
 import android.annotation.SuppressLint;
 import android.text.Html;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -11,10 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.DateUtil;
+import me.cl.lingxi.databinding.FutureRecycleItemBinding;
 import me.cl.lingxi.entity.Future;
 
 /**
@@ -57,8 +56,8 @@ public class FutureAdapter extends RecyclerView.Adapter<FutureAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.future_recycle_item, null);
-        return new ViewHolder(view);
+        FutureRecycleItemBinding binding = FutureRecycleItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -73,16 +72,17 @@ public class FutureAdapter extends RecyclerView.Adapter<FutureAdapter.ViewHolder
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.tv_future_info)
-        TextView mFutureInfo;
-        @BindView(R.id.tv_show_time)
-        TextView mShowTime;
+        private final TextView mFutureInfo;
+        private final TextView mShowTime;
 
         private Future mFuture;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        public ViewHolder(FutureRecycleItemBinding binding) {
+            super(binding.getRoot());
+
+            mFutureInfo = binding.tvFutureInfo;
+            mShowTime = binding.tvShowTime;
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

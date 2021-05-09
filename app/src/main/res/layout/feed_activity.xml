@@ -9,7 +9,9 @@
     android:orientation="vertical"
     tools:context=".module.feed.FeedActivity">
 
-    <include layout="@layout/include_toolbar"/>
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -42,7 +44,9 @@
                         android:paddingBottom="32dp"
                         app:layout_collapseMode="parallax">
 
-                        <include layout="@layout/feed_info_include"/>
+                        <include
+                            android:id="@+id/include_feed_info"
+                            layout="@layout/feed_info_include"/>
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/photo_recycler_view"
@@ -53,9 +57,13 @@
                             android:overScrollMode="never"
                             android:scrollbars="none"/>
 
-                        <include layout="@layout/feed_action_include"/>
+                        <include
+                            android:id="@+id/include_feed_action"
+                            layout="@layout/feed_action_include"/>
 
-                        <include layout="@layout/feed_like_include"/>
+                        <include
+                            android:id="@+id/include_feed_like"
+                            layout="@layout/feed_like_include"/>
 
                     </LinearLayout>
 

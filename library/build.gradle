@@ -26,8 +26,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation library.material
-    implementation library.supportV4
-    implementation library.appcompat
-    implementation library.recyclerview
+    implementation library.androidxAppcompat
+    implementation library.androidxActivity
+    implementation library.androidxFragment
+    implementation library.androidxRecyclerview
     implementation library.glide
 }

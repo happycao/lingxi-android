@@ -9,8 +9,6 @@ import android.view.MenuItem;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
@@ -22,6 +20,7 @@ import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.FutureActivityBinding;
 import me.cl.lingxi.dialog.FutureDialog;
 import okhttp3.Call;
 
@@ -30,18 +29,18 @@ import okhttp3.Call;
  */
 public class FutureActivity extends BaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.future_info)
-    AppCompatEditText mFutureInfo;
+    private FutureActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private AppCompatEditText mFutureInfo;
 
     private String futureInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.future_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = FutureActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
@@ -59,6 +58,9 @@ public class FutureActivity extends BaseActivity {
      * 初始化
      */
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mFutureInfo = mActivityBinding.futureInfo;
+
         ToolbarUtil.init(mToolbar, this)
                 .setTitle(R.string.title_bar_future)
                 .setBack()

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/spacing_56"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/nav_bg"
-    android:orientation="horizontal">
-
-    <RelativeLayout
-        android:layout_width="@dimen/nav_spacing"
-        android:layout_height="match_parent"/>
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/nav_spacing"
+    android:paddingEnd="@dimen/nav_spacing">
 
     <RelativeLayout
         android:id="@+id/rl_home"
@@ -29,7 +28,6 @@
             app:srcCompat="@drawable/ic_home" />
 
     </RelativeLayout>
-
 
     <RelativeLayout
         android:id="@+id/rl_feed"
@@ -72,7 +70,6 @@
 
     </RelativeLayout>
 
-
     <RelativeLayout
         android:id="@+id/rl_mine"
         android:layout_width="0dp"
@@ -92,9 +89,5 @@
             app:srcCompat="@drawable/ic_user" />
 
     </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="@dimen/nav_spacing"
-        android:layout_height="match_parent"/>
 
 </LinearLayout>

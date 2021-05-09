@@ -1,5 +1,6 @@
 package me.cl.lingxi.adapter;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -12,8 +13,8 @@ import java.util.List;
  */
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
-    private List<Fragment> mFragments = new ArrayList<>();
-    private List<String> mTitles = new ArrayList<>();
+    private final List<Fragment> mFragments = new ArrayList<>();
+    private final List<String> mTitles = new ArrayList<>();
 
     public ViewPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -24,6 +25,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         mTitles.add(title);
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         return mFragments.get(position);

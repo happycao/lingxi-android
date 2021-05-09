@@ -1,5 +1,6 @@
 package me.cl.lingxi.adapter;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,10 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.ContentUtil;
+import me.cl.lingxi.databinding.TopicEitRecycleItemBinding;
 import me.cl.lingxi.entity.Topic;
 import me.cl.lingxi.module.feed.TopicEitActivity;
 
@@ -77,8 +76,8 @@ public class TopicEitAdapter extends RecyclerView.Adapter<TopicEitAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.topic_eit_recycle_item, null);
-        return new ViewHolder(view);
+        TopicEitRecycleItemBinding binding = TopicEitRecycleItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -93,19 +92,20 @@ public class TopicEitAdapter extends RecyclerView.Adapter<TopicEitAdapter.ViewHo
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.iv_img)
-        ImageView mIvImg;
-        @BindView(R.id.tv_info)
-        TextView mTvInfo;
-        @BindView(R.id.iv_ok)
-        ImageView mIvOk;
+        private final ImageView mIvImg;
+        private final TextView mTvInfo;
+        private final ImageView mIvOk;
 
         private Topic mTopic;
         private int mPosition;
 
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        public ViewHolder(TopicEitRecycleItemBinding binding) {
+            super(binding.getRoot());
+
+            mIvImg = binding.ivImg;
+            mTvInfo = binding.tvInfo;
+            mIvOk = binding.ivOk;
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

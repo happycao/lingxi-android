@@ -6,7 +6,9 @@
     android:orientation="vertical"
     tools:context=".module.setting.AboutActivity">
 
-    <include layout="@layout/include_toolbar"/>
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -88,7 +90,7 @@
                 android:padding="@dimen/spacing_16"
                 android:gravity="center"
                 android:textSize="12sp"
-                android:text="Copyright © 2015-2017 LingXi. All Rights Reserved"/>
+                android:text="Copyright © 2015-2021 LingXi. All Rights Reserved"/>
 
         </LinearLayout>
 

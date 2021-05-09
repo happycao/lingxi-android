@@ -45,12 +45,12 @@ public class LoadMoreViewHolder extends RecyclerView.ViewHolder {
                 itemView.setVisibility(View.VISIBLE);
                 break;
             case LoadMord.LOAD_PULL_TO:
-                mProgress.setVisibility(View.INVISIBLE);
+                mProgress.setVisibility(View.GONE);
                 mLoadPrompt.setText(R.string.lib_load_pull_to);
                 itemView.setVisibility(View.VISIBLE);
                 break;
             case LoadMord.LOAD_NONE:
-                mProgress.setVisibility(View.INVISIBLE);
+                mProgress.setVisibility(View.GONE);
                 mLoadPrompt.setText(R.string.lib_load_none);
                 break;
             case LoadMord.LOAD_END:

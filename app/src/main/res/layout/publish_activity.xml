@@ -12,7 +12,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/include_toolbar"/>
+        <include
+            android:id="@+id/include_toolbar"
+            layout="@layout/include_toolbar"/>
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/feed_info"

@@ -10,29 +10,31 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
+import me.cl.lingxi.databinding.SearchActivityBinding;
 
 public class SearchActivity extends BaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    SearchView mSearchView;
+    private SearchActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
+    private SearchView mSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = SearchActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.toolbar;
+        mRecyclerView = mActivityBinding.recyclerView;
+
         ToolbarUtil.init(mToolbar, this)
                 .setMenu(R.menu.search_view_menu, null)
                 .setBack()

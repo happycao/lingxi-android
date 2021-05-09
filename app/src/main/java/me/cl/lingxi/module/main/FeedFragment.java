@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.main;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -16,10 +18,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseFragment;
-import me.cl.library.loadmore.LoadMord;
+import me.cl.library.loadmore.LoadMoreAdapter;
 import me.cl.library.loadmore.OnLoadMoreListener;
 import me.cl.library.photo.PhotoBrowser;
 import me.cl.library.recycle.ItemAnimator;
@@ -33,6 +33,7 @@ import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.FeedFragmentBinding;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.Like;
 import me.cl.lingxi.entity.PageInfo;
@@ -49,18 +50,19 @@ public class FeedFragment extends BaseFragment {
 
     private static final String FEED_TYPE = "feed_type";
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    private FeedFragmentBinding mFragmentBinding;
+
+    private Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private String saveUid;
     private String saveUName;
 
     private List<Feed> mList = new ArrayList<>();
-    private FeedAdapter mAdapter;
+    private ConcatAdapter mConcatAdapter;
+    private FeedAdapter mFeedAdapter;
+    private LoadMoreAdapter mLoadMoreAdapter = new LoadMoreAdapter();
 
     private int mPage = 1;
     private int mCount = 10;
@@ -90,23 +92,24 @@ public class FeedFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.feed_fragment, container, false);
-        ButterKnife.bind(this, view);
+        mFragmentBinding = FeedFragmentBinding.inflate(inflater, container, false);
         init();
-        return view;
+        return mFragmentBinding.getRoot();
     }
 
     private void init() {
+        mToolbar = mFragmentBinding.includeToolbar.toolbar;
+        mRecyclerView = mFragmentBinding.recyclerView;
+        mSwipeRefreshLayout = mFragmentBinding.swipeRefreshLayout;
+
         ToolbarUtil.init(mToolbar, getActivity())
                 .setTitle(R.string.nav_camera)
                 .setTitleCenter()
                 .setMenu(R.menu.publish_menu, new Toolbar.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()){
-                            case R.id.action_share:
-                                gotoPublish();
-                                break;
+                        if (item.getItemId() == R.id.action_share) {
+                            gotoPublish();
                         }
                         return false;
                     }
@@ -123,12 +126,13 @@ public class FeedFragment extends BaseFragment {
         // 隐藏最后一个item的分割线
         itemDecoration.setGoneLast(true);
         // mRecyclerView.addItemDecoration(itemDecoration);
-        mAdapter = new FeedAdapter(mList);
-        mRecyclerView.setAdapter(mAdapter);
+        mFeedAdapter = new FeedAdapter(mList);
+        mConcatAdapter = new ConcatAdapter(mFeedAdapter, mLoadMoreAdapter);
+        mRecyclerView.setAdapter(mConcatAdapter);
 
         initEvent();
 
-        getMoodList(mPage, mCount);
+        getFeedList(mPage, mCount);
     }
 
     //初始化事件
@@ -139,12 +143,13 @@ public class FeedFragment extends BaseFragment {
             public void onRefresh() {
                 RefreshMODE = MOD_REFRESH;
                 mPage = 1;
-                getMoodList(mPage, mCount);
+                getFeedList(mPage, mCount);
             }
         });
 
         //item点击
-        mAdapter.setOnItemListener(new FeedAdapter.OnItemListener() {
+        mFeedAdapter.setOnItemListener(new FeedAdapter.OnItemListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public void onItemClick(View view, Feed feed, int position) {
                 switch (view.getId()) {
@@ -177,15 +182,15 @@ public class FeedFragment extends BaseFragment {
 
             @Override
             public void onLoadMore() {
-                if (mAdapter.getItemCount() < 4) return;
+                if (mFeedAdapter.getItemCount() < 4) return;
 
                 RefreshMODE = MOD_LOADING;
-                mAdapter.updateLoadStatus(LoadMord.LOAD_MORE);
+                mLoadMoreAdapter.loading();
 
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getMoodList(mPage, mCount);
+                        getFeedList(mPage, mCount);
                     }
                 },1000);
             }
@@ -229,7 +234,7 @@ public class FeedFragment extends BaseFragment {
                         likeList.add(like);
                         feed.setLikeList(likeList);
                         feed.setLike(true);
-                        mAdapter.updateItem(feed, position);
+                        mFeedAdapter.updateItem(feed, position);
                     }
 
                     @Override
@@ -240,7 +245,7 @@ public class FeedFragment extends BaseFragment {
     }
 
     // 获取动态列表
-    private void getMoodList(int pageNum, int pageSize) {
+    private void getFeedList(int pageNum, int pageSize) {
         if (!mSwipeRefreshLayout.isRefreshing() && RefreshMODE == MOD_REFRESH) mSwipeRefreshLayout.setRefreshing(true);
         String uid = SPUtil.build().getString(Constants.SP_USER_ID);
         OkUtil.post()
@@ -254,32 +259,30 @@ public class FeedFragment extends BaseFragment {
                         mSwipeRefreshLayout.setRefreshing(false);
                         String code = response.getCode();
                         if (!"00000".equals(code)) {
-                            mAdapter.updateLoadStatus(LoadMord.LOAD_NONE);
+                            mLoadMoreAdapter.loadNone();
                             showToast(R.string.toast_get_feed_error);
                             return;
                         }
                         PageInfo<Feed> page = response.getData();
                         Integer size = page.getSize();
                         if (size == 0) {
-                            mAdapter.updateLoadStatus(LoadMord.LOAD_NONE);
+                            mLoadMoreAdapter.loadNone();
                             return;
                         }
                         mPage++;
                         List<Feed> list = page.getList();
-                        switch (RefreshMODE) {
-                            case MOD_LOADING:
-                                updateData(list);
-                                break;
-                            default:
-                                setData(list);
-                                break;
+                        if (RefreshMODE == MOD_LOADING) {
+                            updateData(list);
+                        } else {
+                            setData(list);
                         }
+                        mLoadMoreAdapter.loadEnd();
                     }
 
                     @Override
                     public void onError(Call call, Exception e) {
                         mSwipeRefreshLayout.setRefreshing(false);
-                        mAdapter.updateLoadStatus(LoadMord.LOAD_NONE);
+                        mLoadMoreAdapter.loadNone();
                         showToast(R.string.toast_get_feed_error);
                     }
                 });
@@ -287,19 +290,19 @@ public class FeedFragment extends BaseFragment {
 
     // 设置数据
     private void setData(List<Feed> data){
-        mAdapter.setData(data);
+        mFeedAdapter.setData(data);
     }
 
     // 更新数据
     public void updateData(List<Feed> data) {
-        mAdapter.addData(data);
+        mFeedAdapter.addData(data);
     }
 
     // 刷新数据
     private void onRefresh(){
         RefreshMODE = MOD_REFRESH;
         mPage = 1;
-        getMoodList(mPage, mCount);
+        getFeedList(mPage, mCount);
     }
 
     @Override

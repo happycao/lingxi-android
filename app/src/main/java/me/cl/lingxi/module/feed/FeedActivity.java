@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.feed;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,9 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.photo.PhotoBrowser;
 import me.cl.library.util.ToolbarUtil;
@@ -41,6 +39,10 @@ import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ContentUtil;
 import me.cl.lingxi.common.util.FeedContentUtil;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.FeedActionIncludeBinding;
+import me.cl.lingxi.databinding.FeedActivityBinding;
+import me.cl.lingxi.databinding.FeedInfoIncludeBinding;
+import me.cl.lingxi.databinding.FeedLikeIncludeBinding;
 import me.cl.lingxi.entity.Comment;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.Like;
@@ -50,48 +52,20 @@ import me.cl.lingxi.entity.User;
 import me.cl.lingxi.module.member.UserActivity;
 import okhttp3.Call;
 
-public class FeedActivity extends BaseActivity {
+public class FeedActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.user_img)
-    ImageView mUserImg;
-    @BindView(R.id.user_name)
-    TextView mUserName;
-    @BindView(R.id.feed_time)
-    TextView mFeedTime;
-    @BindView(R.id.feed_info)
-    AppCompatTextView mFeedInfo;
-    @BindView(R.id.feed_body)
-    LinearLayout mFeedBody;
-    @BindView(R.id.feed_view_num)
-    TextView mFeedSeeNum;
-    @BindView(R.id.feed_comment_num)
-    TextView mFeedCommentNum;
-    @BindView(R.id.feed_comment_layout)
-    LinearLayout mFeedComment;
-    @BindView(R.id.feed_like_icon)
-    ImageView mFeedLikeIcon;
-    @BindView(R.id.feed_like_num)
-    TextView mFeedLikeNum;
-    @BindView(R.id.feed_like_layout)
-    LinearLayout mFeedLikeLayout;
-    @BindView(R.id.feed_action_layout)
-    LinearLayout mFeedActionLayout;
-    @BindView(R.id.like_people)
-    TextView mLikePeople;
-    @BindView(R.id.like_window)
-    LinearLayout mLikeWindow;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.edit_mask)
-    View mEditMask;
-    @BindView(R.id.edit_tu_cao)
-    AppCompatEditText mEditTuCao;
-    @BindView(R.id.btn_publish)
-    Button mBtnPublish;
-    @BindView(R.id.photo_recycler_view)
-    RecyclerView mPhotoRecyclerView;
+    private FeedActivityBinding mActivityBinding;
+    private FeedInfoIncludeBinding mFeedInfoBinding;
+    private FeedActionIncludeBinding mFeedActionBinding;
+    private FeedLikeIncludeBinding mFeedLikeBinding;
+
+    private AppCompatEditText mEditTuCao;
+    private Button mBtnPublish;
+    private View mEditMask;
+    private RecyclerView mRecyclerView;
+    private RecyclerView mPhotoRecyclerView;
+    private ImageView mUserImg;
+    private TextView mFeedCommentNum;
 
     private int MSG_MODE;
     private final int MSG_EVALUATE = 0;
@@ -109,13 +83,29 @@ public class FeedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.feed_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = FeedActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
-        ToolbarUtil.init(mToolbar, this)
+        mFeedInfoBinding = mActivityBinding.includeFeedInfo;
+        mFeedActionBinding = mActivityBinding.includeFeedAction;
+        mFeedLikeBinding = mActivityBinding.includeFeedLike;
+
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
+        mEditTuCao = mActivityBinding.editTuCao;
+        mBtnPublish = mActivityBinding.btnPublish;
+        mEditMask = mActivityBinding.editMask;
+        mRecyclerView = mActivityBinding.recyclerView;
+        mPhotoRecyclerView = mActivityBinding.photoRecyclerView;
+
+        mUserImg = mFeedInfoBinding.userImg;
+        mFeedCommentNum = mFeedActionBinding.feedCommentNum;
+        LinearLayout feedLikeLayout = mFeedActionBinding.feedLikeLayout;
+        LinearLayout feedCommentLayout = mFeedActionBinding.feedCommentLayout;
+
+        ToolbarUtil.init(toolbar, this)
                 .setTitle(R.string.title_bar_feed_detail)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -131,6 +121,14 @@ public class FeedActivity extends BaseActivity {
         mBtnPublish.setClickable(false);
         mBtnPublish.setSelected(false);
 
+        // 点击事件
+        mEditTuCao.setOnClickListener(this);
+        mBtnPublish.setOnClickListener(this);
+        mEditMask.setOnClickListener(this);
+        mUserImg.setOnClickListener(this);
+        feedLikeLayout.setOnClickListener(this);
+        feedCommentLayout.setOnClickListener(this);
+
         initRecyclerView();
         initView();
     }
@@ -138,10 +136,11 @@ public class FeedActivity extends BaseActivity {
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter = new EvaluateAdapter(this, new ArrayList<Comment>());
+        mAdapter = new EvaluateAdapter(new ArrayList<>());
         mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnItemListener(new EvaluateAdapter.OnItemListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public void onItemClick(View view, Comment comment) {
                 switch (view.getId()) {
@@ -184,18 +183,22 @@ public class FeedActivity extends BaseActivity {
 
         // 动态详情
         ContentUtil.loadUserAvatar(mUserImg, user.getAvatar());
-        mUserName.setText(user.getUsername());
-        mFeedTime.setText(feed.getCreateTime());
-        mFeedInfo.setText(FeedContentUtil.getFeedText(feed.getFeedInfo(), mFeedInfo));
+        mFeedInfoBinding.userName.setText(user.getUsername());
+        mFeedInfoBinding.feedTime.setText(feed.getCreateTime());
+        AppCompatTextView feedInfo = mFeedInfoBinding.feedInfo;
+        feedInfo.setText(FeedContentUtil.getFeedText(feed.getFeedInfo(), feedInfo));
         // 查看评论点赞数
-        mFeedSeeNum.setText(String.valueOf(feed.getViewNum()));
+        mFeedActionBinding.feedViewNum.setText(String.valueOf(feed.getViewNum()));
         mFeedCommentNum.setText(String.valueOf(feed.getCommentNum()));
         // 是否已经点赞
-        mFeedLikeIcon.setSelected(feed.isLike());
-        mFeedLikeLayout.setClickable(feed.isLike());
+        mFeedActionBinding.feedLikeIcon.setSelected(feed.isLike());
+        mFeedActionBinding.feedLikeLayout.setClickable(feed.isLike());
         // 点赞列表
         List<Like> likeList = feed.getLikeList();
-        ContentUtil.setLikePeopleAll(mLikePeople, mFeedLikeNum, mLikeWindow, likeList);
+        TextView likePeople = mFeedLikeBinding.likePeople;
+        LinearLayout likeWindow = mFeedLikeBinding.likeWindow;
+        TextView feedLikeNum = mFeedActionBinding.feedLikeNum;
+        ContentUtil.setLikePeopleAll(likePeople, feedLikeNum, likeWindow, likeList);
 
         // 图片
         final List<String> photos = feed.getPhotoList();
@@ -238,7 +241,8 @@ public class FeedActivity extends BaseActivity {
     /**
      * 点击事件
      */
-    @OnClick({R.id.user_img, R.id.feed_like_layout, R.id.feed_comment_layout, R.id.edit_mask, R.id.edit_tu_cao, R.id.btn_publish})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.user_img:

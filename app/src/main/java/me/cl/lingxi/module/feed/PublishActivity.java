@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.feed;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
@@ -24,9 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
@@ -38,51 +35,51 @@ import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ImageUtil;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.PublishActivityBinding;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.module.main.MainActivity;
 import me.iwf.photopicker.PhotoPicker;
 import me.iwf.photopicker.PhotoPreview;
 import okhttp3.Call;
 
-public class PublishActivity extends BaseActivity {
+public class PublishActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.feed_info)
-    AppCompatEditText mEtFeedInfo;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.iv_camera)
-    ImageView mIvCamera;
-    @BindView(R.id.iv_eit)
-    ImageView mIvEit;
-    @BindView(R.id.iv_topic)
-    ImageView mIvTopic;
-    @BindView(R.id.iv_link)
-    ImageView mIvLink;
+    private PublishActivityBinding mActivityBinding;
+
+    private AppCompatEditText mEtFeedInfo;
+    private RecyclerView mRecyclerView;
 
     private PhotoSelAdapter mPhotoSelAdapter;
     private List<String> mPhotos = new ArrayList<>();
 
     private String mInfo = "";
-    private boolean showAdd = false;
+    private final boolean showAdd = false;
 
     // 话题与艾特相关
-    private StringBuilder mFeedInfoSb = new StringBuilder();
-    private List<String> mActionList = new ArrayList<>();
-    private List<ForegroundColorSpan> mColorSpans = new ArrayList<>();
-    private boolean isInAfter = true;
+    private final StringBuilder mFeedInfoSb = new StringBuilder();
+    private final List<String> mActionList = new ArrayList<>();
+    private final List<ForegroundColorSpan> mColorSpans = new ArrayList<>();
+    private final boolean isInAfter = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.publish_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = PublishActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
-        ToolbarUtil.init(mToolbar, this)
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
+        mEtFeedInfo = mActivityBinding.feedInfo;
+        mRecyclerView = mActivityBinding.recyclerView;
+
+        mActivityBinding.ivCamera.setOnClickListener(this);
+        mActivityBinding.ivEit.setOnClickListener(this);
+        mActivityBinding.ivTopic.setOnClickListener(this);
+        mActivityBinding.ivLink.setOnClickListener(this);
+
+        ToolbarUtil.init(toolbar, this)
                 .setTitle("发布新动态")
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -230,7 +227,8 @@ public class PublishActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.iv_camera, R.id.iv_eit, R.id.iv_topic, R.id.iv_link})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_camera:

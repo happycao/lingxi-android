@@ -1,6 +1,6 @@
 package me.cl.lingxi.adapter;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -10,11 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.FeedReplyRecycleItemBinding;
 import me.cl.lingxi.entity.Reply;
 
 /**
@@ -22,8 +19,7 @@ import me.cl.lingxi.entity.Reply;
  */
 public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHolder> {
 
-    private Context mContext;
-    private List<Reply> mList;
+    private final List<Reply> mList;
 
     private OnItemListener mOnItemListener;
 
@@ -35,21 +31,20 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
         this.mOnItemListener = onItemListener;
     }
 
-    public ReplyAdapter(Context context, List<Reply> list) {
-        this.mContext = context;
+    public ReplyAdapter(List<Reply> list) {
         this.mList = list;
     }
 
     @NonNull
     @Override
     public ReplyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.feed_reply_recycle_item, null);
-        return new ReplyViewHolder(view);
+        FeedReplyRecycleItemBinding binding = FeedReplyRecycleItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ReplyViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ReplyViewHolder holder, int position) {
-        holder.bindItem(mContext, mList.get(position));
+        holder.bindItem(mList.get(position));
     }
 
     @Override
@@ -57,25 +52,27 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ReplyViewHol
         return mList.size();
     }
 
-    class ReplyViewHolder extends RecyclerView.ViewHolder {
+    class ReplyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.reply_info)
-        AppCompatTextView mReplyInfo;
+        private final AppCompatTextView mReplyInfo;
         private Reply mReply;
 
-        public ReplyViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        public ReplyViewHolder(FeedReplyRecycleItemBinding binding) {
+            super(binding.getRoot());
+
+            mReplyInfo = binding.replyInfo;
+
+            mReplyInfo.setOnClickListener(this);
         }
 
-        public void bindItem(Context context, Reply reply) {
+        public void bindItem(Reply reply) {
             mReply = reply;
             String replyStr = "{" + reply.getUser().getUsername() + "}回复{" + reply.getToUser().getUsername() + "}：" + reply.getCommentInfo();
             mReplyInfo.setText(Utils.colorFormat(replyStr));
         }
 
-        @OnClick(R.id.reply_info)
-        void onClick(View view){
+        @Override
+        public void onClick(View view){
             if (mOnItemListener != null) mOnItemListener.onItemClick(view, mReply);
         }
     }

@@ -2,16 +2,15 @@ package me.cl.lingxi.module.member;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.Toolbar;
+
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.library.view.LoadingDialog;
@@ -24,6 +23,7 @@ import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.LoginActivityBinding;
 import me.cl.lingxi.entity.UserToken;
 import me.cl.lingxi.module.main.MainActivity;
 import okhttp3.Call;
@@ -35,12 +35,11 @@ public class LoginActivity extends BaseActivity {
 
     private static final String TAG = "LoginActivity";
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.username)
-    AppCompatEditText mUsername;
-    @BindView(R.id.password)
-    AppCompatEditText mPassword;
+    private LoginActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private AppCompatEditText mUsername;
+    private AppCompatEditText mPassword;
 
     private long mExitTime = 0;
     private LoadingDialog loginProgress;
@@ -48,12 +47,16 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = LoginActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mUsername = mActivityBinding.username;
+        mPassword = mActivityBinding.password;
+
         ToolbarUtil.init(mToolbar, this)
                 .setTitle(R.string.title_bar_login)
                 .setTitleCenter()

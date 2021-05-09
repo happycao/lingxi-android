@@ -1,5 +1,6 @@
 package me.cl.lingxi.dialog;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -8,18 +9,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.DialogFragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.library.util.ToastUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.FutureDialogBinding;
 
 /**
  * @author : happyc
@@ -28,36 +26,14 @@ import me.cl.lingxi.common.util.Utils;
  * desc   : 写给未来设置
  * version: 1.0
  */
-public class FutureDialog extends DialogFragment {
+public class FutureDialog extends DialogFragment implements View.OnClickListener {
 
-    @BindView(R.id.future_type)
-    RadioGroup mFutureType;
-    @BindView(R.id.future_type_app)
-    RadioButton mFutureTypeApp;
-    @BindView(R.id.future_type_mail)
-    RadioButton mFutureTypeMail;
-    @BindView(R.id.future_mail)
-    AppCompatEditText mFutureMail;
-    @BindView(R.id.future_time_group)
-    RadioGroup mFutureTimeGroup;
-    @BindView(R.id.future_time_one)
-    RadioButton mFutureTimeOne;
-    @BindView(R.id.future_time_two)
-    RadioButton mFutureTimeTwo;
-    @BindView(R.id.future_time_three)
-    RadioButton mFutureTimeThree;
-    @BindView(R.id.future_time_other)
-    RadioButton mFutureTimeOther;
-    @BindView(R.id.future_time_edit)
-    LinearLayout mFutureTimeEdit;
-    @BindView(R.id.future_time_start)
-    AppCompatEditText mFutureTimeStart;
-    @BindView(R.id.future_time_end)
-    AppCompatEditText mFutureTimeEnd;
-    @BindView(R.id.future_cancel)
-    Button mFutureCancel;
-    @BindView(R.id.future_ok)
-    Button mFutureOk;
+    private FutureDialogBinding mBinding;
+
+    private AppCompatEditText mFutureMail;
+    private LinearLayout mFutureTimeEdit;
+    private AppCompatEditText mFutureTimeStart;
+    private AppCompatEditText mFutureTimeEnd;
 
     /**
      * 展示类型，0-APP\1-MAIL
@@ -96,16 +72,28 @@ public class FutureDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        View view = inflater.inflate(R.layout.future_dialog, container, false);
-        ButterKnife.bind(this, view);
+        mBinding = FutureDialogBinding.inflate(inflater, container, false);
         init();
-        return view;
+        return mBinding.getRoot();
     }
 
     private void init() {
+        RadioGroup futureType = mBinding.futureType;
+        mFutureMail = mBinding.futureMail;
+        RadioGroup futureTimeGroup = mBinding.futureTimeGroup;
+        mFutureTimeEdit = mBinding.futureTimeEdit;
+        mFutureTimeStart = mBinding.futureTimeStart;
+        mFutureTimeEnd = mBinding.futureTimeEnd;
+        Button futureCancel = mBinding.futureCancel;
+        Button futureOk = mBinding.futureOk;
+
+        futureCancel.setOnClickListener(this);
+        futureOk.setOnClickListener(this);
+
         // 传达类型
-        mFutureType.check(R.id.future_type_app);
-        mFutureType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        futureType.check(R.id.future_type_app);
+        futureType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
@@ -121,8 +109,9 @@ public class FutureDialog extends DialogFragment {
             }
         });
         // 传达时间
-        mFutureTimeGroup.check(R.id.future_time_one);
-        mFutureTimeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        futureTimeGroup.check(R.id.future_time_one);
+        futureTimeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 mFutureTimeEdit.setVisibility(View.GONE);
@@ -152,7 +141,8 @@ public class FutureDialog extends DialogFragment {
     /**
      * 点击事件
      */
-    @OnClick({R.id.future_cancel, R.id.future_ok})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.future_cancel:

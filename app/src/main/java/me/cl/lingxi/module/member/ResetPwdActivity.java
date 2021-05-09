@@ -1,13 +1,12 @@
 package me.cl.lingxi.module.member;
 
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.widget.Toolbar;
+
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.library.view.LoadingDialog;
@@ -16,6 +15,7 @@ import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
+import me.cl.lingxi.databinding.ResetpwdActivityBinding;
 import me.cl.lingxi.entity.UserInfo;
 import okhttp3.Call;
 
@@ -24,28 +24,31 @@ import okhttp3.Call;
  */
 public class ResetPwdActivity extends BaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.username)
-    EditText mUsername;
-    @BindView(R.id.phone)
-    EditText mPhone;
-    @BindView(R.id.password)
-    EditText mPassword;
-    @BindView(R.id.do_password)
-    EditText mDoPassword;
+    private ResetpwdActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private EditText mUsername;
+    private EditText mPhone;
+    private EditText mPassword;
+    private EditText mDoPassword;
 
     private LoadingDialog updateProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.resetpwd_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = ResetpwdActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mUsername = mActivityBinding.username;
+        mPassword = mActivityBinding.password;
+        mDoPassword = mActivityBinding.doPassword;
+        mPhone = mActivityBinding.phone;
+
         ToolbarUtil.init(mToolbar, this)
                 .setTitle(R.string.title_bar_reset_pwd)
                 .setBack()

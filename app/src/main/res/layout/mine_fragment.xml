@@ -7,7 +7,9 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <include layout="@layout/include_toolbar"/>
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar"/>
 
     <me.cl.lingxi.view.JellyScrollView
         android:layout_width="match_parent"

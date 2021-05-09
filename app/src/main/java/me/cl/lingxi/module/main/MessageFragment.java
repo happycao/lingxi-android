@@ -11,30 +11,30 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.ViewPagerAdapter;
+import me.cl.lingxi.databinding.MessageFragmentBinding;
 
 public class MessageFragment extends Fragment{
 
-    @BindView(R.id.tab_layout)
-    TabLayout mTabLayout;
-    @BindView(R.id.view_pager)
-    ViewPager mViewPager;
+    private MessageFragmentBinding mFragmentBinding;
 
-    private String[] tabNamArray = {"未来日记", "飞鸽传书"};
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+
+    private final String[] tabNamArray = {"未来日记", "飞鸽传书"};
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.message_fragment, container, false);
-        ButterKnife.bind(this, view);
+        mFragmentBinding = MessageFragmentBinding.inflate(inflater, container, false);
         init();
-        return view;
+        return mFragmentBinding.getRoot();
     }
 
 
     private void init() {
+        mTabLayout = mFragmentBinding.includeTabLayout.tabLayout;
+        mViewPager = mFragmentBinding.viewPager;
+
         final ViewPagerAdapter mPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
         addFragment(mPagerAdapter);
         mViewPager.post(() -> {

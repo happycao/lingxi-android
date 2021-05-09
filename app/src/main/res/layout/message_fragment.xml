@@ -9,7 +9,9 @@
         android:layout_height="@dimen/spacing_48"
         android:gravity="center">
 
-        <include layout="@layout/include_tab_layout" />
+        <include
+            android:id="@+id/include_tab_layout"
+            layout="@layout/include_tab_layout" />
 
     </androidx.appcompat.widget.Toolbar>
 

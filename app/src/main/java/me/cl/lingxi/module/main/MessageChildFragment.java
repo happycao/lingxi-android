@@ -1,31 +1,30 @@
 package me.cl.lingxi.module.main;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+
 import me.cl.library.base.BaseFragment;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.MessageChildFragmentBinding;
 import me.cl.lingxi.module.future.FutureActivity;
 
-public class MessageChildFragment extends BaseFragment {
+public class MessageChildFragment extends BaseFragment implements View.OnClickListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.msg)
-    TextView mMsg;
-    @BindView(R.id.send)
-    Button mSend;
+    private MessageChildFragmentBinding mFragmentBinding;
+
+    private Toolbar mToolbar;
+    private TextView mMsg;
+    private Button mSend;
 
     private static final String NEWS_TYPE = "news_type";
     private boolean flag = false;
@@ -61,25 +60,31 @@ public class MessageChildFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.message_child_fragment, container, false);
-        ButterKnife.bind(this, view);
+        mFragmentBinding = MessageChildFragmentBinding.inflate(inflater, container, false);
         init();
-        return view;
+        return mFragmentBinding.getRoot();
     }
 
     private void init() {
+        mToolbar = mFragmentBinding.includeToolbar.toolbar;
+        mMsg = mFragmentBinding.msg;
+        mSend = mFragmentBinding.send;
+
         mToolbar.setVisibility(View.GONE);
         if (mNewsType.contains("飞鸽传书")) {
             flag = true;
-            mSend.setVisibility(View.VISIBLE);
         } else {
             mSend.setText("编写");
-            mSend.setVisibility(View.VISIBLE);
         }
+        mSend.setVisibility(View.VISIBLE);
         mMsg.setText(mNewsType);
+
+        mMsg.setOnClickListener(this);
+        mSend.setOnClickListener(this);
     }
 
-    @OnClick({R.id.msg, R.id.send})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.msg:
@@ -95,7 +100,7 @@ public class MessageChildFragment extends BaseFragment {
                 break;
             case R.id.send:
                 if (flag) {
-                    boolean isWpa = Utils.wpaQQ(getActivity(), "986417980");
+                    boolean isWpa = Utils.wpaQQ(requireActivity(), "986417980");
                     if (!isWpa) {
                         showToast("未安装手Q或安装的版本不支持");
                     }

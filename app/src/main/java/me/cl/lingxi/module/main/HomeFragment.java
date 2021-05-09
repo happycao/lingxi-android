@@ -19,8 +19,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseFragment;
 import me.cl.library.photo.PhotoBrowser;
 import me.cl.library.util.ToolbarUtil;
@@ -31,25 +29,20 @@ import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.util.GsonUtil;
 import me.cl.lingxi.common.util.NetworkUtil;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.HomeFragmentBinding;
 import me.cl.lingxi.module.search.SearchActivity;
 import okhttp3.Call;
 
 public class HomeFragment extends BaseFragment {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.random_image)
-    ImageView mRandomImage;
-    @BindView(R.id.image_source)
-    TextView mImageSource;
-    @BindView(R.id.hitokoto_info)
-    TextView mHitokotoInfo;
-    @BindView(R.id.hitokoto_author)
-    TextView mHitokotoAuthor;
-    @BindView(R.id.hitokoto_source)
-    TextView mHitokotoSource;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ImageView mRandomImage;
+    private TextView mImageSource;
+    private TextView mHitokotoInfo;
+    private TextView mHitokotoAuthor;
+    private TextView mHitokotoSource;
+
+    private HomeFragmentBinding mFragmentBinding;
 
     private static final String TYPE = "type";
 
@@ -86,14 +79,21 @@ public class HomeFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.home_fragment, container, false);
-        ButterKnife.bind(this, view);
+        mFragmentBinding = HomeFragmentBinding.inflate(inflater, container, false);
         init();
-        return view;
+        return mFragmentBinding.getRoot();
     }
 
     private void init() {
-        ToolbarUtil.init(mToolbar, getActivity())
+        Toolbar toolbar = mFragmentBinding.includeToolbar.toolbar;
+        mSwipeRefreshLayout = mFragmentBinding.swipeRefreshLayout;
+        mRandomImage = mFragmentBinding.randomImage;
+        mImageSource = mFragmentBinding.imageSource;
+        mHitokotoInfo = mFragmentBinding.hitokotoInfo;
+        mHitokotoAuthor = mFragmentBinding.hitokotoAuthor;
+        mHitokotoSource = mFragmentBinding.hitokotoSource;
+
+        ToolbarUtil.init(toolbar, getActivity())
                 .setTitle(R.string.title_bar_home)
                 .setTitleCenter()
                 .setMenu(R.menu.search_menu, new Toolbar.OnMenuItemClickListener() {
@@ -172,7 +172,7 @@ public class HomeFragment extends BaseFragment {
 
     private void getTuPicsData() {
         // Tujian
-		// old API https://api.dpic.dev/ | new API https://v2.api.dailypics.cn/
+        // old API https://api.dpic.dev/ | new API https://v2.api.dailypics.cn/
         // 图片访问 s1.images.dailypics.cn | s2.images.dailypics.cn
         OkUtil.get()
                 .url("https://v2.api.dailypics.cn/random?op=mobile")

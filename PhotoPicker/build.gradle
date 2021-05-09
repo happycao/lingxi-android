@@ -1,0 +1,30 @@
+apply plugin: 'com.android.library'
+
+def configInfo = rootProject.ext.android
+def library = rootProject.ext.dependencies
+
+android {
+  compileSdkVersion configInfo.compileSdkVersion
+  resourcePrefix "__picker_"
+
+  dexOptions {
+    javaMaxHeapSize "4g"
+  }
+  defaultConfig {
+    minSdkVersion configInfo.minSdkVersion
+    targetSdkVersion configInfo.targetSdkVersion
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  implementation library.material
+  implementation library.androidxAppcompat
+  implementation library.androidxActivity
+  implementation library.androidxFragment
+  implementation library.androidxRecyclerview
+  implementation library.glide
+}

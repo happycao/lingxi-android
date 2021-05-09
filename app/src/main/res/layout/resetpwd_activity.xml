@@ -7,7 +7,9 @@
     android:orientation="vertical"
     tools:context=".module.member.ResetPwdActivity" >
 
-    <include layout="@layout/include_toolbar" />
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar" />
 
     <LinearLayout
         android:layout_width="match_parent"

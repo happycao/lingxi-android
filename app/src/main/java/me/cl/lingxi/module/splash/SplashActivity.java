@@ -19,6 +19,7 @@ import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.SplashActivityBinding;
 import me.cl.lingxi.module.main.MainActivity;
 import me.cl.lingxi.module.member.LoginActivity;
 import me.cl.library.view.MoeToast;
@@ -29,13 +30,16 @@ import okhttp3.Call;
  */
 public class SplashActivity extends BaseActivity {
 
+    private SplashActivityBinding mActivityBinding;
+
     private boolean isLogin;
     private boolean tokenNull;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_activity);
+        mActivityBinding = SplashActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
 		requestPermission();
     }
 
@@ -44,7 +48,7 @@ public class SplashActivity extends BaseActivity {
         //只有SDK版本小于19的时候需要申请权限，这里我们用小于Android6.0(23)判断
 //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         rxPermissions
-                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe(granted -> {
                     init();
                 });

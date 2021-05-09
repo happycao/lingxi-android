@@ -7,7 +7,9 @@
     android:orientation="vertical"
     tools:context=".module.mine.PersonalInfoActivity" >
 
-    <include layout="@layout/include_toolbar" />
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar" />
 
     <me.cl.lingxi.view.JellyScrollView
         android:layout_width="match_parent"

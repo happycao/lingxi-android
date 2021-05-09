@@ -20,9 +20,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.recycle.ItemAnimator;
 import me.cl.library.recycle.ItemDecoration;
@@ -32,6 +29,7 @@ import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
+import me.cl.lingxi.databinding.TopicEitActivityBinding;
 import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.Topic;
 import me.cl.lingxi.entity.User;
@@ -43,24 +41,20 @@ import okhttp3.Call;
  * desc    :
  * version : 1.0
  */
-public class TopicEitActivity extends BaseActivity {
+public class TopicEitActivity extends BaseActivity implements View.OnClickListener {
 
+    private TopicEitActivityBinding mActivityBinding;
 
     public static final int REQUEST_CODE = 2233;
 
     public static final String TYPE = "type";
     public static final String MSG = "msg";
 
-    @BindView(R.id.btn_negative)
-    ImageButton mBtnNegative;
-    @BindView(R.id.edit_search)
-    AppCompatEditText mEditSearch;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.float_button)
-    FloatingActionButton mFloatButton;
+    private ImageButton mBtnNegative;
+    private AppCompatEditText mEditSearch;
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private FloatingActionButton mFloatButton;
 
     private Type mType = Type.TOPIC;
     private String queryName = "";
@@ -82,14 +76,23 @@ public class TopicEitActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.topic_eit_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = TopicEitActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         Intent intent = getIntent();
         mType = (Type) intent.getSerializableExtra(TYPE);
         init();
     }
 
     private void init() {
+        mEditSearch = mActivityBinding.editSearch;
+        mSwipeRefreshLayout = mActivityBinding.swipeRefreshLayout;
+        mRecyclerView = mActivityBinding.recyclerView;
+        mBtnNegative = mActivityBinding.btnNegative;
+        mFloatButton = mActivityBinding.floatButton;
+
+        mBtnNegative.setOnClickListener(this);
+        mFloatButton.setOnClickListener(this);
+
         mEditSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -138,8 +141,9 @@ public class TopicEitActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.btn_negative, R.id.float_button})
-    public void onViewClicked(View view) {
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_negative:
                 mMsgList.clear();

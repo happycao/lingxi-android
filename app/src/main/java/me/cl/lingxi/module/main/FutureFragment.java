@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseFragment;
 import me.cl.library.recycle.ItemAnimator;
 import me.cl.lingxi.R;
@@ -24,6 +22,7 @@ import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
+import me.cl.lingxi.databinding.FutureFragmentBinding;
 import me.cl.lingxi.entity.Future;
 import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.module.future.FutureActivity;
@@ -36,10 +35,10 @@ public class FutureFragment extends BaseFragment {
 
     private static final String PARAM_TYPE = "_type";
 
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.tv_to_future)
-    TextView mTvToFuture;
+    private FutureFragmentBinding mFragmentBinding;
+
+    private RecyclerView mRecyclerView;
+    private TextView mTvToFuture;
 
     private List<Future> mList = new ArrayList<>();
     private FutureAdapter mAdapter;
@@ -72,13 +71,15 @@ public class FutureFragment extends BaseFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.future_fragment, container, false);
-        ButterKnife.bind(this, view);
+        mFragmentBinding = FutureFragmentBinding.inflate(inflater, container, false);
         init();
-        return view;
+        return mFragmentBinding.getRoot();
     }
 
     private void init() {
+        mRecyclerView = mFragmentBinding.recyclerView;
+        mTvToFuture = mFragmentBinding.tvToFuture;
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         // 列表再底部开始展示，反转后由上面开始展示
         layoutManager.setStackFromEnd(true);

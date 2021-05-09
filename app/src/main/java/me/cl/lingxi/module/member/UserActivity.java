@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.member;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -20,11 +22,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.library.base.BaseActivity;
-import me.cl.library.loadmore.LoadMord;
+import me.cl.library.loadmore.LoadMoreAdapter;
 import me.cl.library.loadmore.OnLoadMoreListener;
 import me.cl.library.recycle.ItemAnimator;
 import me.cl.library.recycle.ItemDecoration;
@@ -37,6 +36,7 @@ import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ContentUtil;
+import me.cl.lingxi.databinding.UserActivityBinding;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.User;
@@ -48,33 +48,27 @@ import okhttp3.Call;
 /**
  * 用户界面
  */
-public class UserActivity extends BaseActivity {
+public class UserActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.app_bar)
-    AppBarLayout mAppBar;
-    @BindView(R.id.button_bar)
-    RelativeLayout mButtonBar;
-    @BindView(R.id.parallax)
-    ImageView mParallax;
-    @BindView(R.id.title_name)
-    TextView mTitleName;
-    @BindView(R.id.user_name)
-    TextView mUserName;
-    @BindView(R.id.contact)
-    TextView mContact;
-    @BindView(R.id.feed_num)
-    TextView mFeedNum;
+    private UserActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView mRecyclerView;
+    private AppBarLayout mAppBar;
+    private RelativeLayout mButtonBar;
+    private ImageView mParallax;
+    private TextView mTitleName;
+    private TextView mUserName;
+    private TextView mContact;
+    private TextView mFeedNum;
 
     private boolean isPostUser = true;
     private String mUserId;
     private List<Feed> mFeedList = new ArrayList<>();
-    private FeedAdapter mAdapter;
+    private ConcatAdapter mConcatAdapter;
+    private FeedAdapter mFeedAdapter;
+    private LoadMoreAdapter mLoadMoreAdapter = new LoadMoreAdapter();
 
     private int mPageNum = 1;
     private int mPageSize = 10;
@@ -85,12 +79,25 @@ public class UserActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.user_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = UserActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.toolbar;
+        mSwipeRefreshLayout = mActivityBinding.swipeRefreshLayout;
+        mRecyclerView = mActivityBinding.recyclerView;
+        mAppBar = mActivityBinding.appBar;
+        mButtonBar = mActivityBinding.buttonBar;
+        mParallax = mActivityBinding.parallax;
+        mTitleName = mActivityBinding.titleName;
+        mUserName = mActivityBinding.userName;
+        mContact = mActivityBinding.contact;
+        mFeedNum = mActivityBinding.feedNum;
+
+        mContact.setOnClickListener(this);
+
         ToolbarUtil.init(mToolbar, this)
                 .setBack()
                 .build();
@@ -119,9 +126,9 @@ public class UserActivity extends BaseActivity {
         // 隐藏最后一个item的分割线
         itemDecoration.setGoneLast(true);
         mRecyclerView.addItemDecoration(itemDecoration);
-        mAdapter = new FeedAdapter(mFeedList);
-        mRecyclerView.setAdapter(mAdapter);
-
+        mFeedAdapter = new FeedAdapter(mFeedList);
+        mConcatAdapter = new ConcatAdapter(mFeedAdapter, mLoadMoreAdapter);
+        mRecyclerView.setAdapter(mConcatAdapter);
     }
 
     /**
@@ -196,7 +203,8 @@ public class UserActivity extends BaseActivity {
         });
 
         // item点击
-        mAdapter.setOnItemListener(new FeedAdapter.OnItemListener() {
+        mFeedAdapter.setOnItemListener(new FeedAdapter.OnItemListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public void onItemClick(View view, Feed feed, int position) {
                 switch (view.getId()) {
@@ -227,10 +235,10 @@ public class UserActivity extends BaseActivity {
 
             @Override
             public void onLoadMore() {
-                if (mAdapter.getItemCount() < 4) return;
+                if (mFeedAdapter.getItemCount() < 4) return;
 
                 mRefreshMode = MODE_LOADING;
-                mAdapter.updateLoadStatus(LoadMord.LOAD_MORE);
+                mLoadMoreAdapter.loading();
 
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override
@@ -261,12 +269,10 @@ public class UserActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.contact})
+    @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.contact:
-                showToast("紧张开发中");
-                break;
+        if (view.getId() == R.id.contact) {
+            showToast("紧张开发中");
         }
     }
 
@@ -289,33 +295,31 @@ public class UserActivity extends BaseActivity {
                         mSwipeRefreshLayout.setRefreshing(false);
                         String code = response.getCode();
                         if (!"00000".equals(code)) {
-                            mAdapter.updateLoadStatus(LoadMord.LOAD_NONE);
+                            mLoadMoreAdapter.loadNone();
                             showToast(R.string.toast_get_feed_error);
                             return;
                         }
                         PageInfo<Feed> page = response.getData();
                         Integer size = page.getSize();
                         if (size == 0) {
-                            mAdapter.updateLoadStatus(LoadMord.LOAD_NONE);
+                            mLoadMoreAdapter.loadNone();
                             return;
                         }
                         mPageNum++;
                         List<Feed> list = page.getList();
-                        switch (mRefreshMode) {
-                            case MODE_LOADING:
-                                updateData(list);
-                                break;
-                            default:
-                                mAdapter.setData(list);
-                                mFeedNum.setText(String.valueOf(page.getTotal()));
-                                break;
+                        if (mRefreshMode == MODE_LOADING) {
+                            updateData(list);
+                        } else {
+                            mFeedAdapter.setData(list);
+                            mFeedNum.setText(String.valueOf(page.getTotal()));
                         }
+                        mLoadMoreAdapter.loadEnd();
                     }
 
                     @Override
                     public void onError(Call call, Exception e) {
                         mSwipeRefreshLayout.setRefreshing(false);
-                        mAdapter.updateLoadStatus(LoadMord.LOAD_NONE);
+                        mLoadMoreAdapter.loadNone();
                         showToast(R.string.toast_get_feed_error);
                     }
                 });
@@ -323,7 +327,7 @@ public class UserActivity extends BaseActivity {
 
     //更新数据
     public void updateData(List<Feed> data) {
-        mAdapter.addData(data);
+        mFeedAdapter.addData(data);
     }
 
     // 刷新数据

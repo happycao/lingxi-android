@@ -1,5 +1,7 @@
 package me.cl.lingxi.adapter;
 
+import android.annotation.SuppressLint;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -9,11 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.ContentUtil;
+import me.cl.lingxi.databinding.PublishPhotoRecycleItemBinding;
 
 /**
  * author : Bafs
@@ -46,8 +46,8 @@ public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoV
     @NonNull
     @Override
     public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.publish_photo_recycle_item, null);
-        return new PhotoViewHolder(view);
+        PublishPhotoRecycleItemBinding binding = PublishPhotoRecycleItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new PhotoViewHolder(binding);
     }
 
     @Override
@@ -66,17 +66,20 @@ public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoV
         notifyDataSetChanged();
     }
 
-    class PhotoViewHolder extends RecyclerView.ViewHolder {
+    class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.iv_photo)
-        ImageView mIvPhoto;
-        @BindView(R.id.iv_delete)
-        ImageView mIvDelete;
+        private final ImageView mIvPhoto;
+        private final ImageView mIvDelete;
         private int mPosition;
 
-        PhotoViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        PhotoViewHolder(PublishPhotoRecycleItemBinding binding) {
+            super(binding.getRoot());
+
+            mIvPhoto = binding.ivPhoto;
+            mIvDelete = binding.ivDelete;
+
+            mIvPhoto.setOnClickListener(this);
+            mIvDelete.setOnClickListener(this);
         }
 
         public void bindItem(String photoUrl, final int position) {
@@ -90,7 +93,8 @@ public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoV
             ContentUtil.loadImage(mIvPhoto , photoUrl);
         }
 
-        @OnClick({R.id.iv_photo, R.id.iv_delete})
+        @SuppressLint("NonConstantResourceId")
+        @Override
         public void onClick(View view){
             switch (view.getId()) {
                 case R.id.iv_photo:

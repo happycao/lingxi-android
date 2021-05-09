@@ -5,8 +5,12 @@
     android:orientation="vertical"
     tools:context=".module.mine.RelevantActivity" >
 
-    <include layout="@layout/include_toolbar" />
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar" />
 
-    <include layout="@layout/include_recycler_view"/>
+    <include
+        android:id="@+id/include_recycler_view"
+        layout="@layout/include_recycler_view"/>
 
 </LinearLayout>

@@ -3,15 +3,15 @@ package me.cl.lingxi.module.setting;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import androidx.appcompat.widget.Toolbar;
 import android.widget.FrameLayout;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import androidx.appcompat.widget.Toolbar;
+
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.SettingsActivityBinding;
 
 /**
  * 设置
@@ -19,30 +19,29 @@ import me.cl.lingxi.common.util.SPUtil;
  */
 public class SettingsActivity extends BaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.fragment_container)
-    FrameLayout mFragmentContainer;
+    private SettingsActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private FrameLayout mFragmentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = SettingsActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mFragmentContainer = mActivityBinding.fragmentContainer;
+
         ToolbarUtil.init(mToolbar, this)
                 .setTitle(R.string.action_settings)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
                 .build();
 
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.fragment_container, new SettingsFragment())
-//                .commit();
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, new SettingsFragment())

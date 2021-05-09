@@ -14,8 +14,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
@@ -26,6 +24,7 @@ import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.FeedContentUtil;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.PublishActivityBinding;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.module.main.MainActivity;
 import okhttp3.Call;
@@ -35,28 +34,27 @@ import okhttp3.Call;
  */
 public class ShareFeedActivity extends BaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.feed_info)
-    AppCompatEditText mFeedInfo;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.ll_action)
-    LinearLayout mLlAction;
+    private PublishActivityBinding mActivityBinding;
+
+    private AppCompatEditText mFeedInfo;
 
     private String mUid;
-    private StringBuffer mInfo = new StringBuffer();
+    private final StringBuffer mInfo = new StringBuffer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.publish_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = PublishActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
-        ToolbarUtil.init(mToolbar, this)
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
+        RecyclerView recyclerView = mActivityBinding.recyclerView;
+        LinearLayout llAction = mActivityBinding.llAction;
+
+        ToolbarUtil.init(toolbar, this)
                 .setTitle(R.string.share_text)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -75,8 +73,8 @@ public class ShareFeedActivity extends BaseActivity {
 
         mUid = SPUtil.build().getString(Constants.SP_USER_ID);
         setLoading("发布中...");
-        mLlAction.setVisibility(View.GONE);
-        mRecyclerView.setVisibility(View.GONE);
+        llAction.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
 
         Intent intent = getIntent();
         if (intent == null) {

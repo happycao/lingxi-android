@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.mine;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.library.view.LoadingDialog;
@@ -26,6 +25,7 @@ import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.RelevantActivityBinding;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.Relevant;
@@ -37,25 +37,28 @@ import okhttp3.Call;
  */
 public class RelevantActivity extends BaseActivity {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    private RelevantActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
 
     private RelevantAdapter mAdapter;
     private LoadingDialog loadingProgress;
     private String saveId;
-    private List<Relevant> mRelevantList = new ArrayList<>();
+    private final List<Relevant> mRelevantList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.relevant_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = RelevantActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mRecyclerView = mActivityBinding.includeRecyclerView.recyclerView;
+
         int x = (int) (Math.random() * 4) + 1;
         if (x == 1) {
             MoeToast.makeText(this, R.string.egg_can_you_find);
@@ -94,10 +97,11 @@ public class RelevantActivity extends BaseActivity {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter = new RelevantAdapter(this, mRelevantList);
+        mAdapter = new RelevantAdapter(mRelevantList);
         mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnItemListener(new RelevantAdapter.OnItemListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public void onItemClick(View view, Relevant relevant) {
                 switch (view.getId()) {

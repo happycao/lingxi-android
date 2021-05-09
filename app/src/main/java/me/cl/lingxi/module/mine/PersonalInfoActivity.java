@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.mine;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,9 +16,6 @@ import androidx.appcompat.widget.Toolbar;
 import java.io.File;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.library.view.LoadingDialog;
@@ -31,6 +29,7 @@ import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ContentUtil;
 import me.cl.lingxi.common.util.ImageUtil;
 import me.cl.lingxi.common.util.SPUtil;
+import me.cl.lingxi.databinding.PersonalInfoActivityBinding;
 import me.cl.lingxi.dialog.EditTextDialog;
 import me.cl.lingxi.entity.UserInfo;
 import me.iwf.photopicker.PhotoPicker;
@@ -40,18 +39,16 @@ import okhttp3.Call;
 /**
  * 用户资料
  */
-public class PersonalInfoActivity extends BaseActivity {
+public class PersonalInfoActivity extends BaseActivity implements View.OnClickListener {
 
     private static final int PHOTO_REQUEST_CUT = 456;
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.person_img)
-    ImageView mPersonImg;
-    @BindView(R.id.person_name)
-    TextView mPersonName;
-    @BindView(R.id.user_signature)
-    TextView mUserSignature;
+    private PersonalInfoActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private ImageView mPersonImg;
+    private TextView mPersonName;
+    private TextView mUserSignature;
 
     private String mUserId;
     private String saveName;
@@ -72,12 +69,20 @@ public class PersonalInfoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.personal_info_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = PersonalInfoActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mPersonImg = mActivityBinding.personImg;
+        mPersonName = mActivityBinding.personName;
+        mUserSignature = mActivityBinding.userSignature;
+
+        mPersonImg.setOnClickListener(this);
+        mPersonName.setOnClickListener(this);
+
         ToolbarUtil.init(mToolbar, this)
                 .setTitle(R.string.title_bar_personal_info)
                 .setBack()
@@ -97,7 +102,8 @@ public class PersonalInfoActivity extends BaseActivity {
         postUserInfo();
     }
 
-    @OnClick({R.id.person_img, R.id.person_name})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.person_img:

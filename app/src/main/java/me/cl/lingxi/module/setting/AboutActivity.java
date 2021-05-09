@@ -1,47 +1,55 @@
 package me.cl.lingxi.module.setting;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
+import me.cl.library.view.MoeToast;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
+import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.Utils;
-import me.cl.library.view.MoeToast;
+import me.cl.lingxi.databinding.AboutActivityBinding;
 import me.cl.lingxi.entity.AppVersion;
-import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.module.webview.WebActivity;
 import okhttp3.Call;
 
-public class AboutActivity extends BaseActivity {
+public class AboutActivity extends BaseActivity implements View.OnClickListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.version)
-    TextView mVersion;
+    private AboutActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private TextView mVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.about_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = AboutActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mVersion = mActivityBinding.version;
+
+        mActivityBinding.appUpdate.setOnClickListener(this);
+        mActivityBinding.feedback.setOnClickListener(this);
+        mActivityBinding.publicLicense.setOnClickListener(this);
+        mActivityBinding.learnMore.setOnClickListener(this);
+
         ToolbarUtil.init(mToolbar, this)
                 .setTitle(R.string.title_bar_about)
                 .setBack()
@@ -59,7 +67,8 @@ public class AboutActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.app_update, R.id.feedback, R.id.public_license, R.id.learn_more})
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public void onClick(View view){
         switch (view.getId()) {
             case R.id.app_update:

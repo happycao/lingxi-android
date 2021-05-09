@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:cardCornerRadius="8dp"
     app:cardElevation="0dp"
     app:cardBackgroundColor="@color/white"
@@ -19,7 +19,9 @@
         android:descendantFocusability="blocksDescendants"
         android:orientation="vertical">
 
-        <include layout="@layout/feed_info_include"/>
+        <include
+            android:id="@+id/include_feed_info"
+            layout="@layout/feed_info_include"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -30,9 +32,13 @@
             android:overScrollMode="never"
             android:scrollbars="none"/>
 
-        <include layout="@layout/feed_action_include"/>
+        <include
+            android:id="@+id/include_feed_action"
+            layout="@layout/feed_action_include"/>
 
-        <include layout="@layout/feed_like_include"/>
+        <include
+            android:id="@+id/include_feed_like"
+            layout="@layout/feed_like_include"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

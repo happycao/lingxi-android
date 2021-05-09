@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.main;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,7 +9,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -18,14 +18,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Api;
@@ -36,29 +33,15 @@ import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.IncludeBottomNavigationBinding;
+import me.cl.lingxi.databinding.MianActivityBinding;
 import me.cl.lingxi.entity.AppVersion;
 import okhttp3.Call;
 
 public class MainActivity extends BaseActivity {
 
-    @BindView(R.id.bottom_navigation)
-    BottomNavigationView mBottomNavigation;
-    @BindView(R.id.rl_home)
-    RelativeLayout mRlHome;
-    @BindView(R.id.rl_feed)
-    RelativeLayout mRlFeed;
-    @BindView(R.id.rl_msg)
-    RelativeLayout mRlMsg;
-    @BindView(R.id.rl_mine)
-    RelativeLayout mRlMine;
-    @BindView(R.id.iv_home)
-    ImageView mIvHome;
-    @BindView(R.id.iv_feed)
-    ImageView mIvFeed;
-    @BindView(R.id.iv_msg)
-    ImageView mIvMsg;
-    @BindView(R.id.iv_mine)
-    ImageView mIvMine;
+    private MianActivityBinding mActivityBinding;
+    private IncludeBottomNavigationBinding mNavigationBinding;
 
     private FragmentManager mFragmentManager;
     private HomeFragment mHomeFragment;
@@ -76,8 +59,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mian_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = MianActivityBinding.inflate(getLayoutInflater());
+        mNavigationBinding = mActivityBinding.includeNavigation;
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
@@ -101,20 +85,20 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initNavigation() {
-        switchNavigation(mIvHome);
-        mRlHome.setOnClickListener(v -> {
+        switchNavigation(mNavigationBinding.ivHome);
+        mNavigationBinding.rlHome.setOnClickListener(v -> {
             currentIndex = 0;
             switchPage();
         });
-        mRlFeed.setOnClickListener(v -> {
+        mNavigationBinding.rlFeed.setOnClickListener(v -> {
             currentIndex = 1;
             switchPage();
         });
-        mRlMsg.setOnClickListener(v -> {
+        mNavigationBinding.rlMsg.setOnClickListener(v -> {
             currentIndex = 2;
             switchPage();
         });
-        mRlMine.setOnClickListener(v -> {
+        mNavigationBinding.rlMine.setOnClickListener(v -> {
             currentIndex = 3;
             switchPage();
         });
@@ -123,19 +107,19 @@ public class MainActivity extends BaseActivity {
     private void switchPage() {
         switch (currentIndex) {
             case 0 :
-                switchNavigation(mIvHome);
+                switchNavigation(mNavigationBinding.ivHome);
                 switchFragment(mHomeFragment);
                 break;
             case 1 :
-                switchNavigation(mIvFeed);
+                switchNavigation(mNavigationBinding.ivFeed);
                 switchFragment(mFeedFragment);
                 break;
             case 2 :
-                switchNavigation(mIvMsg);
+                switchNavigation(mNavigationBinding.ivMsg);
                 switchFragment(mMessageFragment);
                 break;
             case 3 :
-                switchNavigation(mIvMine);
+                switchNavigation(mNavigationBinding.ivMine);
                 switchFragment(mMineFragment);
                 break;
         }
@@ -159,9 +143,10 @@ public class MainActivity extends BaseActivity {
         mMineFragment = new MineFragment();
     }
 
-    //底部导航
+    // 底部导航
+    @SuppressLint("NonConstantResourceId")
     private void initBottomNavigation() {
-        mBottomNavigation.setOnNavigationItemSelectedListener(item -> {
+        mActivityBinding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     switchFragment(mHomeFragment);
@@ -184,7 +169,7 @@ public class MainActivity extends BaseActivity {
         Intent intent = getIntent();
         if (intent == null) return;
         int num = intent.getIntExtra(Constants.PASSED_UNREAD_NUM, 0);
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mBottomNavigation.getChildAt(0);
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mActivityBinding.bottomNavigation.getChildAt(0);
         BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(3);
         View badge = LayoutInflater.from(this).inflate(R.layout.main_menu_badge, menuView, false);
         itemView.addView(badge);
@@ -216,7 +201,7 @@ public class MainActivity extends BaseActivity {
             case Constants.ACTIVITY_PUBLISH:
                 int id = data.getIntExtra(Constants.GO_INDEX, R.id.navigation_home);
                 // 非导航本身事件，手动切换
-                mBottomNavigation.setSelectedItemId(id);
+                mActivityBinding.bottomNavigation.setSelectedItemId(id);
                 break;
             case Constants.ACTIVITY_PERSONAL:
                 mMineFragment.onActivityResult(requestCode, resultCode, data);

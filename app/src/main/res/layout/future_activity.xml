@@ -7,7 +7,9 @@
     android:orientation="vertical"
     tools:context=".module.future.FutureActivity">
 
-    <include layout="@layout/include_toolbar" />
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/include_toolbar" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/future_info"

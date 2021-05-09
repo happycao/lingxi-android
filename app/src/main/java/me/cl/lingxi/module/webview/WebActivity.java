@@ -12,11 +12,10 @@ import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.Toolbar;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
+import me.cl.lingxi.databinding.WebActivityBinding;
 import me.cl.lingxi.view.webview.MoeChromeClient;
 import me.cl.lingxi.view.webview.MoeWebClient;
 import me.cl.lingxi.view.webview.MoeWebView;
@@ -30,12 +29,11 @@ public class WebActivity extends BaseActivity {
 
     private static final String TAG = "WebActivity";
 
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.web_view)
-    MoeWebView mWebView;
-    @BindView(R.id.video_view)
-    FrameLayout mVideoView;
+    private WebActivityBinding mActivityBinding;
+
+    private Toolbar mToolbar;
+    private MoeWebView mWebView;
+    private FrameLayout mVideoView;
 
     private String mTittle;
     private String mUrl;
@@ -45,12 +43,16 @@ public class WebActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.web_activity);
-        ButterKnife.bind(this);
+        mActivityBinding = WebActivityBinding.inflate(getLayoutInflater());
+        setContentView(mActivityBinding.getRoot());
         init();
     }
 
     private void init() {
+        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        mWebView = mActivityBinding.webView;
+        mVideoView = mActivityBinding.videoView;
+
         Intent intent = getIntent();
         Bundle bundle = null;
         if (intent != null) {

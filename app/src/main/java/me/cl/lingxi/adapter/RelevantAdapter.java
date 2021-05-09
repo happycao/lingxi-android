@@ -1,6 +1,6 @@
 package me.cl.lingxi.adapter;
 
-import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,12 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import me.cl.lingxi.R;
 import me.cl.lingxi.common.util.ContentUtil;
 import me.cl.lingxi.common.util.Utils;
+import me.cl.lingxi.databinding.RelevantRecycleItemBinding;
 import me.cl.lingxi.entity.Comment;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.Relevant;
@@ -30,8 +27,7 @@ import me.cl.lingxi.entity.User;
  */
 public class RelevantAdapter extends RecyclerView.Adapter<RelevantAdapter.RelevantViewHolder> {
 
-    private Context mContext;
-    private List<Relevant> mList;
+    private final List<Relevant> mList;
 
     private OnItemListener mOnItemListener;
 
@@ -43,21 +39,20 @@ public class RelevantAdapter extends RecyclerView.Adapter<RelevantAdapter.Releva
         this.mOnItemListener = onItemListener;
     }
 
-    public RelevantAdapter(Context context, List<Relevant> list) {
-        this.mContext = context;
+    public RelevantAdapter(List<Relevant> list) {
         this.mList = list;
     }
 
     @NonNull
     @Override
     public RelevantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = View.inflate(parent.getContext(), R.layout.relevant_recycle_item, null);
-        return new RelevantViewHolder(view);
+        RelevantRecycleItemBinding binding = RelevantRecycleItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new RelevantViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RelevantViewHolder holder, int position) {
-        holder.bindItem(mContext, mList.get(position));
+        holder.bindItem(mList.get(position));
     }
 
     @Override
@@ -70,29 +65,32 @@ public class RelevantAdapter extends RecyclerView.Adapter<RelevantAdapter.Releva
         notifyDataSetChanged();
     }
 
-    class RelevantViewHolder extends RecyclerView.ViewHolder {
+    class RelevantViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.user_img)
-        ImageView mUserImg;
-        @BindView(R.id.user_name)
-        TextView mUserName;
-        @BindView(R.id.relevant_time)
-        TextView mRelevantTime;
-        @BindView(R.id.relevant_info)
-        AppCompatTextView mRelevantInfo;
-        @BindView(R.id.feed_info)
-        AppCompatTextView mMoodInfo;
-        @BindView(R.id.feed_body)
-        LinearLayout mMoodBody;
+        private final ImageView mUserImg;
+        private final TextView mUserName;
+        private final TextView mRelevantTime;
+        private final AppCompatTextView mRelevantInfo;
+        private final AppCompatTextView mFeedInfo;
+        private final LinearLayout mFeedBody;
 
         private Relevant mRelevant;
 
-        public RelevantViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        public RelevantViewHolder(RelevantRecycleItemBinding binding) {
+            super(binding.getRoot());
+
+            mUserImg = binding.userImg;
+            mUserName = binding.userName;
+            mRelevantTime = binding.relevantTime;
+            mRelevantInfo = binding.relevantInfo;
+            mFeedInfo = binding.feedInfo;
+            mFeedBody = binding.feedBody;
+
+            mUserImg.setOnClickListener(this);
+            mFeedBody.setOnClickListener(this);
         }
 
-        public void bindItem(Context context, Relevant relevant) {
+        public void bindItem(Relevant relevant) {
             mRelevant = relevant;
             Comment comment = relevant.getComment();
             User user = comment.getUser();
@@ -129,10 +127,10 @@ public class RelevantAdapter extends RecyclerView.Adapter<RelevantAdapter.Releva
 
             Feed feed = relevant.getFeed();
             String feedInfo = "{" + feed.getUser().getUsername() + "}：" + feed.getFeedInfo();
-            mMoodInfo.setText(Utils.colorFormat(feedInfo));
+            mFeedInfo.setText(Utils.colorFormat(feedInfo));
         }
 
-        @OnClick({R.id.user_img, R.id.feed_body})
+        @Override
         public void onClick(View view) {
             if (mOnItemListener != null) mOnItemListener.onItemClick(view, mRelevant);
         }
