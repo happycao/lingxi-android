@@ -27,8 +27,6 @@ public class EvaluateAdapter extends RecyclerView.Adapter<EvaluateAdapter.Evalua
 
     private List<Comment> mList;
 
-    private static final int TYPE_FOOTER = -1;
-
     private OnItemListener mOnItemListener;
 
     public interface OnItemListener {
@@ -59,7 +57,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<EvaluateAdapter.Evalua
 
     @Override
     public int getItemCount() {
-        return mList.size() + 1;
+        return mList.size();
     }
 
     public void setDate(List<Comment> data) {
