@@ -157,10 +157,10 @@ public class ImageUtil {
     }
 
     /**
-     * 获取图片存储卡目录
+     * 获取图片目录
      */
     private static String getImageFilePath(){
-        return Environment.getExternalStorageDirectory() + "/Android/data/" + BuildConfig.APPLICATION_ID + "/image/";
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/Touches/";
     }
 
     /**
