@@ -16,6 +16,7 @@ import android.view.View;
 
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,23 +29,25 @@ import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.PhotoSelAdapter;
-import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
+import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.util.ImageUtil;
 import me.cl.lingxi.common.util.Utils;
 import me.cl.lingxi.databinding.PublishActivityBinding;
-import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.module.main.MainActivity;
+import me.cl.lingxi.viewmodel.FeedViewModel;
+import me.cl.lingxi.viewmodel.UploadViewModel;
 import me.iwf.photopicker.PhotoPicker;
 import me.iwf.photopicker.PhotoPreview;
-import okhttp3.Call;
 
+/**
+ * 发布动态
+ */
 public class PublishActivity extends BaseActivity implements View.OnClickListener {
 
     private PublishActivityBinding mActivityBinding;
+    private FeedViewModel mFeedViewModel;
+    private UploadViewModel mUploadViewModel;
 
     private AppCompatEditText mEtFeedInfo;
     private RecyclerView mRecyclerView;
@@ -53,7 +56,7 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
     private List<String> mPhotos = new ArrayList<>();
 
     private String mInfo = "";
-    private final boolean showAdd = false;
+    private static final boolean showAdd = false;
 
     // 话题与艾特相关
     private final StringBuilder mFeedInfoSb = new StringBuilder();
@@ -86,19 +89,19 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
                 .setMenu(R.menu.send_menu, new Toolbar.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_send:
-                                mInfo = mEtFeedInfo.getText().toString().trim();
-                                if (TextUtils.isEmpty(mInfo)) {
-                                    showToast("好歹写点什么吧！");
-                                    break;
-                                }
-                                if (mPhotos.isEmpty()) {
-                                    postSaveFeed(mPhotos);
-                                } else {
-                                    postUpload(mPhotos);
-                                }
-                                break;
+                        if (item.getItemId() == R.id.action_send) {
+                            mInfo = mEtFeedInfo.getText().toString().trim();
+                            if (TextUtils.isEmpty(mInfo)) {
+                                showToast("好歹写点什么吧！");
+                                return false;
+                            }
+                            showLoading();
+                            removePhotoAdd(mPhotos);
+                            if (mPhotos.isEmpty()) {
+                                postSaveFeed(mPhotos);
+                            } else {
+                                postUpload(mPhotos);
+                            }
                         }
                         return false;
                     }
@@ -108,8 +111,10 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
         setLoading("发布中...");
         initTextChangeListener();
         initRecycleView();
+        initViewModel();
     }
 
+    // 输入监听
     private void initTextChangeListener() {
         mEtFeedInfo.addTextChangedListener(new TextWatcher() {
             @Override
@@ -195,7 +200,7 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
 
     private void initRecycleView() {
         mRecyclerView.setLayoutManager(new GridLayoutManager(PublishActivity.this, 3));
-        mPhotoSelAdapter = new PhotoSelAdapter(mPhotos, false);
+        mPhotoSelAdapter = new PhotoSelAdapter(mPhotos);
         mRecyclerView.setAdapter(mPhotoSelAdapter);
         mPhotoSelAdapter.setOnItemClickListener(new PhotoSelAdapter.OnItemClickListener() {
             @Override
@@ -222,9 +227,36 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onDelete(int position) {
                 mPhotos.remove(position);
-                mPhotoSelAdapter.setPhotos(mPhotos, showAdd);
+                mPhotoSelAdapter.setPhotos(mPhotos);
             }
         });
+    }
+
+    private void initViewModel() {
+        ViewModelProvider viewModelProvider = new ViewModelProvider(this);
+        mFeedViewModel = viewModelProvider.get(FeedViewModel.class);
+        mUploadViewModel = viewModelProvider.get(UploadViewModel.class);
+        mFeedViewModel.getTipMessage().observe(this, this::showTip);
+        mUploadViewModel.getTipMessage().observe(this, this::showTip);
+        mUploadViewModel.getPhotos().observe(this, this::postSaveFeed);
+        mFeedViewModel.getFeed().observe(this, feed -> {
+            dismissLoading();
+            showToast("发布成功");
+            mEtFeedInfo.setText(null);
+            mInfo = "";
+            onBackPressed();
+        });
+    }
+
+    // 提示
+    private void showTip(TipMessage tipMessage) {
+        dismissLoading();
+        if (tipMessage.isRes()) {
+            showToast(tipMessage.getMsgId());
+        } else {
+            showToast(tipMessage.getMsgStr());
+        }
+        addPhotoAdd(mPhotos);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -302,74 +334,20 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
                 }
             }
         }
-        mPhotoSelAdapter.setPhotos(mPhotos, showAdd);
+        mPhotoSelAdapter.setPhotos(mPhotos);
     }
 
     // 上传图片
     private void postUpload(List<String> photos) {
-        removePhotoAdd(photos);
-
         // 压缩图片
         photos = ImageUtil.compressorImage(this, photos);
-
-        OkUtil.post()
-                .url(Api.uploadFeedImage)
-                .addFiles("file", ImageUtil.pathToImageFile(photos))
-                .execute(new ResultCallback<Result<List<String>>>() {
-                    @Override
-                    public void onSuccess(Result<List<String>> response) {
-                        String code = response.getCode();
-                        if ("00100".equals(code)) {
-                            showToast(response.getMsg());
-                            addPhotoAdd(mPhotos);
-                            return;
-                        }
-                        if (!"00000".equals(code)) {
-                            showToast("图片上传失败");
-                            addPhotoAdd(mPhotos);
-                            return;
-                        }
-                        // 发送动态
-                        postSaveFeed(response.getData());
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast("图片上传失败");
-                        addPhotoAdd(mPhotos);
-                    }
-                });
+        // 上传动态图片
+        mUploadViewModel.uploadFeedImage(photos);
     }
 
     // 发布动态
     private void postSaveFeed(List<String> uploadImg) {
-        removePhotoAdd(uploadImg);
-        OkUtil.post()
-                .url(Api.saveFeed)
-                .addParam("feedInfo", mInfo)
-                .addUrlParams("photoList", uploadImg)
-                .execute(new ResultCallback<Result<Feed>>() {
-                    @Override
-                    public void onSuccess(Result<Feed> response) {
-                        dismissLoading();
-                        String code = response.getCode();
-                        if (!"00000".equals(code)) {
-                            showToast("发布失败");
-                            addPhotoAdd(mPhotos);
-                            return;
-                        }
-                        mEtFeedInfo.setText(null);
-                        showToast("发布成功");
-                        onBackPressed();
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        dismissLoading();
-                        showToast("发布失败");
-                        addPhotoAdd(mPhotos);
-                    }
-                });
+        mFeedViewModel.saveFeed(mInfo, uploadImg);
     }
 
     // 添加添加图片按钮

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -25,15 +26,12 @@ import me.cl.library.recycle.ItemAnimator;
 import me.cl.library.recycle.ItemDecoration;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.TopicEitAdapter;
-import me.cl.lingxi.common.config.Api;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
+import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.databinding.TopicEitActivityBinding;
-import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.Topic;
 import me.cl.lingxi.entity.User;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.TopicViewModel;
+import me.cl.lingxi.viewmodel.UserViewModel;
 
 /**
  * @author : happyc
@@ -44,6 +42,8 @@ import okhttp3.Call;
 public class TopicEitActivity extends BaseActivity implements View.OnClickListener {
 
     private TopicEitActivityBinding mActivityBinding;
+    private UserViewModel mUserViewModel;
+    private TopicViewModel mTopicViewModel;
 
     public static final int REQUEST_CODE = 2233;
 
@@ -58,15 +58,11 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
 
     private Type mType = Type.TOPIC;
     private String queryName = "";
-    private ArrayList<String> mMsgList = new ArrayList<>();
+    private final ArrayList<String> mMsgList = new ArrayList<>();
     private TopicEitAdapter mAdapter;
 
-    private int mPage = 1;
-    private int mCount = 10;
-    private final int MOD_REFRESH = 1;
-    private final int MOD_LOADING = 2;
-    private int RefreshMODE = 0;
-
+    private int mPageNum = 1;
+    private static final int PAGE_SIZE = 10;
 
     public enum Type implements Serializable {
         TOPIC,
@@ -83,6 +79,7 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
         init();
     }
 
+    @SuppressLint("RestrictedApi")
     private void init() {
         mEditSearch = mActivityBinding.editSearch;
         mSwipeRefreshLayout = mActivityBinding.swipeRefreshLayout;
@@ -90,6 +87,12 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
         mBtnNegative = mActivityBinding.btnNegative;
         mFloatButton = mActivityBinding.floatButton;
 
+        initListener();
+        initRecyclerView();
+        initViewModel();
+    }
+
+    private void initListener() {
         mBtnNegative.setOnClickListener(this);
         mFloatButton.setOnClickListener(this);
 
@@ -101,6 +104,7 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mPageNum = 1;
                 doSearch(s.toString());
             }
 
@@ -110,15 +114,14 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
             }
         });
         //刷新
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                RefreshMODE = MOD_REFRESH;
-                mPage = 1;
-                doSearch(queryName);
-            }
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            mPageNum = 1;
+            doSearch(queryName);
         });
+    }
 
+    @SuppressLint("RestrictedApi")
+    private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new ItemAnimator());
@@ -128,17 +131,67 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
         // mRecyclerView.addItemDecoration(itemDecoration);
         mAdapter = new TopicEitAdapter(new ArrayList<>(), mType);
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setOnItemListener(new TopicEitAdapter.OnItemListener() {
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onItemClick(View view, Topic future) {
-                if (mAdapter.isSelected()) {
-                    mFloatButton.setVisibility(View.VISIBLE);
-                } else {
-                    mFloatButton.setVisibility(View.GONE);
-                }
+        mAdapter.setOnItemListener((view, future) -> {
+            if (mAdapter.isSelected()) {
+                mFloatButton.setVisibility(View.VISIBLE);
+            } else {
+                mFloatButton.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void initViewModel() {
+        ViewModelProvider viewModelProvider = new ViewModelProvider(this);
+        mUserViewModel = viewModelProvider.get(UserViewModel.class);
+        mTopicViewModel = viewModelProvider.get(TopicViewModel.class);
+        mUserViewModel.getTipMessage().observe(this, this::showTip);
+        mTopicViewModel.getTipMessage().observe(this, this::showTip);
+        mUserViewModel.getUsers().observe(this, userPageInfo -> {
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+            Integer pageNum = userPageInfo.getPageNum();
+            mPageNum = pageNum + 1;
+            List<User> users = userPageInfo.getList();
+            List<Topic> list = new ArrayList<>();
+            for (User user: users) {
+                Topic topic = new Topic();
+                topic.setId(user.getId());
+                topic.setTopicName(user.getUsername());
+                topic.setAvatar(user.getAvatar());
+                topic.setSelected(false);
+                list.add(topic);
+            }
+            if (pageNum == 1) {
+                mAdapter.setData(list);
+            } else {
+                mAdapter.addData(list);
+            }
+        });
+        mTopicViewModel.getTopics().observe(this, topicPageInfo -> {
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+            Integer pageNum = topicPageInfo.getPageNum();
+            mPageNum = pageNum + 1;
+            List<Topic> list = topicPageInfo.getList();
+            if (pageNum == 1) {
+                mAdapter.setData(list);
+            } else {
+                mAdapter.addData(list);
+            }
+        });
+    }
+
+    private void showTip(TipMessage tipMessage) {
+        if (mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+        if (tipMessage.isRes()) {
+            showToast(tipMessage.getMsgId());
+        } else {
+            showToast(tipMessage.getMsgStr());
+        }
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -162,94 +215,17 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
     }
 
     void doSearch(String searchStr) {
-        RefreshMODE = MOD_REFRESH;
-        mPage = 1;
+        mPageNum = 1;
+        if (!mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
         queryName = searchStr;
         if (mType == Type.EIT) {
-            getUserList(mPage, mCount);
+            mUserViewModel.queryUser(queryName, mPageNum, PAGE_SIZE);
         }
         if (mType == Type.TOPIC) {
-            getTopicList(mPage, mCount);
+            mTopicViewModel.queryTopic(queryName, mPageNum, PAGE_SIZE);
         }
-    }
-
-    // 获取用户
-    private void getUserList(int pageNum, int pageSize) {
-        if (!mSwipeRefreshLayout.isRefreshing() && RefreshMODE == MOD_REFRESH) mSwipeRefreshLayout.setRefreshing(true);
-        OkUtil.post()
-                .url(Api.queryUser)
-                .addParam("username", queryName)
-                .addParam("pageNum", pageNum)
-                .addParam("pageSize", pageSize)
-                .execute(new ResultCallback<Result<PageInfo<User>>>() {
-                    @Override
-                    public void onSuccess(Result<PageInfo<User>> response) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        String code = response.getCode();
-                        if (!"00000".equals(code)) {
-                            showToast(R.string.toast_get_user_error);
-                            return;
-                        }
-                        mPage++;
-                        PageInfo<User> page = response.getData();
-                        List<User> users = page.getList();
-                        List<Topic> list = new ArrayList<>();
-                        for (User user: users) {
-                            Topic topic = new Topic();
-                            topic.setId(user.getId());
-                            topic.setTopicName(user.getUsername());
-                            topic.setAvatar(user.getAvatar());
-                            topic.setSelected(false);
-                            list.add(topic);
-                        }
-                        if (RefreshMODE == MOD_LOADING) {
-                            mAdapter.addData(list);
-                        } else {
-                            mAdapter.setData(list);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        showToast(R.string.toast_get_user_error);
-                    }
-                });
-    }
-
-    // 获取话题
-    private void getTopicList(int pageNum, int pageSize) {
-        if (!mSwipeRefreshLayout.isRefreshing() && RefreshMODE == MOD_REFRESH) mSwipeRefreshLayout.setRefreshing(true);
-        OkUtil.post()
-                .url(Api.queryTopic)
-                .addParam("name", queryName)
-                .addParam("pageNum", pageNum)
-                .addParam("pageSize", pageSize)
-                .execute(new ResultCallback<Result<PageInfo<Topic>>>() {
-                    @Override
-                    public void onSuccess(Result<PageInfo<Topic>> response) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        String code = response.getCode();
-                        if (!"00000".equals(code)) {
-                            showToast(R.string.toast_get_topic_error);
-                            return;
-                        }
-                        mPage++;
-                        PageInfo<Topic> page = response.getData();
-                        List<Topic> list = page.getList();
-                        if (RefreshMODE == MOD_LOADING) {
-                            mAdapter.addData(list);
-                        } else {
-                            mAdapter.setData(list);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        showToast(R.string.toast_get_topic_error);
-                    }
-                });
     }
 
     @Override

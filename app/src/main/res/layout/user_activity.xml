@@ -8,7 +8,6 @@
     android:fitsSystemWindows="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@color/white"
     tools:context=".module.member.UserActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -37,101 +36,110 @@
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"/>
 
-            <!-- 遮罩，后续考虑使用Palette -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                android:background="#64b4b4b4"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.5"/>
-
-            <RelativeLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
+                android:layout_marginStart="@dimen/spacing_8"
+                android:layout_marginEnd="@dimen/spacing_8"
+                android:layout_marginBottom="@dimen/spacing_4"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#BFFFFFFF"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.9"
-                android:padding="@dimen/spacing_16">
+                app:layout_collapseParallaxMultiplier="1.2">
 
-                <TextView
-                    android:id="@+id/attention"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/spacing_8"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/action_attention"
-                    android:textColor="@color/colorAccent"/>
-
-                <TextView
-                    android:id="@+id/contact"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/spacing_16"
-                    android:layout_toLeftOf="@id/attention"
-                    android:layout_toStartOf="@id/attention"
-                    android:padding="@dimen/spacing_8"
-                    android:text="@string/action_contact"
-                    android:textColor="@color/colorAccent"/>
-
-                <TextView
-                    android:id="@+id/user_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_name"
-                    android:textSize="@dimen/spacing_24"
-                    android:textColor="@color/textColorBasic"/>
-
-                <LinearLayout
-                    android:id="@+id/action_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/user_name"
-                    android:layout_marginTop="@dimen/spacing_8">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/hint_attention"
-                        android:textColor="@color/textColorSecondary"/>
-
-                    <TextView
-                        android:id="@+id/relationship_attention"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="@dimen/spacing_3"
-                        android:text="@string/zero_num"
-                        android:textColor="@color/textColorSecondary"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/spacing_16"
-                        android:text="@string/hint_fans"
-                        android:textColor="@color/textColorSecondary"/>
-
-                    <TextView
-                        android:id="@+id/relationship_fans"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="@dimen/spacing_3"
-                        android:text="@string/zero_num"
-                        android:textColor="@color/textColorSecondary"/>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/signature"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/action_layout"
-                    android:layout_marginTop="@dimen/spacing_8"
-                    android:text="@string/hint_signature_default"
-                    android:minLines="1"
-                    android:maxLines="2"
-                    android:textColor="@color/textColorSecondary"/>
+                    android:paddingStart="@dimen/spacing_10"
+                    android:paddingEnd="@dimen/spacing_10"
+                    android:paddingTop="@dimen/spacing_4"
+                    android:paddingBottom="@dimen/spacing_8">
 
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/attention"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/spacing_8"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/action_attention"
+                        android:textColor="@color/colorAccent"/>
+
+                    <TextView
+                        android:id="@+id/contact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/spacing_8"
+                        android:layout_toStartOf="@id/attention"
+                        android:padding="@dimen/spacing_8"
+                        android:text="@string/action_contact"
+                        android:textColor="@color/colorAccent"/>
+
+                    <TextView
+                        android:id="@+id/user_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name"
+                        android:textSize="@dimen/spacing_20"
+                        android:textColor="@color/textColorBasic"
+                        tools:ignore="SpUsage" />
+
+                    <LinearLayout
+                        android:id="@+id/action_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/user_name"
+                        android:layout_marginTop="@dimen/spacing_8">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/hint_attention"
+                            android:textColor="@color/textColorSub"/>
+
+                        <TextView
+                            android:id="@+id/relationship_attention"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="@dimen/spacing_3"
+                            android:text="@string/zero_num"
+                            android:textColor="@color/textColorSub"
+                            tools:ignore="RtlSymmetry" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_16"
+                            android:text="@string/hint_fans"
+                            android:textColor="@color/textColorSub"/>
+
+                        <TextView
+                            android:id="@+id/relationship_fans"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="@dimen/spacing_3"
+                            android:text="@string/zero_num"
+                            android:textColor="@color/textColorSub"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/signature"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/action_layout"
+                        android:layout_marginTop="@dimen/spacing_8"
+                        android:text="@string/hint_signature_default"
+                        android:minLines="1"
+                        android:maxLines="2"
+                        android:textColor="@color/textColorSub"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -154,7 +162,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/app_name"
                         android:textColor="@color/textColorBasic"
-                        android:textSize="@dimen/font_16"/>
+                        android:textSize="@dimen/font_16"
+                        tools:ignore="SpUsage" />
 
                     <TextView
                         android:id="@+id/hint_all_feed"
@@ -163,18 +172,20 @@
                         android:layout_below="@+id/title_name"
                         android:text="@string/hint_feed"
                         android:textColor="@color/textColorSecondary"
-                        android:textSize="@dimen/font_12"/>
+                        android:textSize="@dimen/font_12"
+                        tools:ignore="SpUsage" />
 
                     <TextView
                         android:id="@+id/feed_num"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/hint_all_feed"
+                        android:layout_toEndOf="@+id/hint_all_feed"
                         android:layout_alignBottom="@+id/hint_all_feed"
-                        android:paddingLeft="@dimen/spacing_4"
+                        android:paddingStart="@dimen/spacing_4"
                         android:text="@string/zero_num"
                         android:textColor="@color/textColorSecondary"
-                        android:textSize="@dimen/font_12"/>
+                        android:textSize="@dimen/font_12"
+                        tools:ignore="RtlSymmetry,SpUsage" />
                 </RelativeLayout>
 
             </androidx.appcompat.widget.Toolbar>
@@ -194,6 +205,8 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingStart="@dimen/spacing_8"
+            android:paddingEnd="@dimen/spacing_8"
             android:overScrollMode="never"
             android:scrollbars="none"/>
 

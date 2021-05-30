@@ -17,7 +17,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import me.cl.library.base.BaseFragment;
 import me.cl.library.photo.PhotoBrowser;
@@ -148,7 +147,7 @@ public class HomeFragment extends BaseFragment {
                 strings.add(mImageUrl);
                 PhotoBrowser.builder()
                         .setPhotos(strings)
-                        .start(Objects.requireNonNull(getActivity()));
+                        .start(requireActivity());
             }
         });
     }
@@ -159,7 +158,7 @@ public class HomeFragment extends BaseFragment {
     private void initData() {
         mSwipeRefreshLayout.setRefreshing(true);
         openTuPics = SPUtil.build().getBoolean("open_tu_pics");
-        if (NetworkUtil.isWifiConnected(Objects.requireNonNull(getContext()))) {
+        if (NetworkUtil.isWifiConnected(requireContext())) {
             if (openTuPics) {
                 getTuPicsData();
             } else {
@@ -362,7 +361,7 @@ public class HomeFragment extends BaseFragment {
     /**
      * 一言
      */
-    class Hitokoto {
+    static class Hitokoto {
 
         /**
          * id : 2098/1495
@@ -472,7 +471,7 @@ public class HomeFragment extends BaseFragment {
         }
     }
 
-    class RandomPicture {
+    static class RandomPicture {
         /**
          * PID : 9a8f807a-440e-11e9-8eca-f23c914b97eb
          * p_title : 地狱之刃：塞娜的献祭

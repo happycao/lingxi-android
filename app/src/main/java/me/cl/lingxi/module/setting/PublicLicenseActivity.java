@@ -75,7 +75,7 @@ public class PublicLicenseActivity extends BaseActivity {
                 "https://github.com/google/gson"));
         mData.add(new PublicLicense("Tujian", "open.dpic.dev",
                 "无人为孤岛，一图一世界。",
-                "https://open.dpic.dev"));
+                "https://www.dailypics.cn"));
         mData.add(new PublicLicense("butterknife", "JakeWharton",
                 "Bind Android views and callbacks to fields and methods",
                 "https://github.com/JakeWharton/butterknife"));

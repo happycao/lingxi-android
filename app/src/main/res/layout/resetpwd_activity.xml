@@ -42,12 +42,13 @@
             android:layout_marginTop="5dp"
             android:background="@null"
             android:hint="@string/hint_phone"
-            android:inputType="number"
+            android:inputType="phone"
             android:maxLength="11"
             android:maxLines="1"
             android:padding="7dp"
             android:lines="1"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tools:ignore="TextFields" />
 
         <TextView
             android:layout_width="match_parent"

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,14 +31,9 @@ import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.EvaluateAdapter;
 import me.cl.lingxi.adapter.FeedAdapter;
-import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.ContentUtil;
 import me.cl.lingxi.common.util.FeedContentUtil;
-import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.databinding.FeedActionIncludeBinding;
 import me.cl.lingxi.databinding.FeedActivityBinding;
 import me.cl.lingxi.databinding.FeedInfoIncludeBinding;
@@ -46,18 +41,22 @@ import me.cl.lingxi.databinding.FeedLikeIncludeBinding;
 import me.cl.lingxi.entity.Comment;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.Like;
-import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.Reply;
 import me.cl.lingxi.entity.User;
 import me.cl.lingxi.module.member.UserActivity;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.FeedViewModel;
 
+/**
+ * 动态详情页
+ * TODO 从与我相关跳转目前没用动态图片，需要新增获取动态详情的接口
+ */
 public class FeedActivity extends BaseActivity implements View.OnClickListener {
 
     private FeedActivityBinding mActivityBinding;
     private FeedInfoIncludeBinding mFeedInfoBinding;
     private FeedActionIncludeBinding mFeedActionBinding;
     private FeedLikeIncludeBinding mFeedLikeBinding;
+    private FeedViewModel mFeedViewModel;
 
     private AppCompatEditText mEditTuCao;
     private Button mBtnPublish;
@@ -71,7 +70,6 @@ public class FeedActivity extends BaseActivity implements View.OnClickListener {
     private final int MSG_EVALUATE = 0;
     private final int MSG_REPLY = 1;
 
-    private String saveId;
     private String mFeedId;
     private String mCommentId;
     private String toUid;
@@ -111,8 +109,6 @@ public class FeedActivity extends BaseActivity implements View.OnClickListener {
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
                 .build();
 
-        saveId = SPUtil.build().getString(Constants.SP_USER_ID);
-
         // 输入状态模式默认为评论
         MSG_MODE = MSG_EVALUATE;
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -130,6 +126,7 @@ public class FeedActivity extends BaseActivity implements View.OnClickListener {
         feedCommentLayout.setOnClickListener(this);
 
         initRecyclerView();
+        initViewModel();
         initView();
     }
 
@@ -227,15 +224,32 @@ public class FeedActivity extends BaseActivity implements View.OnClickListener {
             mPhotoRecyclerView.setVisibility(View.GONE);
         }
 
-        postViewFeed();
-        getEvaluateList(feed.getId());
+        mFeedViewModel.viewFeed(mFeedId);
+        mFeedViewModel.doPageComment(1, 20 , mFeedId);
     }
 
-    private void postViewFeed() {
-        OkUtil.post()
-                .url(Api.viewFeed)
-                .addParam("id", mFeedId)
-                .execute();
+    private void initViewModel() {
+        mFeedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
+        mFeedViewModel.getTipMessage().observe(this, tipMessage -> {
+            if (tipMessage.isRes()) {
+                showToast(tipMessage.getMsgId());
+            } else {
+                showToast(tipMessage.getMsgStr());
+            }
+        });
+        mFeedViewModel.getFeed().observe(this, feed -> {
+
+        });
+        mFeedViewModel.getFeedComment().observe(this, i -> {
+            if (i == MSG_EVALUATE) {
+                mFeedCommentNum.setText(String.valueOf(Integer.parseInt(mFeedCommentNum.getText().toString()) + 1));
+            }
+            mFeedViewModel.doPageComment(1, 20, mFeedId);
+            // TODO 对回复进行处理，而非单纯直接调用接口刷新
+        });
+        mFeedViewModel.getCommentPage().observe(this, commentPageInfo -> {
+            setData(commentPageInfo.getList());
+        });
     }
 
     /**
@@ -265,106 +279,29 @@ public class FeedActivity extends BaseActivity implements View.OnClickListener {
                 mEditMask.setVisibility(View.VISIBLE);
                 break;
             case R.id.btn_publish:
-                String msg = mEditTuCao.getText().toString().trim();
-                switch (MSG_MODE) {
-                    case MSG_EVALUATE:
-                        //评论
-                        setLoading("评论中...");
-                        addEvaluate(mFeedId, saveId, toUid, msg);
-                        mEditTuCao.setText(null);
-                        hideSoftInput(mEditTuCao);
-                        break;
-                    case MSG_REPLY:
-                        //回复
-                        setLoading("回复中...");
-                        addReply(mFeedId, mCommentId, saveId, toUid, msg);
-                        mEditTuCao.setText(null);
-                        hideSoftInput(mEditTuCao);
-                        break;
-                }
+                publishComment();
                 break;
         }
     }
 
-    /**
-     * 添加评论
-     */
-    public void addEvaluate(String feedId, String uid, String toUid, String comment) {
-        Log.d(getClass().getName(), feedId + "," + uid + "," + toUid + "," + comment);
-        OkUtil.post()
-                .url(Api.saveComment)
-                .addParam("feedId", feedId)
-                .addParam("userId", uid)
-                .addParam("toUserId", toUid)
-                .addParam("commentInfo", comment)
-                .addParam("type", "0")
-                .execute(new ResultCallback<Result>() {
-                    @Override
-                    public void onSuccess(Result response) {
-                        showToast("评论成功");
-                        mFeedCommentNum.setText(String.valueOf(Integer.parseInt(mFeedCommentNum.getText().toString()) + 1));
-
-                        getEvaluateList(mFeedId);
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast("评论失败");
-                    }
-                });
-    }
-
-    /**
-     * 添加回复
-     */
-    public void addReply(String feedId, String commentId, String uid, String toUid, String reply) {
-        OkUtil.post()
-                .url(Api.saveComment)
-                .addParam("feedId", feedId)
-                .addParam("commentId", commentId)
-                .addParam("userId", uid)
-                .addParam("toUserId", toUid)
-                .addParam("commentInfo", reply)
-                .addParam("type", "1")
-                .execute(new ResultCallback<Result>() {
-                    @Override
-                    public void onSuccess(Result response) {
-                        showToast("回复成功");
-                        getEvaluateList(mFeedId);
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast("回复失败");
-                    }
-                });
-    }
-
-    /**
-     * 获取评论数据
-     */
-    public void getEvaluateList(String feedId) {
-        Integer pageNum = 1;
-        Integer pageSize = 20;
-        OkUtil.post()
-                .url(Api.pageComment)
-                .addParam("feedId", feedId)
-                .addParam("pageNum", pageNum)
-                .addParam("pageSize", pageSize)
-                .execute(new ResultCallback<Result<PageInfo<Comment>>>() {
-                    @Override
-                    public void onSuccess(Result<PageInfo<Comment>> response) {
-                        String code = response.getCode();
-                        if ("00000".equals(code)) {
-                            setData(response.getData().getList());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast(R.string.toast_get_feed_error);
-                    }
-                });
+    private void publishComment() {
+        String msg = mEditTuCao.getText().toString().trim();
+        switch (MSG_MODE) {
+            case MSG_EVALUATE:
+                // 评论
+                setLoading("评论中...");
+                mFeedViewModel.addEvaluate(mFeedId, toUid, msg);
+                mEditTuCao.setText(null);
+                hideSoftInput(mEditTuCao);
+                break;
+            case MSG_REPLY:
+                // 回复
+                setLoading("回复中...");
+                mFeedViewModel.addReply(mFeedId, mCommentId, toUid, msg);
+                mEditTuCao.setText(null);
+                hideSoftInput(mEditTuCao);
+                break;
+        }
     }
 
     /**
@@ -384,7 +321,6 @@ public class FeedActivity extends BaseActivity implements View.OnClickListener {
     public void openSofInput(EditText edit) {
         edit.setText(null);
         edit.requestFocus();
-//        edit.setFocusable(true);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
@@ -392,7 +328,6 @@ public class FeedActivity extends BaseActivity implements View.OnClickListener {
      * 隐藏输入法
      */
     public void hideSoftInput(EditText edit) {
-//        edit.setFocusable(false);
         imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
     }
 

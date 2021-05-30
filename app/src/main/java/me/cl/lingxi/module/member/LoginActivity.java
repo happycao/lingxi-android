@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
 
@@ -19,14 +20,10 @@ import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
 import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
-import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.databinding.LoginActivityBinding;
-import me.cl.lingxi.entity.UserToken;
 import me.cl.lingxi.module.main.MainActivity;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.UserViewModel;
 
 /**
  * 用户登录
@@ -36,8 +33,8 @@ public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
 
     private LoginActivityBinding mActivityBinding;
+    private UserViewModel mUserViewModel;
 
-    private Toolbar mToolbar;
     private AppCompatEditText mUsername;
     private AppCompatEditText mPassword;
 
@@ -53,11 +50,11 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
         mUsername = mActivityBinding.username;
         mPassword = mActivityBinding.password;
 
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(toolbar, this)
                 .setTitle(R.string.title_bar_login)
                 .setTitleCenter()
                 .build();
@@ -70,6 +67,27 @@ public class LoginActivity extends BaseActivity {
         String saveName = SPUtil.build().getString(Constants.SP_USER_NAME);
         mUsername.setText(saveName);
         mUsername.setSelection(saveName.length());
+
+        initViewModel();
+    }
+
+    private void initViewModel() {
+        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        mUserViewModel.getTipMessage().observe(this, tipMessage -> {
+            if (tipMessage.isRes()) {
+                showToast(tipMessage.getMsgId());
+            } else {
+                showToast(tipMessage.getMsgStr());
+            }
+        });
+        mUserViewModel.getUserToken().observe(this, userToken -> {
+            SPUtil.build().putBoolean(Constants.SP_BEEN_LOGIN, true);
+            SPUtil.build().putString(Constants.SP_USER_ID, userToken.getId());
+            SPUtil.build().putString(Constants.SP_USER_NAME, userToken.getUsername());
+            SPUtil.build().putString(Api.X_APP_TOKEN, userToken.getToken());
+            OkUtil.newInstance().addCommonHeader(Api.X_APP_TOKEN, userToken.getToken());
+            goHome();
+        });
     }
 
     public void login(View view) {
@@ -79,41 +97,7 @@ public class LoginActivity extends BaseActivity {
             showToast(R.string.toast_login_null);
             return;
         }
-        postLogin(username, password);
-    }
-
-    // 登录请求
-    private void postLogin(final String userName, String userPwd) {
-        OkUtil.post()
-                .url(Api.userLogin)
-                .addParam("username", userName)
-                .addParam("password", userPwd)
-                .setProgressDialog(loginProgress)
-                .execute(new ResultCallback<Result<UserToken>>() {
-                    @Override
-                    public void onSuccess(Result<UserToken> response) {
-                        String code = response.getCode();
-                        switch (code) {
-                            case ResultConstant.CODE_SUCCESS:
-                                UserToken user = response.getData();
-                                SPUtil.build().putBoolean(Constants.SP_BEEN_LOGIN, true);
-                                SPUtil.build().putString(Constants.SP_USER_ID, user.getId());
-                                SPUtil.build().putString(Constants.SP_USER_NAME, user.getUsername());
-                                SPUtil.build().putString(Api.X_APP_TOKEN, user.getToken());
-                                OkUtil.newInstance().addCommonHeader(Api.X_APP_TOKEN, user.getToken());
-                                goHome();
-                                break;
-                            default:
-                                showToast(R.string.toast_pwd_error);
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast(R.string.toast_login_error);
-                    }
-                });
+        mUserViewModel.doLogin(username, password, loginProgress);
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {

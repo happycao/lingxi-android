@@ -8,6 +8,7 @@
     <color name="textColorPrimary">@color/textColorBasic</color>
 
     <color name="textColorBasic">#333333</color>
+    <color name="textColorSub">#666666</color>
     <color name="textColorSecondary">#7f7f7f</color>
     <!-- #F4F6F8 浅 | 深 #EAECEE -->
     <color name="background">#EAECEE</color>

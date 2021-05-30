@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,15 +15,10 @@ import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.library.view.LoadingDialog;
 import me.cl.lingxi.R;
-import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.databinding.RegisteActivityBinding;
-import me.cl.lingxi.entity.UserInfo;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.UserViewModel;
 
 /**
  * 用户注册
@@ -30,8 +26,8 @@ import okhttp3.Call;
 public class RegisterActivity extends BaseActivity {
 
     private RegisteActivityBinding mActivityBinding;
+    private UserViewModel mUserViewModel;
 
-    private Toolbar mToolbar;
     private EditText mUsername;
     private EditText mPassword;
     private EditText mDoPassword;
@@ -48,20 +44,37 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
         mUsername = mActivityBinding.username;
         mPassword = mActivityBinding.password;
         mDoPassword = mActivityBinding.doPassword;
         mPhone = mActivityBinding.phone;
 
-
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(toolbar, this)
                 .setTitle(R.string.title_bar_reg)
                 .setBack()
                 .setTitleCenter()
                 .build();
 
         registerProgress = new LoadingDialog(this, R.string.dialog_loading_reg);
+
+        initViewModel();
+    }
+
+    private void initViewModel() {
+        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        mUserViewModel.getTipMessage().observe(this, tipMessage -> {
+            if (tipMessage.isRes()) {
+                showToast(tipMessage.getMsgId());
+            } else {
+                showToast(tipMessage.getMsgStr());
+            }
+        });
+        mUserViewModel.getUserInfo().observe(this, userInfo -> {
+            showToast(R.string.toast_reg_success);
+            SPUtil.build().putString(Constants.SP_USER_NAME, userInfo.getUsername());
+            onBackPressed();
+        });
     }
 
     public void goRegister(View view) {
@@ -85,7 +98,8 @@ public class RegisterActivity extends BaseActivity {
             showToast(R.string.toast_phone_format_error);
             return;
         }
-        postRegister(uName, uPwd, uPhone);
+
+        mUserViewModel.doRegister(uName, uPwd, uPhone, registerProgress);
     }
 
     /**
@@ -95,47 +109,6 @@ public class RegisterActivity extends BaseActivity {
         Pattern p = Pattern.compile("1[3-9]\\d{9}$");
         Matcher m = p.matcher(mobiles);
         return m.matches();
-    }
-
-    /**
-     * 注册请求
-     */
-    public void postRegister(String userName, String userPwd, String phone) {
-        OkUtil.post()
-                .url(Api.userRegister)
-                .addParam("username", userName)
-                .addParam("password", userPwd)
-                .addParam("phone", phone)
-                .setProgressDialog(registerProgress)
-                .execute(new ResultCallback<Result<UserInfo>>() {
-
-                    @Override
-                    public void onSuccess(Result<UserInfo> response) {
-                        String code = response.getCode();
-                        switch (code) {
-                            case "00000":
-                                showToast(R.string.toast_reg_success);
-                                UserInfo user = response.getData();
-                                SPUtil.build().putString(Constants.SP_USER_NAME, user.getUsername());
-                                onBackPressed();
-                                break;
-                            case "00105":
-                                showToast(R.string.toast_phone_being);
-                                break;
-                            case "00106":
-                                showToast(R.string.toast_username_being);
-                                break;
-                            default:
-                                showToast(R.string.toast_reg_error);
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast(R.string.toast_reg_error);
-                    }
-                });
     }
 
     @Override

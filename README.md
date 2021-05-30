@@ -9,6 +9,9 @@ Glide版本4.1.1，与之对应PhotoPicker版本0.9.12、glide-transformations�
 体验请直接点击下载打包版本[点击下载测试版](http://42.192.229.55/download/lingxi-test.apk)
 如果不是用于测试，欢迎来正式版一起玩耍[点击下载正式版](http://42.192.229.55/download/lingxi.apk)
 
+**[2021/05/30]**  
+1、采用viewmodel剥离网络请求，轻量化Activity/Fragment  
+
 **[2021/05/09]**  
 1、此版本升级不可逆，建议悉知所有变更项，如果只是服务不可以，可升级到2021/03/15版本  
 2、废弃ButterKnife，采用viewBinding，因此涉及代码较多，升级不可逆  

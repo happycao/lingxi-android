@@ -6,18 +6,14 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.library.view.LoadingDialog;
 import me.cl.lingxi.R;
-import me.cl.lingxi.common.config.Api;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.databinding.ResetpwdActivityBinding;
-import me.cl.lingxi.entity.UserInfo;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.UserViewModel;
 
 /**
  * 忘记密码重置
@@ -25,8 +21,8 @@ import okhttp3.Call;
 public class ResetPwdActivity extends BaseActivity {
 
     private ResetpwdActivityBinding mActivityBinding;
+    private UserViewModel mUserViewModel;
 
-    private Toolbar mToolbar;
     private EditText mUsername;
     private EditText mPhone;
     private EditText mPassword;
@@ -43,19 +39,36 @@ public class ResetPwdActivity extends BaseActivity {
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
         mUsername = mActivityBinding.username;
         mPassword = mActivityBinding.password;
         mDoPassword = mActivityBinding.doPassword;
         mPhone = mActivityBinding.phone;
 
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(toolbar, this)
                 .setTitle(R.string.title_bar_reset_pwd)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
                 .build();
 
         updateProgress = new LoadingDialog(this, R.string.dialog_loading_reset_wd);
+
+        initViewModel();
+    }
+
+    private void initViewModel() {
+        mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        mUserViewModel.getTipMessage().observe(this, tipMessage -> {
+            if (tipMessage.isRes()) {
+                showToast(tipMessage.getMsgId());
+            } else {
+                showToast(tipMessage.getMsgStr());
+            }
+        });
+        mUserViewModel.getUserInfo().observe(this, userInfo -> {
+            showToast(R.string.toast_reset_ped_success);
+            onBackPressed();
+        });
     }
 
     public void goUpdatePwd(View view) {
@@ -74,40 +87,8 @@ public class ResetPwdActivity extends BaseActivity {
             showToast(R.string.toast_again_error);
             return;
         }
-        postUpdatePwd(uName, uPwd, uPhone);
-    }
 
-    public void postUpdatePwd(String userName, String userPwd, String phone) {
-        OkUtil.post()
-                .url(Api.resetPassword)
-                .addParam("username", userName)
-                .addParam("password", userPwd)
-                .addParam("phone", phone)
-                .setProgressDialog(updateProgress)
-                .execute(new ResultCallback<Result<UserInfo>>() {
-
-                    @Override
-                    public void onSuccess(Result<UserInfo> response) {
-                        String code = response.getCode();
-                        switch (code) {
-                            case "00000":
-                                showToast(R.string.toast_reset_ped_success);
-                                onBackPressed();
-                                break;
-                            case "00104":
-                                showToast(R.string.toast_reset_pwd_user);
-                                break;
-                            default:
-                                showToast(R.string.toast_reset_pwd_error);
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast(R.string.toast_reset_pwd_error);
-                    }
-                });
+        mUserViewModel.doResetPwd(uName, uPwd, uPhone, updateProgress);
     }
 
     @Override

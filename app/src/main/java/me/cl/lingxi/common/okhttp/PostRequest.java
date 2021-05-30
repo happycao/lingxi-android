@@ -49,21 +49,21 @@ import okhttp3.ResponseBody;
 public class PostRequest {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final long LOAD_TIME = 1500;
+    private static final long LOAD_TIME = 1000;
 
     private String mUrl;
-    private Gson mGson;
-    private Handler mDelivery;
-    private OkHttpClient mOkHttpClient;
+    private final Gson mGson;
+    private final Handler mDelivery;
+    private final OkHttpClient mOkHttpClient;
 
     // 请求头
-    private LinkedHashMap<String, String> headers = new LinkedHashMap<>();
+    private final LinkedHashMap<String, String> headers = new LinkedHashMap<>();
     // 参数
-    private LinkedHashMap<String, String> params = new LinkedHashMap<>();
+    private final LinkedHashMap<String, String> params = new LinkedHashMap<>();
     // 文件
-    private LinkedHashMap<String, List<File>> fileParams = new LinkedHashMap<>();
+    private final LinkedHashMap<String, List<File>> fileParams = new LinkedHashMap<>();
     // url参数
-    private LinkedHashMap<String, List<String>> urlParams = new LinkedHashMap<>();
+    private final LinkedHashMap<String, List<String>> urlParams = new LinkedHashMap<>();
     // 是否包含文件
     private boolean isMultipart;
     // 是否拼接url参数

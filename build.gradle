@@ -6,7 +6,6 @@ buildscript {
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
         google()
-        jcenter()
         mavenCentral()
         maven {
             url "http://dl.bintray.com/lukaville/maven"
@@ -25,7 +24,6 @@ allprojects {
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/google' }
         maven { url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin' }
         google()
-        jcenter()
         mavenCentral()
         maven {
             url "http://dl.bintray.com/lukaville/maven"

@@ -60,6 +60,12 @@ public class RelevantAdapter extends RecyclerView.Adapter<RelevantAdapter.Releva
         return mList.size();
     }
 
+    public void setData(List<Relevant> data) {
+        mList.clear();
+        mList.addAll(data);
+        notifyDataSetChanged();
+    }
+
     public void updateData(List<Relevant> data) {
         mList.addAll(data);
         notifyDataSetChanged();

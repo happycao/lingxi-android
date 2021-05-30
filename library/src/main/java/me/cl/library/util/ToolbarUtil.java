@@ -2,14 +2,15 @@ package me.cl.library.util;
 
 import android.app.Activity;
 import android.os.Build;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.Toolbar;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.TextView;
 
 import me.cl.library.R;
 
@@ -27,8 +28,8 @@ public class ToolbarUtil {
     }
 
     public static class Builder {
-        private Toolbar mToolbar;
-        private Activity mActivity;
+        private final Toolbar mToolbar;
+        private final Activity mActivity;
         private String mTitle;
 
         public Builder(Toolbar toolbar, Activity activity) {

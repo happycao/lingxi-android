@@ -12,22 +12,18 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
-import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
+import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.util.FeedContentUtil;
-import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.databinding.PublishActivityBinding;
-import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.module.main.MainActivity;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.FeedViewModel;
 
 /**
  * 动态发布
@@ -35,10 +31,8 @@ import okhttp3.Call;
 public class ShareFeedActivity extends BaseActivity {
 
     private PublishActivityBinding mActivityBinding;
+    private FeedViewModel mFeedViewModel;
 
-    private AppCompatEditText mFeedInfo;
-
-    private String mUid;
     private final StringBuffer mInfo = new StringBuffer();
 
     @Override
@@ -53,6 +47,7 @@ public class ShareFeedActivity extends BaseActivity {
         Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
         RecyclerView recyclerView = mActivityBinding.recyclerView;
         LinearLayout llAction = mActivityBinding.llAction;
+        AppCompatEditText feedInfo = mActivityBinding.feedInfo;
 
         ToolbarUtil.init(toolbar, this)
                 .setTitle(R.string.share_text)
@@ -61,17 +56,15 @@ public class ShareFeedActivity extends BaseActivity {
                 .setMenu(R.menu.send_menu, new Toolbar.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_send:
-                                postSaveFeed();
-                                break;
+                        if (item.getItemId() == R.id.action_send) {
+                            setLoading();
+                            mFeedViewModel.saveFeed(mInfo.toString(), null);
                         }
                         return false;
                     }
                 })
                 .build();
 
-        mUid = SPUtil.build().getString(Constants.SP_USER_ID);
         setLoading("发布中...");
         llAction.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
@@ -106,40 +99,35 @@ public class ShareFeedActivity extends BaseActivity {
         }
 
         mInfo.append(text);
-        mFeedInfo.setEnabled(false);
-        mFeedInfo.setText(FeedContentUtil.getFeedText(mInfo.toString(), mFeedInfo));
+        feedInfo.setEnabled(false);
+        feedInfo.setText(FeedContentUtil.getFeedText(mInfo.toString(), feedInfo));
 
         // 预留
         int i = text.indexOf("http");
         String url = text.substring(i);
         Log.d(TAG, "init: title" + title);
         Log.d(TAG, "init: url" + url);
+
+        initViewModel();
     }
 
-    // 发布动态
-    private void postSaveFeed() {
-        OkUtil.post()
-                .url(Api.saveFeed)
-                .addParam("userId", mUid)
-                .addParam("feedInfo", mInfo.toString())
-                .execute(new ResultCallback<Result<Feed>>() {
-                    @Override
-                    public void onSuccess(Result<Feed> response) {
-                        dismissLoading();
-                        String code = response.getCode();
-                        if (!"00000".equals(code)) {
-                            showToast("发布失败");
-                            return;
-                        }
-                        showSuccess();
-                    }
+    private void initViewModel() {
+        mFeedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
+        mFeedViewModel.getTipMessage().observe(this, this::showTip);
+        mFeedViewModel.getFeed().observe(this, feed -> {
+            dismissLoading();
+            showSuccess();
+        });
+    }
 
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        dismissLoading();
-                        showToast("发布失败");
-                    }
-                });
+    // 提示
+    private void showTip(TipMessage tipMessage) {
+        dismissLoading();
+        if (tipMessage.isRes()) {
+            showToast(tipMessage.getMsgId());
+        } else {
+            showToast(tipMessage.getMsgStr());
+        }
     }
 
     // 发布成功

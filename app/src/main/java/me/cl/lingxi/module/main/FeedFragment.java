@@ -2,14 +2,15 @@ package me.cl.lingxi.module.main;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,25 +24,19 @@ import me.cl.library.loadmore.LoadMoreAdapter;
 import me.cl.library.loadmore.OnLoadMoreListener;
 import me.cl.library.photo.PhotoBrowser;
 import me.cl.library.recycle.ItemAnimator;
-import me.cl.library.recycle.ItemDecoration;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.FeedAdapter;
-import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.databinding.FeedFragmentBinding;
 import me.cl.lingxi.entity.Feed;
 import me.cl.lingxi.entity.Like;
-import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.User;
 import me.cl.lingxi.module.feed.FeedActivity;
 import me.cl.lingxi.module.feed.PublishActivity;
 import me.cl.lingxi.module.member.UserActivity;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.FeedViewModel;
 
 /**
  * 圈子动态
@@ -51,6 +46,7 @@ public class FeedFragment extends BaseFragment {
     private static final String FEED_TYPE = "feed_type";
 
     private FeedFragmentBinding mFragmentBinding;
+    private FeedViewModel mFeedViewModel;
 
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
@@ -59,16 +55,13 @@ public class FeedFragment extends BaseFragment {
     private String saveUid;
     private String saveUName;
 
-    private List<Feed> mList = new ArrayList<>();
+    private final List<Feed> mList = new ArrayList<>();
     private ConcatAdapter mConcatAdapter;
     private FeedAdapter mFeedAdapter;
-    private LoadMoreAdapter mLoadMoreAdapter = new LoadMoreAdapter();
+    private final LoadMoreAdapter mLoadMoreAdapter = new LoadMoreAdapter();
 
-    private int mPage = 1;
-    private int mCount = 10;
-    private final int MOD_REFRESH = 1;
-    private final int MOD_LOADING = 2;
-    private int RefreshMODE = 0;
+    private int mPageNum = 1;
+    private static final int PAGE_SIZE = 10;
 
     public FeedFragment() {
 
@@ -91,7 +84,7 @@ public class FeedFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mFragmentBinding = FeedFragmentBinding.inflate(inflater, container, false);
         init();
         return mFragmentBinding.getRoot();
@@ -119,35 +112,28 @@ public class FeedFragment extends BaseFragment {
         saveUid = SPUtil.build().getString(Constants.SP_USER_ID);
         saveUName = SPUtil.build().getString(Constants.SP_USER_NAME);
 
+        initRecyclerView();
+        initEvent();
+        initViewModel();
+
+        onRefresh();
+    }
+
+    private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new ItemAnimator());
-        ItemDecoration itemDecoration = new ItemDecoration(ItemDecoration.VERTICAL, 10, Color.parseColor("#f2f2f2"));
-        // 隐藏最后一个item的分割线
-        itemDecoration.setGoneLast(true);
-        // mRecyclerView.addItemDecoration(itemDecoration);
         mFeedAdapter = new FeedAdapter(mList);
         mConcatAdapter = new ConcatAdapter(mFeedAdapter, mLoadMoreAdapter);
         mRecyclerView.setAdapter(mConcatAdapter);
-
-        initEvent();
-
-        getFeedList(mPage, mCount);
     }
 
-    //初始化事件
+    // 初始化事件
     private void initEvent() {
-        //刷新
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                RefreshMODE = MOD_REFRESH;
-                mPage = 1;
-                getFeedList(mPage, mCount);
-            }
-        });
+        // 刷新
+        mSwipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
-        //item点击
+        // item点击
         mFeedAdapter.setOnItemListener(new FeedAdapter.OnItemListener() {
             @SuppressLint("NonConstantResourceId")
             @Override
@@ -163,7 +149,8 @@ public class FeedFragment extends BaseFragment {
                     case R.id.feed_like_layout:
                         if (feed.isLike()) return;
                         // 未点赞点赞
-                        postAddLike(feed, position);
+                        feed.setPosition(position);
+                        mFeedViewModel.doLike(feed);
                         break;
                 }
             }
@@ -177,23 +164,66 @@ public class FeedFragment extends BaseFragment {
             }
         });
 
-        //滑动监听
+        // 滑动监听
         mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
 
             @Override
             public void onLoadMore() {
                 if (mFeedAdapter.getItemCount() < 4) return;
 
-                RefreshMODE = MOD_LOADING;
                 mLoadMoreAdapter.loading();
 
                 mRecyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getFeedList(mPage, mCount);
+                        mFeedViewModel.doPageFeed(mPageNum, PAGE_SIZE);
                     }
-                },1000);
+                },500);
             }
+        });
+    }
+
+    private void initViewModel() {
+        mFeedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
+        mFeedViewModel.getTipMessage().observe(requireActivity(), tipMessage -> {
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+            if (tipMessage.isRes()) {
+                showToast(tipMessage.getMsgId());
+            } else {
+                showToast(tipMessage.getMsgStr());
+            }
+            mLoadMoreAdapter.loadEnd();
+        });
+        mFeedViewModel.getFeedPage().observe(requireActivity(), feedPageInfo -> {
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+            Integer pageNum = feedPageInfo.getPageNum();
+            Integer size = feedPageInfo.getSize();
+            if (size == 0) {
+                mLoadMoreAdapter.loadNone();
+                return;
+            }
+            mPageNum = pageNum + 1;
+            List<Feed> list = feedPageInfo.getList();
+            if (pageNum == 1) {
+                setData(list);
+            } else {
+                updateData(list);
+            }
+            mLoadMoreAdapter.loadEnd();
+        });
+        mFeedViewModel.getFeed().observe(requireActivity(), feed -> {
+            List<Like> likeList = new ArrayList<>(feed.getLikeList());
+            Like like = new Like();
+            like.setUserId(saveUid);
+            like.setUsername(saveUName);
+            likeList.add(like);
+            feed.setLikeList(likeList);
+            feed.setLike(true);
+            mFeedAdapter.updateItem(feed, feed.getPosition());
         });
     }
 
@@ -212,82 +242,6 @@ public class FeedFragment extends BaseFragment {
         startActivityForResult(intent, Constants.ACTIVITY_MOOD);
     }
 
-    // 点赞
-    private void postAddLike(final Feed feed, final int position) {
-        OkUtil.post()
-                .url(Api.saveAction)
-                .addParam("feedId", feed.getId())
-                .addParam("userId", saveUid)
-                .addParam("type", "0")
-                .execute(new ResultCallback<Result>() {
-                    @Override
-                    public void onSuccess(Result response) {
-                        String code = response.getCode();
-                        if (!"00000".equals(code)) {
-                            showToast("点赞失败");
-                            return;
-                        }
-                        List<Like> likeList = new ArrayList<>(feed.getLikeList());
-                        Like like = new Like();
-                        like.setUserId(saveUid);
-                        like.setUsername(saveUName);
-                        likeList.add(like);
-                        feed.setLikeList(likeList);
-                        feed.setLike(true);
-                        mFeedAdapter.updateItem(feed, position);
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast("点赞失败");
-                    }
-                });
-    }
-
-    // 获取动态列表
-    private void getFeedList(int pageNum, int pageSize) {
-        if (!mSwipeRefreshLayout.isRefreshing() && RefreshMODE == MOD_REFRESH) mSwipeRefreshLayout.setRefreshing(true);
-        String uid = SPUtil.build().getString(Constants.SP_USER_ID);
-        OkUtil.post()
-                .url(Api.pageFeed)
-                .addParam("userId", uid)
-                .addParam("pageNum", pageNum)
-                .addParam("pageSize", pageSize)
-                .execute(new ResultCallback<Result<PageInfo<Feed>>>() {
-                    @Override
-                    public void onSuccess(Result<PageInfo<Feed>> response) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        String code = response.getCode();
-                        if (!"00000".equals(code)) {
-                            mLoadMoreAdapter.loadNone();
-                            showToast(R.string.toast_get_feed_error);
-                            return;
-                        }
-                        PageInfo<Feed> page = response.getData();
-                        Integer size = page.getSize();
-                        if (size == 0) {
-                            mLoadMoreAdapter.loadNone();
-                            return;
-                        }
-                        mPage++;
-                        List<Feed> list = page.getList();
-                        if (RefreshMODE == MOD_LOADING) {
-                            updateData(list);
-                        } else {
-                            setData(list);
-                        }
-                        mLoadMoreAdapter.loadEnd();
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        mLoadMoreAdapter.loadNone();
-                        showToast(R.string.toast_get_feed_error);
-                    }
-                });
-    }
-
     // 设置数据
     private void setData(List<Feed> data){
         mFeedAdapter.setData(data);
@@ -300,9 +254,11 @@ public class FeedFragment extends BaseFragment {
 
     // 刷新数据
     private void onRefresh(){
-        RefreshMODE = MOD_REFRESH;
-        mPage = 1;
-        getFeedList(mPage, mCount);
+        mPageNum = 1;
+        if (!mSwipeRefreshLayout.isRefreshing()) {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
+        mFeedViewModel.doPageFeed(mPageNum, PAGE_SIZE);
     }
 
     @Override

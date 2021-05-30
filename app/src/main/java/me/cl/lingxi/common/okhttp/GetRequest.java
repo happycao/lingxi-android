@@ -3,6 +3,7 @@ package me.cl.lingxi.common.okhttp;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
@@ -177,7 +178,7 @@ public class GetRequest {
     /**
      * 异步请求
      */
-    public void execute(@NonNull final ResultCallback callback) {
+    public <T> void execute(@NonNull final ResultCallback<T> callback) {
         loadShow();
         mOkHttpClient.newCall(getRequest()).enqueue(new Callback() {
             @Override
@@ -191,7 +192,7 @@ public class GetRequest {
                     ResponseBody body = response.body();
                     if (body != null) {
                         if (Objects.equals(String.class.getGenericSuperclass(), callback.getType())) {
-                            setOnSuccess(body.string(), callback);
+                            setOnSuccess((T) body.string(), callback);
                         } else {
                             setOnSuccess(mGson.fromJson(body.charStream(), callback.getType()), callback);
                         }
@@ -225,7 +226,7 @@ public class GetRequest {
     /**
      * 设置请求成功回调
      */
-    private void setOnSuccess(final Object object, final ResultCallback callback) {
+    private <T> void setOnSuccess(final T object, final ResultCallback<T> callback) {
         mDelivery.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -238,7 +239,7 @@ public class GetRequest {
     /**
      * 设置请求失败回调
      */
-    private void setOnError(final Call call, final Exception e, final ResultCallback callback) {
+    private <T> void setOnError(final Call call, final Exception e, final ResultCallback<T> callback) {
         mDelivery.postDelayed(new Runnable() {
             @Override
             public void run() {

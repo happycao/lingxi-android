@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 import java.util.List;
@@ -32,6 +33,8 @@ import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.databinding.PersonalInfoActivityBinding;
 import me.cl.lingxi.dialog.EditTextDialog;
 import me.cl.lingxi.entity.UserInfo;
+import me.cl.lingxi.viewmodel.UploadViewModel;
+import me.cl.lingxi.viewmodel.UserViewModel;
 import me.iwf.photopicker.PhotoPicker;
 import me.iwf.photopicker.PhotoPreview;
 import okhttp3.Call;
@@ -44,6 +47,8 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     private static final int PHOTO_REQUEST_CUT = 456;
 
     private PersonalInfoActivityBinding mActivityBinding;
+    private UploadViewModel mUploadViewModel;
+    private UserViewModel mUserViewModel;
 
     private Toolbar mToolbar;
     private ImageView mPersonImg;
@@ -99,7 +104,31 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         mUserId = SPUtil.build().getString(Constants.SP_USER_ID);
         saveName = SPUtil.build().getString(Constants.SP_USER_NAME);
         mPersonName.setText(saveName);
-        postUserInfo();
+
+        initViewModel();
+        mUserViewModel.doUserInfo();
+    }
+
+    private void initViewModel() {
+        ViewModelProvider viewModelProvider = new ViewModelProvider(this);
+        mUploadViewModel = viewModelProvider.get(UploadViewModel.class);
+        mUserViewModel = viewModelProvider.get(UserViewModel.class);
+        mUploadViewModel.getPhoto().observe(this, photo -> {
+            if (TextUtils.isEmpty(photo)) {
+                showUserImageUpdateError();
+            } else {
+                avatar = photo;
+                isUpdateAvatar = true;
+                postUpdateUserInfo();
+            }
+        });
+        mUserViewModel.getUserInfo().observe(this, userInfo -> {
+            if (userInfo == null) {
+                onBackPressed();
+            } else {
+                setUserInfo(userInfo);
+            }
+        });
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -166,31 +195,6 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     }
 
     /**
-     * 获取用户信息
-     */
-    private void postUserInfo() {
-        OkUtil.post()
-                .url(Api.userInfo)
-                .addParam("id", mUserId)
-                .execute(new ResultCallback<Result<UserInfo>>() {
-
-                    @Override
-                    public void onSuccess(Result<UserInfo> response) {
-                        if ("00000".equals(response.getCode())) {
-                            setUserInfo(response.getData());
-                        } else {
-                            onBackPressed();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        onBackPressed();
-                    }
-                });
-    }
-
-    /**
      * 上传用户头像
      */
     private void postUserImage() {
@@ -199,28 +203,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             showUserImageUpdateError();
             return;
         }
-        OkUtil.post()
-                .url(Api.uploadUserImage)
-                .addFile("file", file)
-                .execute(new ResultCallback<Result<List<String>>>() {
-                    @Override
-                    public void onSuccess(Result<List<String>> response) {
-                        String code = response.getCode();
-                        List<String> photos = response.getData();
-                        if (!"00000".equals(code) || photos == null || photos.size() == 0) {
-                            showUserImageUpdateError();
-                            return;
-                        }
-                        avatar = photos.get(0);
-                        isUpdateAvatar = true;
-                        postUpdateUserInfo();
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showUserImageUpdateError();
-                    }
-                });
+        mUploadViewModel.uploadUserImage(file);
     }
 
     /**

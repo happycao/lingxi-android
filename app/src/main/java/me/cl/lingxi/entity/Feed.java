@@ -1,5 +1,7 @@
 package me.cl.lingxi.entity;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -21,6 +23,8 @@ public class Feed implements Serializable {
     private List<String> photoList;
     private String createTime;
     private String updateTime;
+    // 索引
+    private int position;
 
     public String getId() {
         return id;
@@ -102,6 +106,15 @@ public class Feed implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return "Feed{" +

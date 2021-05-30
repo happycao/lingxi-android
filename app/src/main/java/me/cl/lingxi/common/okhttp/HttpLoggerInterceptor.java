@@ -4,10 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import me.cl.lingxi.BuildConfig;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -16,17 +18,16 @@ import okhttp3.ResponseBody;
 import okhttp3.internal.http.HttpHeaders;
 
 /**
- * author : Bafs
+ * @author : happyc
  * e-mail : bafs.jy@live.com
  * time   : 2018/04/29
  * desc   : 请求日志log
  * version: 1.0
  */
-
 public class HttpLoggerInterceptor implements Interceptor {
 
-    private static final Charset UTF8 = Charset.forName("UTF-8");
-    private Logger logger;
+    private static final Charset UTF8 = StandardCharsets.UTF_8;
+    private final Logger logger;
 
     public HttpLoggerInterceptor(String tag) {
         logger = Logger.getLogger(tag);
@@ -61,25 +62,25 @@ public class HttpLoggerInterceptor implements Interceptor {
         ResponseBody responseBody = clone.body();
 
         try {
-            log("<-- " + clone.code() + ' ' + clone.message() + ' ' + clone.request().url() + " (" + tookMs + "ms）");
-            if (HttpHeaders.hasBody(clone)) {
+            log("┌── " + clone.code() + ' ' + clone.message() + ' ' + clone.request().url() + " (" + tookMs + "ms）");
+            if (HttpHeaders.hasBody(clone) && BuildConfig.DEBUG) {
                 if (responseBody == null) return response;
 
                 if (isPlaintext(responseBody.contentType())) {
                     byte[] bytes = toByteArray(responseBody.byteStream());
                     MediaType contentType = responseBody.contentType();
                     String body = new String(bytes, getCharset(contentType));
-                    log("\tresponse:" + body);
+                    log("│   response:" + body);
                     responseBody = ResponseBody.create(responseBody.contentType(), bytes);
                     return response.newBuilder().body(responseBody).build();
                 } else {
-                    log("\tresponse: maybe [binary body], omitted!");
+                    log("│   response: maybe [binary body], omitted!");
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log("│   response:" + e.getMessage());
         } finally {
-            log("<-- END HTTP");
+            log("└── END HTTP");
         }
         return response;
     }

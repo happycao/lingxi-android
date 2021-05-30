@@ -8,21 +8,18 @@ import android.view.MenuItem;
 
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
-import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
-import me.cl.lingxi.common.result.ResultConstant;
+import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.common.util.Utils;
 import me.cl.lingxi.databinding.FutureActivityBinding;
 import me.cl.lingxi.dialog.FutureDialog;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.FutureViewModel;
 
 /**
  * 写给未来
@@ -30,8 +27,8 @@ import okhttp3.Call;
 public class FutureActivity extends BaseActivity {
 
     private FutureActivityBinding mActivityBinding;
+    private FutureViewModel mFutureViewModel;
 
-    private Toolbar mToolbar;
     private AppCompatEditText mFutureInfo;
 
     private String futureInfo;
@@ -58,30 +55,33 @@ public class FutureActivity extends BaseActivity {
      * 初始化
      */
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
         mFutureInfo = mActivityBinding.futureInfo;
 
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(toolbar, this)
                 .setTitle(R.string.title_bar_future)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
                 .setMenu(R.menu.future_menu, new Toolbar.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_send:
-                                if (TextUtils.isEmpty(futureInfo)) {
-                                    showToast("没有写下任何给未来的话哟~");
-                                } else {
-                                    showSendDialog();
-                                }
-                                break;
+                        if (item.getItemId() == R.id.action_send) {
+                            if (TextUtils.isEmpty(futureInfo)) {
+                                showToast("没有写下任何给未来的话哟~");
+                            } else {
+                                showSendDialog();
+                            }
                         }
                         return false;
                     }
                 })
                 .build();
 
+        initListener();
+        initViewModel();
+    }
+
+    private void initListener() {
         // 输入监听
         mFutureInfo.addTextChangedListener(new TextWatcher() {
             @Override
@@ -101,6 +101,25 @@ public class FutureActivity extends BaseActivity {
         });
     }
 
+    private void initViewModel() {
+        mFutureViewModel = new ViewModelProvider(this).get(FutureViewModel.class);
+        mFutureViewModel.getTipMessage().observe(this, this::showTip);
+        mFutureViewModel.getSuccess().observe(this, success -> {
+            showToast("信件进入时空隧道，等候传达");
+            SPUtil.build().putString(Constants.SP_FUTURE_INFO, null);
+            onBackPressed();
+        });
+    }
+
+    // 提示
+    private void showTip(TipMessage tipMessage) {
+        if (tipMessage.isRes()) {
+            showToast(tipMessage.getMsgId());
+        } else {
+            showToast(tipMessage.getMsgStr());
+        }
+    }
+
     /**
      * 发送配置Dialog
      */
@@ -117,30 +136,6 @@ public class FutureActivity extends BaseActivity {
      * 提交保存信息
      */
     private void postSaveFuture(int type, String mail, Integer startNum, Integer endNum) {
-        OkUtil.post()
-                .url(Api.saveFuture)
-                .addParam("type", type)
-                .addParam("mail", mail)
-                .addParam("futureInfo", futureInfo)
-                .addParam("startNum", startNum)
-                .addParam("endNum", endNum)
-                .execute(new ResultCallback<Result>() {
-                    @Override
-                    public void onSuccess(Result response) {
-                        String code = response.getCode();
-                        if (ResultConstant.CODE_SUCCESS.equals(code)) {
-                            showToast("信件进入时空隧道，等候传达");
-                            SPUtil.build().putString(Constants.SP_FUTURE_INFO, null);
-                            onBackPressed();
-                        } else {
-                            showToast("信件偏离预定轨道，请调整重试");
-                        }
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast("信件偏离预定轨道，请调整重试");
-                    }
-                });
+        mFutureViewModel.saveFuture(type, mail, futureInfo, startNum, endNum);
     }
 }

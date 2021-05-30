@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,32 +20,28 @@ import me.cl.library.view.LoadingDialog;
 import me.cl.library.view.MoeToast;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.RelevantAdapter;
-import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
+import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.okhttp.OkUtil;
-import me.cl.lingxi.common.okhttp.ResultCallback;
-import me.cl.lingxi.common.result.Result;
-import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.databinding.RelevantActivityBinding;
 import me.cl.lingxi.entity.Feed;
-import me.cl.lingxi.entity.PageInfo;
 import me.cl.lingxi.entity.Relevant;
 import me.cl.lingxi.module.feed.FeedActivity;
-import okhttp3.Call;
+import me.cl.lingxi.viewmodel.FeedViewModel;
 
 /**
  * 与我相关 && 我的回复
+ * TODO 未做加载更多，需要后续补充
  */
 public class RelevantActivity extends BaseActivity {
 
     private RelevantActivityBinding mActivityBinding;
+    private FeedViewModel mFeedViewModel;
 
-    private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
 
     private RelevantAdapter mAdapter;
     private LoadingDialog loadingProgress;
-    private String saveId;
     private final List<Relevant> mRelevantList = new ArrayList<>();
 
     @Override
@@ -56,7 +53,7 @@ public class RelevantActivity extends BaseActivity {
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
+        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
         mRecyclerView = mActivityBinding.includeRecyclerView.recyclerView;
 
         int x = (int) (Math.random() * 4) + 1;
@@ -86,15 +83,25 @@ public class RelevantActivity extends BaseActivity {
                 break;
         }
 
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(toolbar, this)
                 .setTitle(title)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
                 .build();
 
-        saveId = SPUtil.build().getString(Constants.SP_USER_ID);
         loadingProgress = new LoadingDialog(this, R.string.dialog_loading);
 
+        initRecyclerView();
+        initViewModel();
+        if (isMine) {
+            mFeedViewModel.pageMineReply(1, 20, loadingProgress);
+        } else {
+            mFeedViewModel.pageRelevant(1, 20, loadingProgress);
+            mFeedViewModel.updateUnread();
+        }
+    }
+
+    private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mAdapter = new RelevantAdapter(mRelevantList);
@@ -113,70 +120,35 @@ public class RelevantActivity extends BaseActivity {
                 }
             }
         });
+    }
 
-        if (isMine) {
-            getRelevantList(Api.mineReply);
+    private void initViewModel() {
+        mFeedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
+        mFeedViewModel.getTipMessage().observe(this, this::showTip);
+        mFeedViewModel.getRelevantPage().observe(this, relevantPageInfo -> {
+            dismissLoading();
+            setData(relevantPageInfo.getList());
+        });
+    }
+
+    // 提示
+    private void showTip(TipMessage tipMessage) {
+        if (tipMessage.isRes()) {
+            showToast(tipMessage.getMsgId());
         } else {
-            getRelevantList(Api.relevant);
-            updateUnread();
+            showToast(tipMessage.getMsgStr());
         }
     }
 
-    /**
-     * 更新未读条数
-     */
-    public void updateUnread() {
-        String userId = SPUtil.build().getString(Constants.SP_USER_ID);
-        OkUtil.post()
-                .url(Api.updateUnread)
-                .addParam("userId", userId)
-                .execute(new ResultCallback<Result<Integer>>() {
-                    @Override
-                    public void onSuccess(Result<Integer> response) {
-                        Constants.isRead = true;
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-
-                    }
-                });
-    }
-
-    // 请求与我相关
-    public void getRelevantList(String url) {
-        Integer pageNum = 1;
-        Integer pageSize = 20;
-        OkUtil.post()
-                .url(url)
-                .addParam("userId", saveId)
-                .addParam("pageNum", pageNum)
-                .addParam("pageSize", pageSize)
-                .setLoadDelay()
-                .setProgressDialog(loadingProgress)
-                .execute(new ResultCallback<Result<PageInfo<Relevant>>>() {
-                    @Override
-                    public void onSuccess(Result<PageInfo<Relevant>> response) {
-                        String code = response.getCode();
-                        if (!"00000".equals(code)) {
-                            showToast("加载失败，下拉重新加载");
-                            return;
-                        }
-                        updateData(response.getData().getList());
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        showToast("加载失败，下拉重新加载");
-                    }
-                });
+    private void setData(List<Relevant> relevantList) {
+        mAdapter.setData(relevantList);
     }
 
     private void updateData(List<Relevant> relevantList) {
         mAdapter.updateData(relevantList);
     }
 
-    //前往详情页
+    // 前往详情页
     private void gotoFeed(Feed feed) {
         Intent intent = new Intent(RelevantActivity.this, FeedActivity.class);
         Bundle bundle = new Bundle();

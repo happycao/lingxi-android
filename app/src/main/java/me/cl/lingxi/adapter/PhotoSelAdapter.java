@@ -25,6 +25,7 @@ import me.cl.lingxi.databinding.PublishPhotoRecycleItemBinding;
 public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoViewHolder> {
 
     public static final String mPhotoAdd = "file:///android_asset/icon_photo_add.png";
+    private boolean mShowAdd = false;
     private List<String> mPhotos;
 
     private OnItemClickListener mOnItemClickListener;
@@ -38,8 +39,15 @@ public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoV
         void onDelete(int position);
     }
 
+    public PhotoSelAdapter(List<String> photos) {
+        this.mPhotos = photos;
+        this.mShowAdd = false;
+        if (mShowAdd && mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
+    }
+
     public PhotoSelAdapter(List<String> photos, boolean showAdd) {
         this.mPhotos = photos;
+        this.mShowAdd = showAdd;
         if (showAdd && mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
     }
 
@@ -60,9 +68,9 @@ public class PhotoSelAdapter extends RecyclerView.Adapter<PhotoSelAdapter.PhotoV
         return mPhotos.size();
     }
 
-    public void setPhotos(List<String> photos, boolean showAdd) {
+    public void setPhotos(List<String> photos) {
         this.mPhotos = photos;
-        if (showAdd && mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
+        if (mShowAdd && mPhotos.size() < 6 && !mPhotos.contains(mPhotoAdd)) mPhotos.add(mPhotoAdd);
         notifyDataSetChanged();
     }
 
