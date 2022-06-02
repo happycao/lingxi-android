@@ -8,7 +8,7 @@
     tools:context=".module.member.ResetPwdActivity" >
 
     <include
-        android:id="@+id/include_toolbar"
+        android:id="@+id/include_tb"
         layout="@layout/include_toolbar" />
 
     <LinearLayout
@@ -17,7 +17,7 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_16" >
 
-        <EditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="45dp"
@@ -30,12 +30,12 @@
             android:lines="1"
             android:textSize="16sp" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#dcdcdc" />
 
-        <EditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/phone"
             android:layout_width="match_parent"
             android:layout_height="45dp"
@@ -50,12 +50,12 @@
             android:textSize="16sp"
             tools:ignore="TextFields" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#dcdcdc" />
 
-        <EditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="45dp"
@@ -69,12 +69,12 @@
             android:lines="1"
             android:textSize="16sp" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#dcdcdc" />
 
-        <EditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/do_password"
             android:layout_width="match_parent"
             android:layout_height="45dp"
@@ -88,12 +88,12 @@
             android:lines="1"
             android:textSize="16sp" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#dcdcdc" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             style="@style/AppTheme.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

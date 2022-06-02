@@ -6,11 +6,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
-
-import java.util.Objects;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
@@ -32,11 +28,8 @@ public class LoginActivity extends BaseActivity {
 
     private static final String TAG = "LoginActivity";
 
-    private LoginActivityBinding mActivityBinding;
+    private LoginActivityBinding mBinding;
     private UserViewModel mUserViewModel;
-
-    private AppCompatEditText mUsername;
-    private AppCompatEditText mPassword;
 
     private long mExitTime = 0;
     private LoadingDialog loginProgress;
@@ -44,17 +37,13 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = LoginActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = LoginActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
-        mUsername = mActivityBinding.username;
-        mPassword = mActivityBinding.password;
-
-        ToolbarUtil.init(toolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(R.string.title_bar_login)
                 .setTitleCenter()
                 .build();
@@ -65,22 +54,22 @@ public class LoginActivity extends BaseActivity {
         if (x == 5) MoeToast.makeText(this, R.string.egg_from_where);
 
         String saveName = SPUtil.build().getString(Constants.SP_USER_NAME);
-        mUsername.setText(saveName);
-        mUsername.setSelection(saveName.length());
+        mBinding.username.setText(saveName);
+        mBinding.username.setSelection(saveName.length());
 
         initViewModel();
     }
 
     private void initViewModel() {
         mUserViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        mUserViewModel.getTipMessage().observe(this, tipMessage -> {
+        mUserViewModel.mTipMessage.observe(this, tipMessage -> {
             if (tipMessage.isRes()) {
                 showToast(tipMessage.getMsgId());
             } else {
                 showToast(tipMessage.getMsgStr());
             }
         });
-        mUserViewModel.getUserToken().observe(this, userToken -> {
+        mUserViewModel.mUserToken.observe(this, userToken -> {
             SPUtil.build().putBoolean(Constants.SP_BEEN_LOGIN, true);
             SPUtil.build().putString(Constants.SP_USER_ID, userToken.getId());
             SPUtil.build().putString(Constants.SP_USER_NAME, userToken.getUsername());
@@ -91,8 +80,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     public void login(View view) {
-        String username = Objects.requireNonNull(mUsername.getText()).toString().trim();
-        String password = Objects.requireNonNull(mPassword.getText()).toString().trim();
+        String username = mBinding.username.getText().toString().trim();
+        String password = mBinding.password.getText().toString().trim();
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             showToast(R.string.toast_login_null);
             return;

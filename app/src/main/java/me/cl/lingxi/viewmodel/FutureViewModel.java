@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Api;
-import me.cl.lingxi.common.model.TipMessage;
+import me.cl.library.model.TipMessage;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
@@ -23,9 +23,9 @@ import okhttp3.Call;
  */
 public class FutureViewModel extends ViewModel {
 
-    private final MutableLiveData<TipMessage> mTipMessage;
-    private final MutableLiveData<PageInfo<Future>> mFutures;
-    private final MutableLiveData<Boolean> mSuccess;
+    public final MutableLiveData<TipMessage> mTipMessage;
+    public final MutableLiveData<PageInfo<Future>> mFutures;
+    public final MutableLiveData<Boolean> mSuccess;
 
     public FutureViewModel() {
         mTipMessage = new MutableLiveData<>();

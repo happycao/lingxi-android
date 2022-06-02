@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.search;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -7,44 +8,60 @@ import android.view.MenuItem;
 
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import java.util.Collections;
+import java.util.List;
 
 import me.cl.library.base.BaseActivity;
+import me.cl.library.recycle.ItemAnimator;
+import me.cl.library.recycle.ItemDecoration;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
+import me.cl.lingxi.adapter.UserInfoAdapter;
 import me.cl.lingxi.databinding.SearchActivityBinding;
+import me.cl.lingxi.entity.User;
+import me.cl.lingxi.module.member.UserActivity;
+import me.cl.lingxi.viewmodel.UserViewModel;
 
 public class SearchActivity extends BaseActivity {
 
-    private SearchActivityBinding mActivityBinding;
-
-    private Toolbar mToolbar;
-    private RecyclerView mRecyclerView;
+    private SearchActivityBinding mBinding;
+    private UserViewModel mUserViewModel;
     private SearchView mSearchView;
+    private UserInfoAdapter mUserInfoAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = SearchActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = SearchActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        mToolbar = mActivityBinding.toolbar;
-        mRecyclerView = mActivityBinding.recyclerView;
-
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(mBinding.toolbar, this)
                 .setMenu(R.menu.search_view_menu, null)
                 .setBack()
                 .build();
-        Menu menu = mToolbar.getMenu();
+        Menu menu = mBinding.toolbar.getMenu();
         MenuItem searchItem = menu.findItem(R.id.action_search);
         mSearchView = (SearchView) searchItem.getActionView();
+        initViewModel();
         initSearchView();
         initRecyclerView();
         initData();
+    }
+
+    private void initViewModel() {
+        ViewModelProvider viewModelProvider = new ViewModelProvider(this);
+        mUserViewModel = viewModelProvider.get(UserViewModel.class);
+        mUserViewModel.mTipMessage.observe(this, this::showTip);
+        mUserViewModel.mUsers.observe(this, userPageInfo -> {
+            List<User> users = userPageInfo.getList();
+            mUserInfoAdapter.setData(users);
+        });
     }
 
     private void initSearchView() {
@@ -60,7 +77,7 @@ public class SearchActivity extends BaseActivity {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                showToast(R.string.toast_feature_dev);
+                mUserViewModel.queryUser(query, 1, 20);
                 return true;
             }
 
@@ -75,7 +92,15 @@ public class SearchActivity extends BaseActivity {
      * 初始化RecyclerView
      */
     private void initRecyclerView() {
-
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mBinding.recyclerView.setLayoutManager(layoutManager);
+        mBinding.recyclerView.setItemAnimator(new ItemAnimator());
+        ItemDecoration itemDecoration = new ItemDecoration(ItemDecoration.VERTICAL, 2, Color.parseColor("#f2f2f2"));
+        // 隐藏最后一个item的分割线
+        itemDecoration.setGoneLast(true);
+        mUserInfoAdapter = new UserInfoAdapter(Collections.emptyList());
+        mBinding.recyclerView.setAdapter(mUserInfoAdapter);
+        mUserInfoAdapter.setOnItemListener((view, item) -> UserActivity.gotoUser(SearchActivity.this, item));
     }
 
     private void initData() {

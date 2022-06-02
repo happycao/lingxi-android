@@ -1,12 +1,11 @@
 package me.cl.lingxi.viewmodel;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Api;
-import me.cl.lingxi.common.model.TipMessage;
+import me.cl.library.model.TipMessage;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
@@ -23,20 +22,12 @@ import okhttp3.Call;
  */
 public class TopicViewModel extends ViewModel {
 
-    private final MutableLiveData<TipMessage> mTipMessage;
-    private final MutableLiveData<PageInfo<Topic>> mTopics;
+    public final MutableLiveData<TipMessage> mTipMessage;
+    public final MutableLiveData<PageInfo<Topic>> mTopics;
 
     public TopicViewModel() {
         mTipMessage = new MutableLiveData<>();
         mTopics = new MutableLiveData<>();
-    }
-
-    public LiveData<TipMessage> getTipMessage() {
-        return mTipMessage;
-    }
-
-    public LiveData<PageInfo<Topic>> getTopics() {
-        return mTopics;
     }
 
     /**

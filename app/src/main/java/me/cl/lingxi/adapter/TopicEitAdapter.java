@@ -61,7 +61,7 @@ public class TopicEitAdapter extends RecyclerView.Adapter<TopicEitAdapter.ViewHo
     }
 
     public interface OnItemListener {
-        void onItemClick(View view, Topic future);
+        void onItemClick(View view, Topic item);
     }
 
     public void setOnItemListener(OnItemListener onItemListener) {

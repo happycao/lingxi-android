@@ -10,11 +10,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 
@@ -34,14 +31,7 @@ import okhttp3.Call;
 
 public class HomeFragment extends BaseFragment {
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ImageView mRandomImage;
-    private TextView mImageSource;
-    private TextView mHitokotoInfo;
-    private TextView mHitokotoAuthor;
-    private TextView mHitokotoSource;
-
-    private HomeFragmentBinding mFragmentBinding;
+    private HomeFragmentBinding mBinding;
 
     private static final String TYPE = "type";
 
@@ -78,21 +68,13 @@ public class HomeFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mFragmentBinding = HomeFragmentBinding.inflate(inflater, container, false);
+        mBinding = HomeFragmentBinding.inflate(inflater, container, false);
         init();
-        return mFragmentBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     private void init() {
-        Toolbar toolbar = mFragmentBinding.includeToolbar.toolbar;
-        mSwipeRefreshLayout = mFragmentBinding.swipeRefreshLayout;
-        mRandomImage = mFragmentBinding.randomImage;
-        mImageSource = mFragmentBinding.imageSource;
-        mHitokotoInfo = mFragmentBinding.hitokotoInfo;
-        mHitokotoAuthor = mFragmentBinding.hitokotoAuthor;
-        mHitokotoSource = mFragmentBinding.hitokotoSource;
-
-        ToolbarUtil.init(toolbar, getActivity())
+        ToolbarUtil.init(mBinding.includeTb.toolbar, getActivity())
                 .setTitle(R.string.title_bar_home)
                 .setTitleCenter()
                 .setMenu(R.menu.search_menu, new Toolbar.OnMenuItemClickListener() {
@@ -113,42 +95,32 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void initView() {
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (NetworkUtil.isWifiConnected(mSwipeRefreshLayout.getContext())) {
-                    if (openTuPics) {
-                        getTuPicsData();
-                    } else {
-                        getDefaultData();
-                    }
-                } else {
-                    setError();
-                }
-
+         mBinding.swipeRefreshLayout.setOnRefreshListener(() -> {
+             if (NetworkUtil.isWifiConnected( mBinding.swipeRefreshLayout.getContext())) {
+                 if (openTuPics) {
+                     getTuPicsData();
+                 } else {
+                     getDefaultData();
+                 }
+             } else {
+                 setError();
+             }
+         });
+        mBinding.wordInfo.setOnLongClickListener(v -> {
+            ClipboardManager clipboardManager = (ClipboardManager) mBinding.wordInfo.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText(null, mBinding.wordInfo.getText().toString().trim());
+            if (clipboardManager != null) {
+                clipboardManager.setPrimaryClip(clipData);
+                showToast("已复制");
             }
+            return false;
         });
-        mHitokotoInfo.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                ClipboardManager clipboardManager = (ClipboardManager) mHitokotoInfo.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText(null, mHitokotoInfo.getText().toString().trim());
-                if (clipboardManager != null) {
-                    clipboardManager.setPrimaryClip(clipData);
-                    showToast("已复制");
-                }
-                return false;
-            }
-        });
-        mRandomImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<String> strings = new ArrayList<>();
-                strings.add(mImageUrl);
-                PhotoBrowser.builder()
-                        .setPhotos(strings)
-                        .start(requireActivity());
-            }
+        mBinding.randomImage.setOnClickListener(v -> {
+            ArrayList<String> strings = new ArrayList<>();
+            strings.add(mImageUrl);
+            PhotoBrowser.builder()
+                    .setPhotos(strings)
+                    .start(requireActivity());
         });
     }
 
@@ -156,7 +128,7 @@ public class HomeFragment extends BaseFragment {
      * 初始化数据
      */
     private void initData() {
-        mSwipeRefreshLayout.setRefreshing(true);
+         mBinding.swipeRefreshLayout.setRefreshing(true);
         openTuPics = SPUtil.build().getBoolean("open_tu_pics");
         if (NetworkUtil.isWifiConnected(requireContext())) {
             if (openTuPics) {
@@ -201,9 +173,9 @@ public class HomeFragment extends BaseFragment {
                 getTuPicsData();
             }
         } else {
-            String json = SPUtil.build().getString(Hitokoto.class.getName());
+            String json = SPUtil.build().getString(HiToKoTo.class.getName());
             if (!TextUtils.isEmpty(json)) {
-                setDefaultData(GsonUtil.toObject(json, Hitokoto.class));
+                setDefaultData(GsonUtil.toObject(json, HiToKoTo.class));
             } else {
                 getDefaultData();
             }
@@ -213,32 +185,27 @@ public class HomeFragment extends BaseFragment {
     private void setTuPicsDate(RandomPicture picture) {
         setRefreshFalse();
         // 文
-        mHitokotoInfo.setVisibility(View.INVISIBLE);
-        mHitokotoAuthor.setVisibility(View.INVISIBLE);
-        mHitokotoSource.setVisibility(View.INVISIBLE);
+        mBinding.wordInfo.setVisibility(View.INVISIBLE);
+        mBinding.wordAuthor.setVisibility(View.INVISIBLE);
+        mBinding.wordSource.setVisibility(View.INVISIBLE);
         String text = picture.getP_content();
         if (!TextUtils.isEmpty(text)) {
-            mHitokotoInfo.setVisibility(View.VISIBLE);
-            mHitokotoInfo.setText(text);
+            mBinding.wordInfo.setVisibility(View.VISIBLE);
+            mBinding.wordInfo.setText(text);
         }
         String author = picture.getP_title();
         if (!TextUtils.isEmpty(author)) {
-            mHitokotoAuthor.setVisibility(View.VISIBLE);
-            mHitokotoAuthor.setText(author);
+            mBinding.wordAuthor.setVisibility(View.VISIBLE);
+            mBinding.wordAuthor.setText(author);
         }
-//        String source = picture.getUsername();
-//        if (!TextUtils.isEmpty(source)) {
-//            mHitokotoSource.setVisibility(View.VISIBLE);
-//            mHitokotoSource.setText(source);
-//        }
         SPUtil.build().putString(RandomPicture.class.getName(), GsonUtil.toJson(picture));
         // 图
-        mImageSource.setVisibility(View.VISIBLE);
+        mBinding.imageSource.setVisibility(View.VISIBLE);
         String pLink = picture.getNativePath();
         if (TextUtils.isEmpty(pLink)) {
-            mRandomImage.setEnabled(false);
+            mBinding.randomImage.setEnabled(false);
         } else {
-            mRandomImage.setEnabled(true);
+            mBinding.randomImage.setEnabled(true);
             pLink = "https://s1.images.dailypics.cn" + pLink;
             // 2560 * 1440
             int width = picture.getWidth();
@@ -250,7 +217,7 @@ public class HomeFragment extends BaseFragment {
             GlideApp.with(this)
                     .load(mImageUrl)
 //                    .centerCrop
-                    .into(mRandomImage);
+                    .into(mBinding.randomImage);
         }
     }
 
@@ -259,9 +226,9 @@ public class HomeFragment extends BaseFragment {
         OkUtil.get()
                 .url("https://hitoapi.cc/sp")
                 .setLoadDelay()
-                .execute(new ResultCallback<Hitokoto>() {
+                .execute(new ResultCallback<HiToKoTo>() {
                     @Override
-                    public void onSuccess(Hitokoto response) {
+                    public void onSuccess(HiToKoTo response) {
                         setDefaultData(response);
                     }
 
@@ -287,29 +254,29 @@ public class HomeFragment extends BaseFragment {
                 });
     }
 
-    private void setDefaultData(Hitokoto hitokoto) {
+    private void setDefaultData(HiToKoTo hitokoto) {
         setRefreshFalse();
-        mHitokotoInfo.setVisibility(View.INVISIBLE);
-        mHitokotoAuthor.setVisibility(View.INVISIBLE);
-        mHitokotoSource.setVisibility(View.INVISIBLE);
-        mImageSource.setVisibility(View.GONE);
+        mBinding.wordInfo.setVisibility(View.INVISIBLE);
+        mBinding.wordAuthor.setVisibility(View.INVISIBLE);
+        mBinding.wordSource.setVisibility(View.INVISIBLE);
+        mBinding.imageSource.setVisibility(View.GONE);
         if (hitokoto != null) {
             String text = hitokoto.getText();
             if (!TextUtils.isEmpty(text)) {
-                mHitokotoInfo.setVisibility(View.VISIBLE);
-                mHitokotoInfo.setText(text);
+                mBinding.wordInfo.setVisibility(View.VISIBLE);
+                mBinding.wordInfo.setText(text);
             }
             String author = hitokoto.getAuthor();
             if (!TextUtils.isEmpty(author)) {
-                mHitokotoAuthor.setVisibility(View.VISIBLE);
-                mHitokotoAuthor.setText(author);
+                mBinding.wordAuthor.setVisibility(View.VISIBLE);
+                mBinding.wordAuthor.setText(author);
             }
             String source = hitokoto.getSource();
             if (!TextUtils.isEmpty(source)) {
-                mHitokotoSource.setVisibility(View.VISIBLE);
-                mHitokotoSource.setText(source);
+                mBinding.wordSource.setVisibility(View.VISIBLE);
+                mBinding.wordSource.setText(source);
             }
-            SPUtil.build().putString(Hitokoto.class.getName(), GsonUtil.toJson(hitokoto));
+            SPUtil.build().putString(HiToKoTo.class.getName(), GsonUtil.toJson(hitokoto));
         }
     }
 
@@ -320,14 +287,14 @@ public class HomeFragment extends BaseFragment {
                 img = "http:" + img;
             }
             if (TextUtils.isEmpty(img)) {
-                mRandomImage.setEnabled(false);
+                mBinding.randomImage.setEnabled(false);
             } else {
-                mRandomImage.setEnabled(true);
+                mBinding.randomImage.setEnabled(true);
                 mImageUrl = img;
                 GlideApp.with(this)
                         .load(img)
                         .centerInside()
-                        .into(mRandomImage);
+                        .into(mBinding.randomImage);
             }
         }
     }
@@ -344,9 +311,9 @@ public class HomeFragment extends BaseFragment {
      * 结束刷新
      */
     private void setRefreshFalse() {
-        boolean refreshing = mSwipeRefreshLayout.isRefreshing();
+        boolean refreshing =  mBinding.swipeRefreshLayout.isRefreshing();
         if (refreshing) {
-            mSwipeRefreshLayout.setRefreshing(false);
+             mBinding.swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -361,7 +328,7 @@ public class HomeFragment extends BaseFragment {
     /**
      * 一言
      */
-    static class Hitokoto {
+    static class HiToKoTo {
 
         /**
          * id : 2098/1495
@@ -440,7 +407,7 @@ public class HomeFragment extends BaseFragment {
     /**
      * 一图
      */
-    class RandomImage {
+    static class RandomImage {
 
         private Integer result;
         private String img;

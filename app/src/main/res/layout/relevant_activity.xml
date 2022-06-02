@@ -6,11 +6,11 @@
     tools:context=".module.mine.RelevantActivity" >
 
     <include
-        android:id="@+id/include_toolbar"
+        android:id="@+id/include_tb"
         layout="@layout/include_toolbar" />
 
     <include
-        android:id="@+id/include_recycler_view"
+        android:id="@+id/include_rv"
         layout="@layout/include_recycler_view"/>
 
 </LinearLayout>

@@ -1,6 +1,5 @@
 package me.cl.lingxi.viewmodel;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -8,7 +7,7 @@ import java.io.File;
 import java.util.List;
 
 import me.cl.lingxi.common.config.Api;
-import me.cl.lingxi.common.model.TipMessage;
+import me.cl.library.model.TipMessage;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
@@ -24,26 +23,14 @@ import okhttp3.Call;
  */
 public class UploadViewModel extends ViewModel {
 
-    private final MutableLiveData<TipMessage> mTipMessage;
-    private final MutableLiveData<List<String>> mPhotos;
-    private final MutableLiveData<String> mPhoto;
+    public final MutableLiveData<TipMessage> mTipMessage;
+    public final MutableLiveData<List<String>> mPhotos;
+    public final MutableLiveData<String> mPhoto;
 
     public UploadViewModel() {
         mTipMessage = new MutableLiveData<>();
         mPhotos = new MutableLiveData<>();
         mPhoto = new MutableLiveData<>();
-    }
-
-    public LiveData<TipMessage> getTipMessage() {
-        return mTipMessage;
-    }
-
-    public LiveData<List<String>> getPhotos() {
-        return mPhotos;
-    }
-
-    public LiveData<String> getPhoto() {
-        return mPhoto;
     }
 
     /**

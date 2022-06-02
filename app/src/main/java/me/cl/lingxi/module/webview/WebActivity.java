@@ -1,5 +1,6 @@
 package me.cl.lingxi.module.webview;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,9 +9,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
-import androidx.appcompat.widget.Toolbar;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
@@ -18,7 +16,6 @@ import me.cl.lingxi.R;
 import me.cl.lingxi.databinding.WebActivityBinding;
 import me.cl.lingxi.view.webview.MoeChromeClient;
 import me.cl.lingxi.view.webview.MoeWebClient;
-import me.cl.lingxi.view.webview.MoeWebView;
 
 /**
  * WebActivity
@@ -29,30 +26,31 @@ public class WebActivity extends BaseActivity {
 
     private static final String TAG = "WebActivity";
 
-    private WebActivityBinding mActivityBinding;
-
-    private Toolbar mToolbar;
-    private MoeWebView mWebView;
-    private FrameLayout mVideoView;
+    private WebActivityBinding mBinding;
 
     private String mTittle;
     private String mUrl;
 
     private MoeChromeClient mChromeClient;
 
+    public static void gotoWeb(Context context, String tittle, String url) {
+        Intent intent = new Intent(context, WebActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("tittle",tittle);
+        bundle.putString("url", url);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = WebActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = WebActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
-        mWebView = mActivityBinding.webView;
-        mVideoView = mActivityBinding.videoView;
-
         Intent intent = getIntent();
         Bundle bundle = null;
         if (intent != null) {
@@ -78,28 +76,28 @@ public class WebActivity extends BaseActivity {
             }
         }
 
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(mTittle)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
                 .build();
 
         MoeWebClient webClient = new MoeWebClient();
-        mChromeClient = new MoeChromeClient(mVideoView, new MoeChromeClient.onChangedListener() {
+        mChromeClient = new MoeChromeClient(mBinding.videoView, new MoeChromeClient.onChangedListener() {
             @Override
             public void onFullscreen(boolean fullscreen) {
                 if (fullscreen) {
-                    mWebView.setVisibility(View.GONE);
+                    mBinding.webView.setVisibility(View.GONE);
                 } else {
-                    mWebView.setVisibility(View.VISIBLE);
+                    mBinding.webView.setVisibility(View.VISIBLE);
                 }
                 setFullscreen(fullscreen);
             }
         });
-        mWebView.setWebViewClient(webClient);
-        mWebView.setWebChromeClient(mChromeClient);
+        mBinding.webView.setWebViewClient(webClient);
+        mBinding.webView.setWebChromeClient(mChromeClient);
 
-        mWebView.loadUrl(mUrl);
+        mBinding.webView.loadUrl(mUrl);
     }
 
     @Override
@@ -119,8 +117,8 @@ public class WebActivity extends BaseActivity {
                 if (inCustomView()) {
                     hideCustomView();
                 } else {
-                    if (mWebView.canGoBack()) {
-                        mWebView.goBack();
+                    if (mBinding.webView.canGoBack()) {
+                        mBinding.webView.goBack();
                     } else {
                         clearWebView();
                         this.finish();
@@ -172,20 +170,20 @@ public class WebActivity extends BaseActivity {
     }
 
     private void pauseWebView() {
-        mWebView.onPause();
-        mWebView.pauseTimers();
+        mBinding.webView.onPause();
+        mBinding.webView.pauseTimers();
     }
 
     private void resumeWebView() {
-        mWebView.resumeTimers();
-        mWebView.onResume();
+        mBinding.webView.resumeTimers();
+        mBinding.webView.onResume();
     }
 
     private void clearWebView() {
-        mWebView.clearHistory();
-        mWebView.clearCache(true);
-        mWebView.loadUrl("about:blank");
-        mWebView.pauseTimers();
+        mBinding.webView.clearHistory();
+        mBinding.webView.clearCache(true);
+        mBinding.webView.loadUrl("about:blank");
+        mBinding.webView.pauseTimers();
     }
 
     @Override

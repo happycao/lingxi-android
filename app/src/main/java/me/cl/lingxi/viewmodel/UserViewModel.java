@@ -1,13 +1,12 @@
 package me.cl.lingxi.viewmodel;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import me.cl.library.view.LoadingDialog;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Api;
-import me.cl.lingxi.common.model.TipMessage;
+import me.cl.library.model.TipMessage;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
@@ -26,32 +25,16 @@ import okhttp3.Call;
  */
 public class UserViewModel extends ViewModel {
 
-    private final MutableLiveData<TipMessage> mTipMessage;
-    private final MutableLiveData<UserToken> mUserToken;
-    private final MutableLiveData<UserInfo> mUserInfo;
-    private final MutableLiveData<PageInfo<User>> mUsers;
+    public final MutableLiveData<TipMessage> mTipMessage;
+    public final MutableLiveData<UserToken> mUserToken;
+    public final MutableLiveData<UserInfo> mUserInfo;
+    public final MutableLiveData<PageInfo<User>> mUsers;
 
     public UserViewModel() {
         mTipMessage = new MutableLiveData<>();
         mUserToken = new MutableLiveData<>();
         mUserInfo = new MutableLiveData<>();
         mUsers = new MutableLiveData<>();
-    }
-
-    public LiveData<TipMessage> getTipMessage() {
-        return mTipMessage;
-    }
-
-    public LiveData<UserToken> getUserToken() {
-        return mUserToken;
-    }
-
-    public LiveData<UserInfo> getUserInfo() {
-        return mUserInfo;
-    }
-
-    public LiveData<PageInfo<User>> getUsers() {
-        return mUsers;
     }
 
     /**

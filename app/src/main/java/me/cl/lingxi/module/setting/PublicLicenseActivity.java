@@ -1,10 +1,7 @@
 package me.cl.lingxi.module.setting;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,26 +19,20 @@ import me.cl.lingxi.module.webview.WebActivity;
 
 public class PublicLicenseActivity extends BaseActivity {
 
-    private PublicLicenseActivityBinding mActivityBinding;
-
-    private Toolbar mToolbar;
-    private RecyclerView mRecyclerView;
+    private PublicLicenseActivityBinding mBinding;
 
     private final List<PublicLicense> mData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = PublicLicenseActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = PublicLicenseActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
-        mRecyclerView = mActivityBinding.includeRecyclerView.recyclerView;
-
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(R.string.title_bar_public_license)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -50,17 +41,14 @@ public class PublicLicenseActivity extends BaseActivity {
         getData();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        mBinding.includeRv.recyclerView.setLayoutManager(layoutManager);
+        mBinding.includeRv.recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         PublicLicenseAdapter mAdapter = new PublicLicenseAdapter(mData);
-        mRecyclerView.setAdapter(mAdapter);
+        mBinding.includeRv.recyclerView.setAdapter(mAdapter);
 
-        mAdapter.setOnItemListener(new PublicLicenseAdapter.OnItemListener() {
-            @Override
-            public void onItemClick(View view, PublicLicense license) {
-                gotoWeb(license.getName(), license.getUrl());
-            }
-        });
+        mAdapter.setOnItemListener((view, license) -> {
+                    WebActivity.gotoWeb(PublicLicenseActivity.this, license.getName(), license.getUrl());
+                });
     }
 
     /**
@@ -91,15 +79,5 @@ public class PublicLicenseActivity extends BaseActivity {
         mData.add(new PublicLicense("PhotoPicker", "donglua",
                 "Image Picker like Wechat",
                 "https://github.com/donglua/PhotoPicker"));
-    }
-
-    // 前往web页
-    private void gotoWeb(String tittle, String url) {
-        Intent intent = new Intent(this, WebActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("tittle",tittle);
-        bundle.putString("url", url);
-        intent.putExtras(bundle);
-        startActivity(intent);
     }
 }

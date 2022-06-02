@@ -1,9 +1,7 @@
 package me.cl.lingxi.module.main;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,15 +31,13 @@ import me.cl.lingxi.common.result.Result;
 import me.cl.lingxi.common.result.ResultConstant;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.common.util.Utils;
-import me.cl.lingxi.databinding.IncludeBottomNavigationBinding;
 import me.cl.lingxi.databinding.MianActivityBinding;
 import me.cl.lingxi.entity.AppVersion;
 import okhttp3.Call;
 
 public class MainActivity extends BaseActivity {
 
-    private MianActivityBinding mActivityBinding;
-    private IncludeBottomNavigationBinding mNavigationBinding;
+    private MianActivityBinding mBinding;
 
     private FragmentManager mFragmentManager;
     private HomeFragment mHomeFragment;
@@ -59,9 +55,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = MianActivityBinding.inflate(getLayoutInflater());
-        mNavigationBinding = mActivityBinding.includeNavigation;
-        setContentView(mActivityBinding.getRoot());
+        mBinding = MianActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
@@ -85,20 +80,20 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initNavigation() {
-        switchNavigation(mNavigationBinding.ivHome);
-        mNavigationBinding.rlHome.setOnClickListener(v -> {
+        switchNavigation(mBinding.includeNav.ivHome);
+        mBinding.includeNav.rlHome.setOnClickListener(v -> {
             currentIndex = 0;
             switchPage();
         });
-        mNavigationBinding.rlFeed.setOnClickListener(v -> {
+        mBinding.includeNav.rlFeed.setOnClickListener(v -> {
             currentIndex = 1;
             switchPage();
         });
-        mNavigationBinding.rlMsg.setOnClickListener(v -> {
+        mBinding.includeNav.rlMsg.setOnClickListener(v -> {
             currentIndex = 2;
             switchPage();
         });
-        mNavigationBinding.rlMine.setOnClickListener(v -> {
+        mBinding.includeNav.rlMine.setOnClickListener(v -> {
             currentIndex = 3;
             switchPage();
         });
@@ -106,20 +101,20 @@ public class MainActivity extends BaseActivity {
 
     private void switchPage() {
         switch (currentIndex) {
-            case 0 :
-                switchNavigation(mNavigationBinding.ivHome);
+            case 0:
+                switchNavigation(mBinding.includeNav.ivHome);
                 switchFragment(mHomeFragment);
                 break;
-            case 1 :
-                switchNavigation(mNavigationBinding.ivFeed);
+            case 1:
+                switchNavigation(mBinding.includeNav.ivFeed);
                 switchFragment(mFeedFragment);
                 break;
-            case 2 :
-                switchNavigation(mNavigationBinding.ivMsg);
+            case 2:
+                switchNavigation(mBinding.includeNav.ivMsg);
                 switchFragment(mMessageFragment);
                 break;
-            case 3 :
-                switchNavigation(mNavigationBinding.ivMine);
+            case 3:
+                switchNavigation(mBinding.includeNav.ivMine);
                 switchFragment(mMineFragment);
                 break;
         }
@@ -146,7 +141,7 @@ public class MainActivity extends BaseActivity {
     // 底部导航
     @SuppressLint("NonConstantResourceId")
     private void initBottomNavigation() {
-        mActivityBinding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
+        mBinding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     switchFragment(mHomeFragment);
@@ -169,7 +164,7 @@ public class MainActivity extends BaseActivity {
         Intent intent = getIntent();
         if (intent == null) return;
         int num = intent.getIntExtra(Constants.PASSED_UNREAD_NUM, 0);
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mActivityBinding.bottomNavigation.getChildAt(0);
+        BottomNavigationMenuView menuView = (BottomNavigationMenuView) mBinding.bottomNavigation.getChildAt(0);
         BottomNavigationItemView itemView = (BottomNavigationItemView) menuView.getChildAt(3);
         View badge = LayoutInflater.from(this).inflate(R.layout.main_menu_badge, menuView, false);
         itemView.addView(badge);
@@ -201,7 +196,7 @@ public class MainActivity extends BaseActivity {
             case Constants.ACTIVITY_PUBLISH:
                 int id = data.getIntExtra(Constants.GO_INDEX, R.id.navigation_home);
                 // 非导航本身事件，手动切换
-                mActivityBinding.bottomNavigation.setSelectedItemId(id);
+                mBinding.bottomNavigation.setSelectedItemId(id);
                 break;
             case Constants.ACTIVITY_PERSONAL:
                 mMineFragment.onActivityResult(requestCode, resultCode, data);
@@ -308,26 +303,11 @@ public class MainActivity extends BaseActivity {
         mDialog.setTitle("发现新版本");
         mDialog.setMessage(appVersion.getUpdateInfo());
         if (appVersion.getUpdateFlag() != 2) {
-            mDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    saveUpdateFlag();
-                }
-            });
+            mDialog.setNegativeButton("取消", (dialog, which) -> saveUpdateFlag());
         }
-        mDialog.setPositiveButton("更新", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                gotoDownload(appVersion.getApkUrl());
-            }
-        }).setCancelable(false).create().show();
-    }
-
-    // 调起浏览器下载
-    private void gotoDownload(String url) {
-        Intent intent = new Intent();
-        intent.setData(Uri.parse(url));
-        intent.setAction(Intent.ACTION_VIEW);
-        startActivity(intent);
+        mDialog.setPositiveButton("更新", (dialog, which) ->
+                gotoDownload(appVersion.getApkUrl())
+        );
+        mDialog.setCancelable(false).create().show();
     }
 }

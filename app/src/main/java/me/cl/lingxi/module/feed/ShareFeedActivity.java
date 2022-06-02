@@ -1,25 +1,19 @@
 package me.cl.lingxi.module.feed;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import me.cl.library.base.BaseActivity;
+import me.cl.library.model.TipMessage;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.util.FeedContentUtil;
 import me.cl.lingxi.databinding.PublishActivityBinding;
 import me.cl.lingxi.module.main.MainActivity;
@@ -30,7 +24,7 @@ import me.cl.lingxi.viewmodel.FeedViewModel;
  */
 public class ShareFeedActivity extends BaseActivity {
 
-    private PublishActivityBinding mActivityBinding;
+    private PublishActivityBinding mBinding;
     private FeedViewModel mFeedViewModel;
 
     private final StringBuffer mInfo = new StringBuffer();
@@ -38,36 +32,28 @@ public class ShareFeedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = PublishActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = PublishActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
-        RecyclerView recyclerView = mActivityBinding.recyclerView;
-        LinearLayout llAction = mActivityBinding.llAction;
-        AppCompatEditText feedInfo = mActivityBinding.feedInfo;
-
-        ToolbarUtil.init(toolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(R.string.share_text)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
-                .setMenu(R.menu.send_menu, new Toolbar.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.action_send) {
-                            setLoading();
-                            mFeedViewModel.saveFeed(mInfo.toString(), null);
-                        }
-                        return false;
+                .setMenu(R.menu.send_menu, item -> {
+                    if (item.getItemId() == R.id.action_send) {
+                        setLoading();
+                        mFeedViewModel.saveFeed(mInfo.toString(), null);
                     }
+                    return false;
                 })
                 .build();
 
         setLoading("发布中...");
-        llAction.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
+        mBinding.llAction.setVisibility(View.GONE);
+        mBinding.recyclerView.setVisibility(View.GONE);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -99,8 +85,8 @@ public class ShareFeedActivity extends BaseActivity {
         }
 
         mInfo.append(text);
-        feedInfo.setEnabled(false);
-        feedInfo.setText(FeedContentUtil.getFeedText(mInfo.toString(), feedInfo));
+        mBinding.feedInfo.setEnabled(false);
+        mBinding.feedInfo.setText(FeedContentUtil.getFeedText(mInfo.toString(), mBinding.feedInfo));
 
         // 预留
         int i = text.indexOf("http");
@@ -113,39 +99,25 @@ public class ShareFeedActivity extends BaseActivity {
 
     private void initViewModel() {
         mFeedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
-        mFeedViewModel.getTipMessage().observe(this, this::showTip);
-        mFeedViewModel.getFeed().observe(this, feed -> {
+        mFeedViewModel.mTipMessage.observe(this, this::showTip);
+        mFeedViewModel.mFeed.observe(this, feed -> {
             dismissLoading();
             showSuccess();
         });
     }
 
-    // 提示
-    private void showTip(TipMessage tipMessage) {
+    @Override
+    protected void showTip(TipMessage tipMessage) {
         dismissLoading();
-        if (tipMessage.isRes()) {
-            showToast(tipMessage.getMsgId());
-        } else {
-            showToast(tipMessage.getMsgStr());
-        }
+        super.showTip(tipMessage);
     }
 
     // 发布成功
     private void showSuccess() {
         AlertDialog.Builder mDialog = new AlertDialog.Builder(this);
         mDialog.setMessage("发布成功，是否留在本APP");
-        mDialog.setNegativeButton("离开", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onBackPressed();
-            }
-        });
-        mDialog.setPositiveButton("留下", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                gotoHome();
-            }
-        });
+        mDialog.setNegativeButton("离开", (dialog, which) -> onBackPressed());
+        mDialog.setPositiveButton("留下", (dialog, which) -> gotoHome());
         mDialog.setCancelable(false).create().show();
     }
 

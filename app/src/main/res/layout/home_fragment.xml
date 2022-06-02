@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/include_toolbar"
+        android:id="@+id/include_tb"
         layout="@layout/include_toolbar"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -59,7 +59,7 @@
                     android:background="#7bffffff">
 
                     <TextView
-                        android:id="@+id/hitokoto_info"
+                        android:id="@+id/word_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
@@ -73,7 +73,7 @@
                         tools:ignore="SpUsage" />
 
                     <TextView
-                        android:id="@+id/hitokoto_author"
+                        android:id="@+id/word_author"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
@@ -82,7 +82,7 @@
                         android:layout_marginBottom="@dimen/spacing_8"/>
 
                     <TextView
-                        android:id="@+id/hitokoto_source"
+                        android:id="@+id/word_source"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"

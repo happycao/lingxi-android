@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -14,7 +13,6 @@ import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.util.SPUtil;
 import me.cl.lingxi.common.util.Utils;
 import me.cl.lingxi.databinding.FutureActivityBinding;
@@ -26,18 +24,16 @@ import me.cl.lingxi.viewmodel.FutureViewModel;
  */
 public class FutureActivity extends BaseActivity {
 
-    private FutureActivityBinding mActivityBinding;
+    private FutureActivityBinding mBinding;
     private FutureViewModel mFutureViewModel;
-
-    private AppCompatEditText mFutureInfo;
 
     private String futureInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = FutureActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = FutureActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
@@ -46,8 +42,8 @@ public class FutureActivity extends BaseActivity {
         super.onStart();
         futureInfo = SPUtil.build().getString(Constants.SP_FUTURE_INFO);
         if (!TextUtils.isEmpty(futureInfo)) {
-            mFutureInfo.setText(futureInfo);
-            mFutureInfo.setSelection(futureInfo.length());
+            mBinding.futureInfo.setText(futureInfo);
+            mBinding.futureInfo.setSelection(futureInfo.length());
         }
     }
 
@@ -55,10 +51,7 @@ public class FutureActivity extends BaseActivity {
      * 初始化
      */
     private void init() {
-        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
-        mFutureInfo = mActivityBinding.futureInfo;
-
-        ToolbarUtil.init(toolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(R.string.title_bar_future)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -83,7 +76,7 @@ public class FutureActivity extends BaseActivity {
 
     private void initListener() {
         // 输入监听
-        mFutureInfo.addTextChangedListener(new TextWatcher() {
+        mBinding.futureInfo.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -103,21 +96,12 @@ public class FutureActivity extends BaseActivity {
 
     private void initViewModel() {
         mFutureViewModel = new ViewModelProvider(this).get(FutureViewModel.class);
-        mFutureViewModel.getTipMessage().observe(this, this::showTip);
-        mFutureViewModel.getSuccess().observe(this, success -> {
+        mFutureViewModel.mTipMessage.observe(this, this::showTip);
+        mFutureViewModel.mSuccess.observe(this, success -> {
             showToast("信件进入时空隧道，等候传达");
             SPUtil.build().putString(Constants.SP_FUTURE_INFO, null);
             onBackPressed();
         });
-    }
-
-    // 提示
-    private void showTip(TipMessage tipMessage) {
-        if (tipMessage.isRes()) {
-            showToast(tipMessage.getMsgId());
-        } else {
-            showToast(tipMessage.getMsgStr());
-        }
     }
 
     /**

@@ -1,21 +1,18 @@
 package me.cl.lingxi.dialog;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
-
-import com.google.android.material.textfield.TextInputLayout;
 
 import me.cl.lingxi.R;
+import me.cl.lingxi.databinding.EditDialogBinding;
 
 /**
  * author : Bafs
@@ -25,6 +22,8 @@ import me.cl.lingxi.R;
  * version: 1.0
  */
 public class EditTextDialog extends DialogFragment {
+
+    private EditDialogBinding mBinding;
 
     private static final String TITLE = "title";
     private static final String CONTENT = "content";
@@ -65,13 +64,12 @@ public class EditTextDialog extends DialogFragment {
         }
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        FragmentActivity activity = getActivity();
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        View view = LayoutInflater.from(activity).inflate(R.layout.edit_dialog, null);
-        final TextInputLayout textInputLayout = view.findViewById(R.id.text_input_layout);
-        EditText editText = textInputLayout.getEditText();
+        mBinding = EditDialogBinding.inflate(LayoutInflater.from(requireContext()));
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        EditText editText = mBinding.textInputLayout.getEditText();
         if (editText != null) {
             if (mLength > 0) {
                 editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mLength)});
@@ -82,15 +80,12 @@ public class EditTextDialog extends DialogFragment {
             }
             editText.setHint(mTitle);
         }
-        builder.setMessage(mTitle);
-        builder.setView(view);
+        builder.setTitle(mTitle);
+        builder.setView(mBinding.getRoot());
         builder.setNegativeButton(R.string.action_negative, null);
-        builder.setPositiveButton(R.string.action_positive, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (mPositiveListener != null) {
-                    mPositiveListener.Positive(textInputLayout.getEditText().getText().toString().trim());
-                }
+        builder.setPositiveButton(R.string.action_positive, (dialog, which) -> {
+            if (mPositiveListener != null) {
+                mPositiveListener.Positive(mBinding.textInputLayout.getEditText().getText().toString().trim());
             }
         });
         return builder.create();

@@ -30,7 +30,7 @@ import okhttp3.Call;
  */
 public class SplashActivity extends BaseActivity {
 
-    private SplashActivityBinding mActivityBinding;
+    private SplashActivityBinding mBinding;
 
     private boolean isLogin;
     private boolean tokenNull;
@@ -38,8 +38,8 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = SplashActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = SplashActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
 		requestPermission();
     }
 

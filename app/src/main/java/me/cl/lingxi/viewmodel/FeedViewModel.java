@@ -1,16 +1,15 @@
 package me.cl.lingxi.viewmodel;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import me.cl.library.model.TipMessage;
 import me.cl.library.view.LoadingDialog;
 import me.cl.lingxi.R;
 import me.cl.lingxi.common.config.Api;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.okhttp.OkUtil;
 import me.cl.lingxi.common.okhttp.ResultCallback;
 import me.cl.lingxi.common.result.Result;
@@ -29,12 +28,12 @@ import okhttp3.Call;
  */
 public class FeedViewModel extends ViewModel {
 
-    private final MutableLiveData<TipMessage> mTipMessage;
-    private final MutableLiveData<PageInfo<Feed>> mFeedPage;
-    private final MutableLiveData<Feed> mFeed;
-    private final MutableLiveData<Integer> mFeedComment;
-    private final MutableLiveData<PageInfo<Comment>> mCommentPage;
-    private final MutableLiveData<PageInfo<Relevant>> mRelevantPage;
+    public final MutableLiveData<TipMessage> mTipMessage;
+    public final MutableLiveData<PageInfo<Feed>> mFeedPage;
+    public final MutableLiveData<Feed> mFeed;
+    public final MutableLiveData<Integer> mFeedComment;
+    public final MutableLiveData<PageInfo<Comment>> mCommentPage;
+    public final MutableLiveData<PageInfo<Relevant>> mRelevantPage;
 
     public FeedViewModel() {
         mTipMessage = new MutableLiveData<>();
@@ -43,30 +42,6 @@ public class FeedViewModel extends ViewModel {
         mFeedComment = new MutableLiveData<>();
         mCommentPage = new MutableLiveData<>();
         mRelevantPage = new MutableLiveData<>();
-    }
-
-    public LiveData<TipMessage> getTipMessage() {
-        return mTipMessage;
-    }
-
-    public LiveData<PageInfo<Feed>> getFeedPage() {
-        return mFeedPage;
-    }
-
-    public LiveData<Feed> getFeed() {
-        return mFeed;
-    }
-
-    public LiveData<Integer> getFeedComment() {
-        return mFeedComment;
-    }
-
-    public LiveData<PageInfo<Comment>> getCommentPage() {
-        return mCommentPage;
-    }
-
-    public LiveData<PageInfo<Relevant>> getRelevantPage() {
-        return mRelevantPage;
     }
 
     /**

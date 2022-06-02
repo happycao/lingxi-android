@@ -6,11 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 
 import me.cl.library.base.BaseFragment;
 import me.cl.lingxi.R;
@@ -20,11 +17,7 @@ import me.cl.lingxi.module.future.FutureActivity;
 
 public class MessageChildFragment extends BaseFragment implements View.OnClickListener {
 
-    private MessageChildFragmentBinding mFragmentBinding;
-
-    private Toolbar mToolbar;
-    private TextView mMsg;
-    private Button mSend;
+    private MessageChildFragmentBinding mBinding;
 
     private static final String NEWS_TYPE = "news_type";
     private boolean flag = false;
@@ -60,27 +53,23 @@ public class MessageChildFragment extends BaseFragment implements View.OnClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mFragmentBinding = MessageChildFragmentBinding.inflate(inflater, container, false);
+        mBinding = MessageChildFragmentBinding.inflate(inflater, container, false);
         init();
-        return mFragmentBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     private void init() {
-        mToolbar = mFragmentBinding.includeToolbar.toolbar;
-        mMsg = mFragmentBinding.msg;
-        mSend = mFragmentBinding.send;
-
-        mToolbar.setVisibility(View.GONE);
+        mBinding.includeTb.toolbar.setVisibility(View.GONE);
         if (mNewsType.contains("飞鸽传书")) {
             flag = true;
         } else {
-            mSend.setText("编写");
+            mBinding.send.setText("编写");
         }
-        mSend.setVisibility(View.VISIBLE);
-        mMsg.setText(mNewsType);
+        mBinding.send.setVisibility(View.VISIBLE);
+        mBinding.msg.setText(mNewsType);
 
-        mMsg.setOnClickListener(this);
-        mSend.setOnClickListener(this);
+        mBinding.msg.setOnClickListener(this);
+        mBinding.send.setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -92,9 +81,9 @@ public class MessageChildFragment extends BaseFragment implements View.OnClickLi
                     tag++;
                     if (tag == 7) {
                         tag = 0;
-                        mMsg.setText(mF);
+                        mBinding.msg.setText(mF);
                     } else {
-                        mMsg.setText(mNewsType);
+                        mBinding.msg.setText(mNewsType);
                     }
                 }
                 break;

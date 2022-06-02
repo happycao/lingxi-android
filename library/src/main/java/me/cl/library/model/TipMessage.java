@@ -1,4 +1,4 @@
-package me.cl.lingxi.common.model;
+package me.cl.library.model;
 
 import androidx.annotation.StringRes;
 

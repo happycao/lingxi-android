@@ -3,9 +3,6 @@ package me.cl.lingxi.module.setting;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.widget.FrameLayout;
-
-import androidx.appcompat.widget.Toolbar;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
@@ -19,24 +16,18 @@ import me.cl.lingxi.databinding.SettingsActivityBinding;
  */
 public class SettingsActivity extends BaseActivity {
 
-    private SettingsActivityBinding mActivityBinding;
-
-    private Toolbar mToolbar;
-    private FrameLayout mFragmentContainer;
+    private SettingsActivityBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = SettingsActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = SettingsActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
-        mFragmentContainer = mActivityBinding.fragmentContainer;
-
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(R.string.action_settings)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -61,12 +52,9 @@ public class SettingsActivity extends BaseActivity {
 
         private void initPreferences() {
             Preference openTuPics = findPreference(OPEN_TU_PICS);
-            openTuPics.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    SPUtil.build().putBoolean(OPEN_TU_PICS, (Boolean) newValue);
-                    return true;
-                }
+            openTuPics.setOnPreferenceChangeListener((preference, newValue) -> {
+                SPUtil.build().putBoolean(OPEN_TU_PICS, (Boolean) newValue);
+                return true;
             });
         }
     }

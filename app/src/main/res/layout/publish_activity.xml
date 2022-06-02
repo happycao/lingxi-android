@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <include
-            android:id="@+id/include_toolbar"
+            android:id="@+id/include_tb"
             layout="@layout/include_toolbar"/>
 
         <androidx.appcompat.widget.AppCompatEditText

@@ -9,7 +9,7 @@ public class Constants {
     public static boolean isRead = true;
 
     // action
-    public static final String UPDATE_USER_IMG = "me.cl.update.img";
+    public static final String UPDATE_USER_INFO = "me.cl.update.info";
 
     // 与我相关&我的回复
     public static final String REPLY_TYPE = "reply_type";

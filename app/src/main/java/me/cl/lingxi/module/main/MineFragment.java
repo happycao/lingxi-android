@@ -6,14 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -44,41 +42,31 @@ import okhttp3.Call;
  */
 public class MineFragment extends BaseFragment implements View.OnClickListener {
 
-    private MineFragmentBinding mFragmentBinding;
-
-    private Toolbar mToolbar;
-    private ImageView mUserImg;
-    private TextView mUserName;
-    private TextView mMineRelevant;
+    private MineFragmentBinding mBinding;
 
     private String mUserId;
     private OperateBroadcastReceiver receiver;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mFragmentBinding = MineFragmentBinding.inflate(inflater, container, false);
+        mBinding = MineFragmentBinding.inflate(inflater, container, false);
         init();
         initReceiver();
-        return mFragmentBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     private void init() {
-        mToolbar = mFragmentBinding.includeToolbar.toolbar;
-        mUserImg = mFragmentBinding.userImg;
-        mUserName = mFragmentBinding.userName;
-        mMineRelevant = mFragmentBinding.actionRelevant;
-
-        ToolbarUtil.init(mToolbar, getActivity())
+        ToolbarUtil.init(mBinding.includeTb.toolbar, getActivity())
                 .setTitle(R.string.nav_mine)
                 .setTitleCenter()
                 .build();
 
-        mFragmentBinding.userBody.setOnClickListener(this);
-        mFragmentBinding.actionReply.setOnClickListener(this);
-        mFragmentBinding.actionRelevant.setOnClickListener(this);
-        mFragmentBinding.actionSetting.setOnClickListener(this);
-        mFragmentBinding.actionAbout.setOnClickListener(this);
-        mFragmentBinding.actionSignOut.setOnClickListener(this);
+        mBinding.userBody.setOnClickListener(this);
+        mBinding.actionReply.setOnClickListener(this);
+        mBinding.actionRelevant.setOnClickListener(this);
+        mBinding.actionSetting.setOnClickListener(this);
+        mBinding.actionAbout.setOnClickListener(this);
+        mBinding.actionSignOut.setOnClickListener(this);
 
         mUserId = SPUtil.build().getString(Constants.SP_USER_ID);
         // 获取用户信息
@@ -95,7 +83,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action != null) {
-                if (Constants.UPDATE_USER_IMG.equals(action)) {
+                if (Constants.UPDATE_USER_INFO.equals(action)) {
                     postUserInfo(mUserId);
                 }
             }
@@ -105,7 +93,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     private void initReceiver() {
         receiver = new OperateBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Constants.UPDATE_USER_IMG);
+        filter.addAction(Constants.UPDATE_USER_INFO);
         requireActivity().registerReceiver(receiver, filter);
     }
 
@@ -129,13 +117,18 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
 
     private void initUser(UserInfo userInfo) {
         String username = getString(R.string.app_name);
+        String signature = "暂无签名，去写点什么吧";
         String avatar = "";
         if (userInfo != null) {
             username = userInfo.getUsername();
+            if (!TextUtils.isEmpty(userInfo.getSignature())) {
+                signature = userInfo.getSignature();
+            }
             avatar = userInfo.getAvatar();
         }
-        mUserName.setText(username);
-        ContentUtil.loadUserAvatar(mUserImg, avatar);
+        mBinding.userName.setText(username);
+        mBinding.userDescription.setText(signature);
+        ContentUtil.loadUserAvatar(mBinding.userImg, avatar);
     }
 
     @Override
@@ -147,7 +140,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void onStart() {
         super.onStart();
-        ContentUtil.setMoreBadge(mMineRelevant);
+        ContentUtil.setMoreBadge(mBinding.actionRelevant);
         if (Constants.isRead) {
             ((MainActivity) requireActivity()).goneBadge();
         }

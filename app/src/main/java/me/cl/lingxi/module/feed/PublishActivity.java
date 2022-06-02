@@ -11,14 +11,10 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,11 +22,11 @@ import java.util.List;
 import java.util.Objects;
 
 import me.cl.library.base.BaseActivity;
+import me.cl.library.model.TipMessage;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.PhotoSelAdapter;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.util.ImageUtil;
 import me.cl.lingxi.common.util.Utils;
 import me.cl.lingxi.databinding.PublishActivityBinding;
@@ -45,12 +41,9 @@ import me.iwf.photopicker.PhotoPreview;
  */
 public class PublishActivity extends BaseActivity implements View.OnClickListener {
 
-    private PublishActivityBinding mActivityBinding;
+    private PublishActivityBinding mBinding;
     private FeedViewModel mFeedViewModel;
     private UploadViewModel mUploadViewModel;
-
-    private AppCompatEditText mEtFeedInfo;
-    private RecyclerView mRecyclerView;
 
     private PhotoSelAdapter mPhotoSelAdapter;
     private List<String> mPhotos = new ArrayList<>();
@@ -67,44 +60,37 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = PublishActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = PublishActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        Toolbar toolbar = mActivityBinding.includeToolbar.toolbar;
-        mEtFeedInfo = mActivityBinding.feedInfo;
-        mRecyclerView = mActivityBinding.recyclerView;
+        mBinding.ivCamera.setOnClickListener(this);
+        mBinding.ivEit.setOnClickListener(this);
+        mBinding.ivTopic.setOnClickListener(this);
+        mBinding.ivLink.setOnClickListener(this);
 
-        mActivityBinding.ivCamera.setOnClickListener(this);
-        mActivityBinding.ivEit.setOnClickListener(this);
-        mActivityBinding.ivTopic.setOnClickListener(this);
-        mActivityBinding.ivLink.setOnClickListener(this);
-
-        ToolbarUtil.init(toolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle("发布新动态")
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
-                .setMenu(R.menu.send_menu, new Toolbar.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.action_send) {
-                            mInfo = mEtFeedInfo.getText().toString().trim();
-                            if (TextUtils.isEmpty(mInfo)) {
-                                showToast("好歹写点什么吧！");
-                                return false;
-                            }
-                            showLoading();
-                            removePhotoAdd(mPhotos);
-                            if (mPhotos.isEmpty()) {
-                                postSaveFeed(mPhotos);
-                            } else {
-                                postUpload(mPhotos);
-                            }
+                .setMenu(R.menu.send_menu, item -> {
+                    if (item.getItemId() == R.id.action_send) {
+                        mInfo = Objects.requireNonNull(mBinding.feedInfo.getText()).toString().trim();
+                        if (TextUtils.isEmpty(mInfo)) {
+                            showToast("好歹写点什么吧！");
+                            return false;
                         }
-                        return false;
+                        showLoading();
+                        removePhotoAdd(mPhotos);
+                        if (mPhotos.isEmpty()) {
+                            postSaveFeed(mPhotos);
+                        } else {
+                            postUpload(mPhotos);
+                        }
                     }
+                    return false;
                 })
                 .build();
 
@@ -116,7 +102,7 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
 
     // 输入监听
     private void initTextChangeListener() {
-        mEtFeedInfo.addTextChangedListener(new TextWatcher() {
+        mBinding.feedInfo.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -132,7 +118,7 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
                 mActionList.clear();
                 mActionList.addAll(Utils.findAction(content));
                 // 首先移除之前设置的colorSpan
-                Editable editable = mEtFeedInfo.getText();
+                Editable editable = mBinding.feedInfo.getText();
                 if (editable == null) {
                     return;
                 }
@@ -158,17 +144,17 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
             }
         });
 
-        mEtFeedInfo.setOnKeyListener(new View.OnKeyListener() {
+        mBinding.feedInfo.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN && isInAfter) {
-                    int selectionStart = mEtFeedInfo.getSelectionStart();
-                    int selectionEnd = mEtFeedInfo.getSelectionEnd();
+                    int selectionStart = mBinding.feedInfo.getSelectionStart();
+                    int selectionEnd = mBinding.feedInfo.getSelectionEnd();
                     // 如果光标起始和结束在同一位置,说明是选中效果,直接返回 false 交给系统执行删除动作
                     if (selectionStart != selectionEnd) {
                         return false;
                     }
-                    Editable editable = mEtFeedInfo.getText();
+                    Editable editable = mBinding.feedInfo.getText();
                     if (editable == null) {
                         return false;
                     }
@@ -180,7 +166,7 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
                         if (lastPos != -1) {
                             if (selectionStart != 0 && selectionStart >= lastPos && selectionStart <= (lastPos + action.length())) {
                                 //选中话题
-                                mEtFeedInfo.setSelection(lastPos, lastPos + action.length());
+                                mBinding.feedInfo.setSelection(lastPos, lastPos + action.length());
                                 return true;
                             }
                         }
@@ -194,14 +180,14 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
 
     // 设置文字和光标
     private void setText() {
-        mEtFeedInfo.setText(mInfo);
-        mEtFeedInfo.setSelection(mInfo.length());
+        mBinding.feedInfo.setText(mInfo);
+        mBinding.feedInfo.setSelection(mInfo.length());
     }
 
     private void initRecycleView() {
-        mRecyclerView.setLayoutManager(new GridLayoutManager(PublishActivity.this, 3));
+        mBinding.recyclerView.setLayoutManager(new GridLayoutManager(PublishActivity.this, 3));
         mPhotoSelAdapter = new PhotoSelAdapter(mPhotos);
-        mRecyclerView.setAdapter(mPhotoSelAdapter);
+        mBinding.recyclerView.setAdapter(mPhotoSelAdapter);
         mPhotoSelAdapter.setOnItemClickListener(new PhotoSelAdapter.OnItemClickListener() {
             @Override
             public void onPhotoClick(int position) {
@@ -236,26 +222,24 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
         ViewModelProvider viewModelProvider = new ViewModelProvider(this);
         mFeedViewModel = viewModelProvider.get(FeedViewModel.class);
         mUploadViewModel = viewModelProvider.get(UploadViewModel.class);
-        mFeedViewModel.getTipMessage().observe(this, this::showTip);
-        mUploadViewModel.getTipMessage().observe(this, this::showTip);
-        mUploadViewModel.getPhotos().observe(this, this::postSaveFeed);
-        mFeedViewModel.getFeed().observe(this, feed -> {
+        mFeedViewModel.mTipMessage.observe(this, this::showTip);
+        mUploadViewModel.mTipMessage.observe(this, this::showTip);
+        mUploadViewModel.mPhotos.observe(this, this::postSaveFeed);
+        mFeedViewModel.mFeed.observe(this, feed -> {
             dismissLoading();
             showToast("发布成功");
-            mEtFeedInfo.setText(null);
+            mBinding.feedInfo.setText(null);
             mInfo = "";
             onBackPressed();
         });
     }
 
+
     // 提示
-    private void showTip(TipMessage tipMessage) {
+    @Override
+    protected void showTip(TipMessage tipMessage) {
         dismissLoading();
-        if (tipMessage.isRes()) {
-            showToast(tipMessage.getMsgId());
-        } else {
-            showToast(tipMessage.getMsgStr());
-        }
+        super.showTip(tipMessage);
         addPhotoAdd(mPhotos);
     }
 
@@ -313,7 +297,7 @@ public class PublishActivity extends BaseActivity implements View.OnClickListene
                         if (msgList == null || msgList.isEmpty()) {
                             return;
                         }
-                        mInfo = Objects.requireNonNull(mEtFeedInfo.getText()).toString();
+                        mInfo = Objects.requireNonNull(mBinding.feedInfo.getText()).toString();
                         if (TopicEitActivity.Type.TOPIC == type) {
                             StringBuilder sb = new StringBuilder();
                             for (String eit : msgList) {

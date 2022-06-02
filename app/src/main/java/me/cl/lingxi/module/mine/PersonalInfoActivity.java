@@ -8,10 +8,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
@@ -46,14 +43,9 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
 
     private static final int PHOTO_REQUEST_CUT = 456;
 
-    private PersonalInfoActivityBinding mActivityBinding;
+    private PersonalInfoActivityBinding mBinding;
     private UploadViewModel mUploadViewModel;
     private UserViewModel mUserViewModel;
-
-    private Toolbar mToolbar;
-    private ImageView mPersonImg;
-    private TextView mPersonName;
-    private TextView mUserSignature;
 
     private String mUserId;
     private String saveName;
@@ -74,21 +66,17 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = PersonalInfoActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = PersonalInfoActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
-        mPersonImg = mActivityBinding.personImg;
-        mPersonName = mActivityBinding.personName;
-        mUserSignature = mActivityBinding.userSignature;
+        mBinding.personImg.setOnClickListener(this);
+        mBinding.personName.setOnClickListener(this);
+        mBinding.userSignature.setOnClickListener(this);
 
-        mPersonImg.setOnClickListener(this);
-        mPersonName.setOnClickListener(this);
-
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(R.string.title_bar_personal_info)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -103,7 +91,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
 
         mUserId = SPUtil.build().getString(Constants.SP_USER_ID);
         saveName = SPUtil.build().getString(Constants.SP_USER_NAME);
-        mPersonName.setText(saveName);
+        mBinding.personName.setText(saveName);
 
         initViewModel();
         mUserViewModel.doUserInfo();
@@ -113,7 +101,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
         ViewModelProvider viewModelProvider = new ViewModelProvider(this);
         mUploadViewModel = viewModelProvider.get(UploadViewModel.class);
         mUserViewModel = viewModelProvider.get(UserViewModel.class);
-        mUploadViewModel.getPhoto().observe(this, photo -> {
+        mUploadViewModel.mPhoto.observe(this, photo -> {
             if (TextUtils.isEmpty(photo)) {
                 showUserImageUpdateError();
             } else {
@@ -122,7 +110,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                 postUpdateUserInfo();
             }
         });
-        mUserViewModel.getUserInfo().observe(this, userInfo -> {
+        mUserViewModel.mUserInfo.observe(this, userInfo -> {
             if (userInfo == null) {
                 onBackPressed();
             } else {
@@ -143,20 +131,19 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                         .setPreviewEnabled(false)
                         .start(PersonalInfoActivity.this, PhotoPicker.REQUEST_CODE);
                 break;
-            case R.id.person_name:
-                EditTextDialog editTextDialog = EditTextDialog.newInstance("修改用户名", saveName, 24);
+            case R.id.user_signature:
+                EditTextDialog editTextDialog = EditTextDialog.newInstance("修改个性签名", mBinding.userSignature.getText().toString(), 60);
                 editTextDialog.show(getSupportFragmentManager(), "edit");
-                editTextDialog.setPositiveListener(new EditTextDialog.PositiveListener() {
-                    @Override
-                    public void Positive(String value) {
-                        if (!TextUtils.isEmpty(value) && value.length() > 4 && !saveName.equals(value)) {
-                            showToast("暂不支持修改用户名");
-                            username = null;
-                        }
+                editTextDialog.setPositiveListener(value -> {
+                    if (!TextUtils.isEmpty(value)) {
+                        isUpdateAvatar = false;
+                        signature = value;
+                        postUpdateUserInfo();
                     }
                 });
                 break;
             default:
+                showToast("暂不支持修改");
                 break;
         }
     }
@@ -188,7 +175,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
 
         // 图片裁剪
         if (requestCode == PHOTO_REQUEST_CUT) {
-            ContentUtil.loadAvatar(mPersonImg, mImagePath);
+            ContentUtil.loadAvatar(mBinding.personImg, mImagePath);
             postUserImage();
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -215,6 +202,7 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
                 .addParam("id", mUserId)
                 .addParam("username", username)
                 .addParam("avatar", avatar)
+                .addParam("signature", signature)
                 .execute(new ResultCallback<Result<UserInfo>>() {
 
                     @Override
@@ -240,7 +228,6 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     private void setUserInfo(UserInfo userInfo) {
         if (isUpdateAvatar) {
             isUpdateAvatar = false;
-            notifyUpdateUserImage();
             File file = new File(mImagePath);
             if (file.exists()) {
                 boolean delete = file.delete();
@@ -248,13 +235,19 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
             }
         }
 
-        ContentUtil.loadUserAvatar(mPersonImg, userInfo.getAvatar());
+        ContentUtil.loadUserAvatar(mBinding.personImg, userInfo.getAvatar());
 
         if (!TextUtils.isEmpty(userInfo.getUsername())) {
-            mPersonName.setText(userInfo.getUsername());
+            mBinding.personName.setText(userInfo.getUsername());
+        }
+
+        if (!TextUtils.isEmpty(userInfo.getSignature())) {
+            signature = userInfo.getSignature();
+            mBinding.userSignature.setText(userInfo.getSignature());
         }
 
         cleanData();
+        notifyUpdateUserInfo();
     }
 
     /**
@@ -269,12 +262,12 @@ public class PersonalInfoActivity extends BaseActivity implements View.OnClickLi
     }
 
     /**
-     * 通知更新用户头像
+     * 通知更新用户信息
      */
-    private void notifyUpdateUserImage() {
+    private void notifyUpdateUserInfo() {
         Intent intent = new Intent();
         intent.setPackage(getPackageName());
-        intent.setAction(Constants.UPDATE_USER_IMG);
+        intent.setAction(Constants.UPDATE_USER_INFO);
         sendBroadcast(intent);
     }
 

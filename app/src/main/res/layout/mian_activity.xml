@@ -13,7 +13,7 @@
         android:layout_weight="1" />
 
     <include
-        android:id="@+id/include_navigation"
+        android:id="@+id/include_nav"
         layout="@layout/include_bottom_navigation"
         android:layout_height="@dimen/spacing_48"
         android:layout_width="match_parent" />

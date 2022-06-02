@@ -3,13 +3,10 @@ package me.cl.lingxi.module.setting;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 
 import me.cl.library.base.BaseActivity;
 import me.cl.library.util.ToolbarUtil;
@@ -28,29 +25,23 @@ import okhttp3.Call;
 
 public class AboutActivity extends BaseActivity implements View.OnClickListener {
 
-    private AboutActivityBinding mActivityBinding;
-
-    private Toolbar mToolbar;
-    private TextView mVersion;
+    private AboutActivityBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = AboutActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = AboutActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        mToolbar = mActivityBinding.includeToolbar.toolbar;
-        mVersion = mActivityBinding.version;
+        mBinding.appUpdate.setOnClickListener(this);
+        mBinding.feedback.setOnClickListener(this);
+        mBinding.publicLicense.setOnClickListener(this);
+        mBinding.learnMore.setOnClickListener(this);
 
-        mActivityBinding.appUpdate.setOnClickListener(this);
-        mActivityBinding.feedback.setOnClickListener(this);
-        mActivityBinding.publicLicense.setOnClickListener(this);
-        mActivityBinding.learnMore.setOnClickListener(this);
-
-        ToolbarUtil.init(mToolbar, this)
+        ToolbarUtil.init(mBinding.includeTb.toolbar, this)
                 .setTitle(R.string.title_bar_about)
                 .setBack()
                 .setTitleCenter(R.style.AppTheme_Toolbar_TextAppearance)
@@ -63,7 +54,7 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
         }
 
         String versionName = "V " + Utils.getAppVersionName(this);
-        mVersion.setText(versionName);
+        mBinding.version.setText(versionName);
 
     }
 
@@ -84,7 +75,7 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
                 gotoPublicLicense();
                 break;
             case R.id.learn_more:
-                gotoWeb("前世今生", "file:///android_asset/about.html");
+                WebActivity.gotoWeb(this, "前世今生", "file:///android_asset/about.html");
                 break;
         }
     }
@@ -137,23 +128,5 @@ public class AboutActivity extends BaseActivity implements View.OnClickListener 
                 gotoDownload(appVersion.getApkUrl());
             }
         }).setCancelable(false).create().show();
-    }
-
-    // 调起浏览器下载
-    private void gotoDownload(String url){
-        Intent intent = new Intent();
-        intent.setData(Uri.parse(url));
-        intent.setAction(Intent.ACTION_VIEW);
-        startActivity(intent);
-    }
-
-    // 前往web页
-    private void gotoWeb(String tittle, String url) {
-        Intent intent = new Intent(this, WebActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("tittle",tittle);
-        bundle.putString("url", url);
-        intent.putExtras(bundle);
-        startActivity(intent);
     }
 }

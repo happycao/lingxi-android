@@ -1,20 +1,15 @@
 package me.cl.lingxi.module.member;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -24,12 +19,12 @@ import java.util.List;
 import me.cl.library.base.BaseActivity;
 import me.cl.library.loadmore.LoadMoreAdapter;
 import me.cl.library.loadmore.OnLoadMoreListener;
+import me.cl.library.model.TipMessage;
 import me.cl.library.recycle.ItemAnimator;
 import me.cl.library.util.ToolbarUtil;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.FeedAdapter;
 import me.cl.lingxi.common.config.Constants;
-import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.common.util.ContentUtil;
 import me.cl.lingxi.databinding.UserActivityBinding;
 import me.cl.lingxi.entity.Feed;
@@ -47,19 +42,9 @@ import me.iwf.photopicker.PhotoPreview;
  */
 public class UserActivity extends BaseActivity implements View.OnClickListener {
 
-    private UserActivityBinding mActivityBinding;
+    private UserActivityBinding mBinding;
     private UserViewModel mUserViewModel;
     private FeedViewModel mFeedViewModel;
-
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView mRecyclerView;
-    private AppBarLayout mAppBar;
-    private RelativeLayout mButtonBar;
-    private ImageView mParallax;
-    private TextView mTitleName;
-    private TextView mUserName;
-    private TextView mContact;
-    private TextView mFeedNum;
 
     private boolean isPostUser = true;
     private String mUserId;
@@ -72,29 +57,26 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
     private int mPageNum = 1;
     private static final int PAGE_SIZE = 10;
 
+    public static void gotoUser(Context context, User user) {
+        Intent intent = new Intent(context, UserActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.PASSED_USER_INFO, user);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = UserActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = UserActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         init();
     }
 
     private void init() {
-        Toolbar toolbar = mActivityBinding.toolbar;
-        mSwipeRefreshLayout = mActivityBinding.swipeRefreshLayout;
-        mRecyclerView = mActivityBinding.recyclerView;
-        mAppBar = mActivityBinding.appBar;
-        mButtonBar = mActivityBinding.buttonBar;
-        mParallax = mActivityBinding.parallax;
-        mTitleName = mActivityBinding.titleName;
-        mUserName = mActivityBinding.userName;
-        mContact = mActivityBinding.contact;
-        mFeedNum = mActivityBinding.feedNum;
+        mBinding.contact.setOnClickListener(this);
 
-        mContact.setOnClickListener(this);
-
-        ToolbarUtil.init(toolbar, this)
+        ToolbarUtil.init(mBinding.toolbar, this)
                 .setBack()
                 .build();
 
@@ -117,22 +99,22 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setItemAnimator(new ItemAnimator());
+        mBinding.recyclerView.setLayoutManager(layoutManager);
+        mBinding.recyclerView.setItemAnimator(new ItemAnimator());
         mFeedAdapter = new FeedAdapter(mFeedList);
         mConcatAdapter = new ConcatAdapter(mFeedAdapter, mLoadMoreAdapter);
-        mRecyclerView.setAdapter(mConcatAdapter);
+        mBinding.recyclerView.setAdapter(mConcatAdapter);
     }
 
     private void initViewModel() {
         ViewModelProvider viewModelProvider = new ViewModelProvider(this);
         mUserViewModel = viewModelProvider.get(UserViewModel.class);
         mFeedViewModel = viewModelProvider.get(FeedViewModel.class);
-        mUserViewModel.getTipMessage().observe(this, this::showTip);
-        mFeedViewModel.getTipMessage().observe(this, this::showTip);
-        mUserViewModel.getUserInfo().observe(this, this::initUser);
-        mFeedViewModel.getFeedPage().observe(this, this::setFeedData);
-        mFeedViewModel.getFeed().observe(this, this::setFeedLike);
+        mUserViewModel.mTipMessage.observe(this, this::showTip);
+        mFeedViewModel.mTipMessage.observe(this, this::showTip);
+        mUserViewModel.mUserInfo.observe(this, this::initUser);
+        mFeedViewModel.mFeedPage.observe(this, this::setFeedData);
+        mFeedViewModel.mFeed.observe(this, this::setFeedLike);
     }
 
     /**
@@ -140,10 +122,14 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
      */
     private void initUser(UserInfo userInfo) {
         boolean isRc = false;
+        String signature = getString(R.string.hint_signature_default);
         String avatar = "";
         if (userInfo != null) {
             mUserId = userInfo.getId();
             mUsername = userInfo.getUsername();
+            if (!TextUtils.isEmpty(userInfo.getSignature())) {
+                signature = userInfo.getSignature();
+            }
             avatar = userInfo.getAvatar();
             if (!TextUtils.isEmpty(userInfo.getImToken())) {
                 isRc = true;
@@ -154,10 +140,11 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
             mUsername = "未知用户";
             showToast(mUsername);
         }
-        mTitleName.setText(mUsername);
-        mUserName.setText(mUsername);
+        mBinding.titleName.setText(mUsername);
+        mBinding.userName.setText(mUsername);
+        mBinding.signature.setText(signature);
         if (!isRc) {
-            mContact.setVisibility(View.GONE);
+            mBinding.contact.setVisibility(View.GONE);
         }
         if (isPostUser) {
             setAvatar(avatar);
@@ -168,16 +155,14 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
      * 设置头像相关图片
      */
     public void setAvatar(String avatar) {
-//        ContentUtil.loadUserAvatar(mTitleImg, avatar);
-//        ContentUtil.loadUserAvatar(mUserImg, avatar);
-        ContentUtil.loadRelativeBlurImage(mParallax, avatar, 10);
+        ContentUtil.loadRelativeBlurImage(mBinding.parallax, avatar, 10);
         switchTitle();
     }
 
     // 初始化事件
     private void initEvent() {
         // 下拉刷新
-        mSwipeRefreshLayout.setOnRefreshListener(this::onRefreshData);
+        mBinding.swipeRefreshLayout.setOnRefreshListener(this::onRefreshData);
 
         // item点击
         mFeedAdapter.setOnItemListener(new FeedAdapter.OnItemListener() {
@@ -209,7 +194,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         });
 
         // 加载更多
-        mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
+        mBinding.recyclerView.addOnScrollListener(new OnLoadMoreListener() {
 
             @Override
             public void onLoadMore() {
@@ -217,7 +202,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
                 mLoadMoreAdapter.loading();
 
-                mRecyclerView.postDelayed(new Runnable() {
+                mBinding.recyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mFeedViewModel.doPageFeed(mPageNum, PAGE_SIZE, mUserId);
@@ -229,8 +214,8 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
     private void switchTitle() {
         // 标题切换
-        mButtonBar.setAlpha(0);
-        mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        mBinding.buttonBar.setAlpha(0);
+        mBinding.appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
 
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -238,10 +223,10 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 int offset = Math.abs(verticalOffset);
                 if (h == offset) return;
 
-                mSwipeRefreshLayout.setEnabled(offset == 0);
+                mBinding.swipeRefreshLayout.setEnabled(offset == 0);
 
                 int bbr = offset - 50 < 0 ? 0 : offset;
-                mButtonBar.setAlpha(1f * bbr / h);
+                mBinding.buttonBar.setAlpha(1f * bbr / h);
             }
         });
     }
@@ -255,8 +240,8 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
     // 设置动态数据
     private void setFeedData(PageInfo<Feed> feedPageInfo) {
-        if (mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(false);
+        if (mBinding.swipeRefreshLayout.isRefreshing()) {
+            mBinding.swipeRefreshLayout.setRefreshing(false);
         }
         Integer pageNum = feedPageInfo.getPageNum();
         Integer size = feedPageInfo.getSize();
@@ -268,7 +253,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         List<Feed> list = feedPageInfo.getList();
         if (pageNum == 1) {
             mFeedAdapter.setData(list);
-            mFeedNum.setText(String.valueOf(feedPageInfo.getTotal()));
+            mBinding.feedNum.setText(String.valueOf(feedPageInfo.getTotal()));
         } else {
             updateData(list);
         }
@@ -287,16 +272,12 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         mFeedAdapter.updateItem(feed, feed.getPosition());
     }
 
-    // 提示
-    private void showTip(TipMessage tipMessage) {
-        if (mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(false);
+    @Override
+    protected void showTip(TipMessage tipMessage) {
+        if (mBinding.swipeRefreshLayout.isRefreshing()) {
+            mBinding.swipeRefreshLayout.setRefreshing(false);
         }
-        if (tipMessage.isRes()) {
-            showToast(tipMessage.getMsgId());
-        } else {
-            showToast(tipMessage.getMsgStr());
-        }
+        super.showTip(tipMessage);
         mLoadMoreAdapter.loadEnd();
     }
 
@@ -308,8 +289,8 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
     // 刷新数据
     private void onRefreshData() {
         mPageNum = 1;
-        if (!mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(true);
+        if (!mBinding.swipeRefreshLayout.isRefreshing()) {
+            mBinding.swipeRefreshLayout.setRefreshing(true);
         }
         mFeedViewModel.doPageFeed(mPageNum, PAGE_SIZE, mUserId);
     }

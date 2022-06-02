@@ -18,7 +18,7 @@ import java.util.List;
 import me.cl.library.base.BaseFragment;
 import me.cl.library.recycle.ItemAnimator;
 import me.cl.lingxi.adapter.FutureAdapter;
-import me.cl.lingxi.common.model.TipMessage;
+import me.cl.library.model.TipMessage;
 import me.cl.lingxi.databinding.FutureFragmentBinding;
 import me.cl.lingxi.entity.Future;
 import me.cl.lingxi.module.future.FutureActivity;
@@ -106,8 +106,8 @@ public class FutureFragment extends BaseFragment {
 
     private void initViewModel() {
         mFutureViewModel = new ViewModelProvider(this).get(FutureViewModel.class);
-        mFutureViewModel.getTipMessage().observe(requireActivity(), this::showTip);
-        mFutureViewModel.getFutures().observe(requireActivity(), futurePageInfo -> {
+        mFutureViewModel.mTipMessage.observe(requireActivity(), this::showTip);
+        mFutureViewModel.mFutures.observe(requireActivity(), futurePageInfo -> {
             Integer pageNum = futurePageInfo.getPageNum();
             Integer size = futurePageInfo.getSize();
             if (size == 0) {

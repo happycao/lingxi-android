@@ -7,26 +7,20 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ImageButton;
 
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.cl.library.base.BaseActivity;
+import me.cl.library.model.TipMessage;
 import me.cl.library.recycle.ItemAnimator;
 import me.cl.library.recycle.ItemDecoration;
 import me.cl.lingxi.R;
 import me.cl.lingxi.adapter.TopicEitAdapter;
-import me.cl.lingxi.common.model.TipMessage;
 import me.cl.lingxi.databinding.TopicEitActivityBinding;
 import me.cl.lingxi.entity.Topic;
 import me.cl.lingxi.entity.User;
@@ -41,7 +35,7 @@ import me.cl.lingxi.viewmodel.UserViewModel;
  */
 public class TopicEitActivity extends BaseActivity implements View.OnClickListener {
 
-    private TopicEitActivityBinding mActivityBinding;
+    private TopicEitActivityBinding mBinding;
     private UserViewModel mUserViewModel;
     private TopicViewModel mTopicViewModel;
 
@@ -49,12 +43,6 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
 
     public static final String TYPE = "type";
     public static final String MSG = "msg";
-
-    private ImageButton mBtnNegative;
-    private AppCompatEditText mEditSearch;
-    private RecyclerView mRecyclerView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private FloatingActionButton mFloatButton;
 
     private Type mType = Type.TOPIC;
     private String queryName = "";
@@ -72,31 +60,24 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivityBinding = TopicEitActivityBinding.inflate(getLayoutInflater());
-        setContentView(mActivityBinding.getRoot());
+        mBinding = TopicEitActivityBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         Intent intent = getIntent();
         mType = (Type) intent.getSerializableExtra(TYPE);
         init();
     }
 
-    @SuppressLint("RestrictedApi")
     private void init() {
-        mEditSearch = mActivityBinding.editSearch;
-        mSwipeRefreshLayout = mActivityBinding.swipeRefreshLayout;
-        mRecyclerView = mActivityBinding.recyclerView;
-        mBtnNegative = mActivityBinding.btnNegative;
-        mFloatButton = mActivityBinding.floatButton;
-
         initListener();
         initRecyclerView();
         initViewModel();
     }
 
     private void initListener() {
-        mBtnNegative.setOnClickListener(this);
-        mFloatButton.setOnClickListener(this);
+        mBinding.btnNegative.setOnClickListener(this);
+        mBinding.floatButton.setOnClickListener(this);
 
-        mEditSearch.addTextChangedListener(new TextWatcher() {
+        mBinding.editSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -113,8 +94,8 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
 
             }
         });
-        //刷新
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+        // 刷新
+        mBinding.swipeRefreshLayout.setOnRefreshListener(() -> {
             mPageNum = 1;
             doSearch(queryName);
         });
@@ -123,19 +104,19 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
     @SuppressLint("RestrictedApi")
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setItemAnimator(new ItemAnimator());
+        mBinding.recyclerView.setLayoutManager(layoutManager);
+        mBinding.recyclerView.setItemAnimator(new ItemAnimator());
         ItemDecoration itemDecoration = new ItemDecoration(ItemDecoration.VERTICAL, 2, Color.parseColor("#f2f2f2"));
         // 隐藏最后一个item的分割线
         itemDecoration.setGoneLast(true);
-        // mRecyclerView.addItemDecoration(itemDecoration);
+        // mBinding.recyclerView.addItemDecoration(itemDecoration);
         mAdapter = new TopicEitAdapter(new ArrayList<>(), mType);
-        mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setOnItemListener((view, future) -> {
+        mBinding.recyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemListener((view, item) -> {
             if (mAdapter.isSelected()) {
-                mFloatButton.setVisibility(View.VISIBLE);
+                mBinding.floatButton.setVisibility(View.VISIBLE);
             } else {
-                mFloatButton.setVisibility(View.GONE);
+                mBinding.floatButton.setVisibility(View.GONE);
             }
         });
     }
@@ -144,11 +125,11 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
         ViewModelProvider viewModelProvider = new ViewModelProvider(this);
         mUserViewModel = viewModelProvider.get(UserViewModel.class);
         mTopicViewModel = viewModelProvider.get(TopicViewModel.class);
-        mUserViewModel.getTipMessage().observe(this, this::showTip);
-        mTopicViewModel.getTipMessage().observe(this, this::showTip);
-        mUserViewModel.getUsers().observe(this, userPageInfo -> {
-            if (mSwipeRefreshLayout.isRefreshing()) {
-                mSwipeRefreshLayout.setRefreshing(false);
+        mUserViewModel.mTipMessage.observe(this, this::showTip);
+        mTopicViewModel.mTipMessage.observe(this, this::showTip);
+        mUserViewModel.mUsers.observe(this, userPageInfo -> {
+            if (mBinding.swipeRefreshLayout.isRefreshing()) {
+                mBinding.swipeRefreshLayout.setRefreshing(false);
             }
             Integer pageNum = userPageInfo.getPageNum();
             mPageNum = pageNum + 1;
@@ -168,9 +149,9 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
                 mAdapter.addData(list);
             }
         });
-        mTopicViewModel.getTopics().observe(this, topicPageInfo -> {
-            if (mSwipeRefreshLayout.isRefreshing()) {
-                mSwipeRefreshLayout.setRefreshing(false);
+        mTopicViewModel.mTopics.observe(this, topicPageInfo -> {
+            if (mBinding.swipeRefreshLayout.isRefreshing()) {
+                mBinding.swipeRefreshLayout.setRefreshing(false);
             }
             Integer pageNum = topicPageInfo.getPageNum();
             mPageNum = pageNum + 1;
@@ -183,15 +164,12 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
-    private void showTip(TipMessage tipMessage) {
-        if (mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(false);
+    @Override
+    protected void showTip(TipMessage tipMessage) {
+        if (mBinding.swipeRefreshLayout.isRefreshing()) {
+            mBinding.swipeRefreshLayout.setRefreshing(false);
         }
-        if (tipMessage.isRes()) {
-            showToast(tipMessage.getMsgId());
-        } else {
-            showToast(tipMessage.getMsgStr());
-        }
+        super.showTip(tipMessage);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -216,8 +194,8 @@ public class TopicEitActivity extends BaseActivity implements View.OnClickListen
 
     void doSearch(String searchStr) {
         mPageNum = 1;
-        if (!mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(true);
+        if (!mBinding.swipeRefreshLayout.isRefreshing()) {
+            mBinding.swipeRefreshLayout.setRefreshing(true);
         }
         queryName = searchStr;
         if (mType == Type.EIT) {

@@ -10,7 +10,7 @@
         android:gravity="center">
 
         <include
-            android:id="@+id/include_tab_layout"
+            android:id="@+id/include_tab"
             layout="@layout/include_tab_layout" />
 
     </androidx.appcompat.widget.Toolbar>

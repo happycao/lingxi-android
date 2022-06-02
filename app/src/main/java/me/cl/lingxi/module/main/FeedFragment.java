@@ -4,17 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,18 +41,13 @@ public class FeedFragment extends BaseFragment {
 
     private static final String FEED_TYPE = "feed_type";
 
-    private FeedFragmentBinding mFragmentBinding;
+    private FeedFragmentBinding mBinding;
     private FeedViewModel mFeedViewModel;
-
-    private Toolbar mToolbar;
-    private RecyclerView mRecyclerView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private String saveUid;
     private String saveUName;
 
     private final List<Feed> mList = new ArrayList<>();
-    private ConcatAdapter mConcatAdapter;
     private FeedAdapter mFeedAdapter;
     private final LoadMoreAdapter mLoadMoreAdapter = new LoadMoreAdapter();
 
@@ -85,27 +76,20 @@ public class FeedFragment extends BaseFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mFragmentBinding = FeedFragmentBinding.inflate(inflater, container, false);
+        mBinding = FeedFragmentBinding.inflate(inflater, container, false);
         init();
-        return mFragmentBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     private void init() {
-        mToolbar = mFragmentBinding.includeToolbar.toolbar;
-        mRecyclerView = mFragmentBinding.recyclerView;
-        mSwipeRefreshLayout = mFragmentBinding.swipeRefreshLayout;
-
-        ToolbarUtil.init(mToolbar, getActivity())
+        ToolbarUtil.init(mBinding.includeTb.toolbar, getActivity())
                 .setTitle(R.string.nav_camera)
                 .setTitleCenter()
-                .setMenu(R.menu.publish_menu, new Toolbar.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.action_share) {
-                            gotoPublish();
-                        }
-                        return false;
+                .setMenu(R.menu.publish_menu, item -> {
+                    if (item.getItemId() == R.id.action_share) {
+                        gotoPublish();
                     }
+                    return false;
                 })
                 .build();
 
@@ -121,17 +105,17 @@ public class FeedFragment extends BaseFragment {
 
     private void initRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setItemAnimator(new ItemAnimator());
+        mBinding.recyclerView.setLayoutManager(layoutManager);
+        mBinding.recyclerView.setItemAnimator(new ItemAnimator());
         mFeedAdapter = new FeedAdapter(mList);
-        mConcatAdapter = new ConcatAdapter(mFeedAdapter, mLoadMoreAdapter);
-        mRecyclerView.setAdapter(mConcatAdapter);
+        ConcatAdapter concatAdapter = new ConcatAdapter(mFeedAdapter, mLoadMoreAdapter);
+        mBinding.recyclerView.setAdapter(concatAdapter);
     }
 
     // 初始化事件
     private void initEvent() {
         // 刷新
-        mSwipeRefreshLayout.setOnRefreshListener(this::onRefresh);
+        mBinding.swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
         // item点击
         mFeedAdapter.setOnItemListener(new FeedAdapter.OnItemListener() {
@@ -165,7 +149,7 @@ public class FeedFragment extends BaseFragment {
         });
 
         // 滑动监听
-        mRecyclerView.addOnScrollListener(new OnLoadMoreListener() {
+        mBinding.recyclerView.addOnScrollListener(new OnLoadMoreListener() {
 
             @Override
             public void onLoadMore() {
@@ -173,7 +157,7 @@ public class FeedFragment extends BaseFragment {
 
                 mLoadMoreAdapter.loading();
 
-                mRecyclerView.postDelayed(new Runnable() {
+                mBinding.recyclerView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mFeedViewModel.doPageFeed(mPageNum, PAGE_SIZE);
@@ -185,9 +169,9 @@ public class FeedFragment extends BaseFragment {
 
     private void initViewModel() {
         mFeedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
-        mFeedViewModel.getTipMessage().observe(requireActivity(), tipMessage -> {
-            if (mSwipeRefreshLayout.isRefreshing()) {
-                mSwipeRefreshLayout.setRefreshing(false);
+        mFeedViewModel.mTipMessage.observe(requireActivity(), tipMessage -> {
+            if (mBinding.swipeRefreshLayout.isRefreshing()) {
+                mBinding.swipeRefreshLayout.setRefreshing(false);
             }
             if (tipMessage.isRes()) {
                 showToast(tipMessage.getMsgId());
@@ -196,9 +180,9 @@ public class FeedFragment extends BaseFragment {
             }
             mLoadMoreAdapter.loadEnd();
         });
-        mFeedViewModel.getFeedPage().observe(requireActivity(), feedPageInfo -> {
-            if (mSwipeRefreshLayout.isRefreshing()) {
-                mSwipeRefreshLayout.setRefreshing(false);
+        mFeedViewModel.mFeedPage.observe(requireActivity(), feedPageInfo -> {
+            if (mBinding.swipeRefreshLayout.isRefreshing()) {
+                mBinding.swipeRefreshLayout.setRefreshing(false);
             }
             Integer pageNum = feedPageInfo.getPageNum();
             Integer size = feedPageInfo.getSize();
@@ -215,7 +199,7 @@ public class FeedFragment extends BaseFragment {
             }
             mLoadMoreAdapter.loadEnd();
         });
-        mFeedViewModel.getFeed().observe(requireActivity(), feed -> {
+        mFeedViewModel.mFeed.observe(requireActivity(), feed -> {
             List<Like> likeList = new ArrayList<>(feed.getLikeList());
             Like like = new Like();
             like.setUserId(saveUid);
@@ -255,8 +239,8 @@ public class FeedFragment extends BaseFragment {
     // 刷新数据
     private void onRefresh(){
         mPageNum = 1;
-        if (!mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(true);
+        if (!mBinding.swipeRefreshLayout.isRefreshing()) {
+            mBinding.swipeRefreshLayout.setRefreshing(true);
         }
         mFeedViewModel.doPageFeed(mPageNum, PAGE_SIZE);
     }

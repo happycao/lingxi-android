@@ -1,7 +1,9 @@
 package me.cl.library.base;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +14,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import me.cl.library.R;
+import me.cl.library.model.TipMessage;
 import me.cl.library.util.ToastUtil;
 import me.cl.library.view.LoadingDialog;
 import me.cl.library.view.MoeToast;
@@ -24,6 +27,23 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSystemUiLightStatus();
+    }
+
+    // 提示
+    protected void showTip(TipMessage tipMessage) {
+        if (tipMessage.isRes()) {
+            showToast(tipMessage.getMsgId());
+        } else {
+            showToast(tipMessage.getMsgStr());
+        }
+    }
+
+    // 调起浏览器下载
+    protected void gotoDownload(String url){
+        Intent intent = new Intent();
+        intent.setData(Uri.parse(url));
+        intent.setAction(Intent.ACTION_VIEW);
+        startActivity(intent);
     }
 
     // 加载动画开始
@@ -83,7 +103,7 @@ public class BaseActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             // 设置竖屏
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             // 显示状态栏
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             // 清除常亮
