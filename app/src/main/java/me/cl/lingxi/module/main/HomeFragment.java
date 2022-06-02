@@ -224,7 +224,7 @@ public class HomeFragment extends BaseFragment {
     private void getDefaultData() {
         // 一言
         OkUtil.get()
-                .url("https://hitoapi.cc/sp")
+                .url("https://v1.hitokoto.cn/")
                 .setLoadDelay()
                 .execute(new ResultCallback<HiToKoTo>() {
                     @Override
@@ -261,17 +261,17 @@ public class HomeFragment extends BaseFragment {
         mBinding.wordSource.setVisibility(View.INVISIBLE);
         mBinding.imageSource.setVisibility(View.GONE);
         if (hitokoto != null) {
-            String text = hitokoto.getText();
+            String text = hitokoto.getHitokoto();
             if (!TextUtils.isEmpty(text)) {
                 mBinding.wordInfo.setVisibility(View.VISIBLE);
                 mBinding.wordInfo.setText(text);
             }
-            String author = hitokoto.getAuthor();
+            String author = hitokoto.getCreator();
             if (!TextUtils.isEmpty(author)) {
                 mBinding.wordAuthor.setVisibility(View.VISIBLE);
                 mBinding.wordAuthor.setText(author);
             }
-            String source = hitokoto.getSource();
+            String source = hitokoto.getFrom();
             if (!TextUtils.isEmpty(source)) {
                 mBinding.wordSource.setVisibility(View.VISIBLE);
                 mBinding.wordSource.setText(source);
@@ -331,21 +331,21 @@ public class HomeFragment extends BaseFragment {
     static class HiToKoTo {
 
         /**
-         * id : 2098/1495
-         * uid : 2098
-         * catname : 收藏
-         * text : 真正的危机不是机器人像人一样思考，而是人像机器一样思考。
-         * author : 5454554a@2980.com
-         * source : 凉宫春日的忧郁
-         * date : 2014.10.18 11:04:52
+         * id : 5963
+         * uuid : b25ebe3d-d031-493c-a129-61ba3b7c0a23
+         * type : b
+         * hitokoto : 此时此刻的咱啊，能和汝在一起，是最幸福的了。
+         * creator : 人活着就是为了贤狼赫萝
+         * from : 狼与香辛料
+         * created_at : 1586916630
          */
         private String id;
-        private int uid;
-        private String catname;
-        private String text;
-        private String author;
-        private String source;
-        private String date;
+        private String uuid;
+        private String type;
+        private String hitokoto;
+        private String creator;
+        private String from;
+        private String created_at;
 
         public String getId() {
             return id;
@@ -355,52 +355,52 @@ public class HomeFragment extends BaseFragment {
             this.id = id;
         }
 
-        public int getUid() {
-            return uid;
+        public String getUuid() {
+            return uuid;
         }
 
-        public void setUid(int uid) {
-            this.uid = uid;
+        public void setUuid(String uuid) {
+            this.uuid = uuid;
         }
 
-        public String getCatname() {
-            return catname;
+        public String getType() {
+            return type;
         }
 
-        public void setCatname(String catname) {
-            this.catname = catname;
+        public void setType(String type) {
+            this.type = type;
         }
 
-        public String getText() {
-            return text;
+        public String getHitokoto() {
+            return hitokoto;
         }
 
-        public void setText(String text) {
-            this.text = text;
+        public void setHitokoto(String hitokoto) {
+            this.hitokoto = hitokoto;
         }
 
-        public String getAuthor() {
-            return author;
+        public String getCreator() {
+            return creator;
         }
 
-        public void setAuthor(String author) {
-            this.author = author;
+        public void setCreator(String creator) {
+            this.creator = creator;
         }
 
-        public String getSource() {
-            return source;
+        public String getFrom() {
+            return from;
         }
 
-        public void setSource(String source) {
-            this.source = source;
+        public void setFrom(String from) {
+            this.from = from;
         }
 
-        public String getDate() {
-            return date;
+        public String getCreated_at() {
+            return created_at;
         }
 
-        public void setDate(String date) {
-            this.date = date;
+        public void setCreated_at(String created_at) {
+            this.created_at = created_at;
         }
     }
 
