@@ -13,26 +13,26 @@ public class Api {
      */
     public static final String X_APP_TOKEN = "X-App-Token";
 
+    private static String baseHost = "http://218.93.206.115:10521";
+
     /**
      * 收束gradle的flavor控制，将url变量在此接管
      */
-    private static String baseUrl = "http://42.192.229.55/lingxi";
-    public static String rssUrl = "http://42.192.229.55/rss/lingxi";
+    private static String baseUrl = baseHost + "/lingxi";
+    public static String rssUrl = baseHost + "/rss/lingxi";
 
     static {
         String flavor = BuildConfig.FLAVOR;
         switch (flavor) {
             case "alpha":
-                baseUrl = "http://42.192.229.55/lingxi-test";
-                rssUrl = "http://42.192.229.55/rss/lingxi-test";
+                baseUrl = baseHost + "/lingxi-test";
+                rssUrl = baseHost + "/rss/lingxi-test";
                 break;
             case "local":
                 baseUrl = "http://192.168.137.1:8090/lingxi";
                 rssUrl = "http://192.168.137.1/rss/lingxi-test";
                 break;
-            case "online":
-                baseUrl = "http://42.192.229.55/lingxi";
-                rssUrl = "http://42.192.229.55/rss/lingxi";
+            default:
                 break;
         }
     }
