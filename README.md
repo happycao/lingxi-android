@@ -6,11 +6,11 @@
 网络为OkHttp，只做了简单的get及post请求封装，如有更多需求请选择更好的轮子  
 Glide版本4.1.1，与之对应PhotoPicker版本0.9.12、glide-transformations版本3.0.1  
 调试请使用alpha版本，local版本为本人本地使用，online版本为发布打包版本  
-体验请直接点击下载打包版本[点击下载测试版](http://218.93.206.115:10521/download/lingxi-test.apk)
-如果不是用于测试，欢迎来正式版一起玩耍[点击下载正式版](http://218.93.206.115:10521/download/lingxi.apk)
+体验请直接点击下载打包版本[点击下载测试版](http://api.ihappyc.eu.org/download/lingxi-test.apk)  
+如果不是用于测试，欢迎来正式版一起玩耍[点击下载正式版](http://api.ihappyc.eu.org/download/lingxi.apk)  
 
-**[2024/04/29]**
-1、迁移服务器，旧版本将无法使用，请尽快升级
+**[2024/06/07]**  
+1、迁移服务器，旧版本将无法使用，请尽快升级  
 
 **[2021/05/30]**  
 1、采用viewmodel剥离网络请求，轻量化Activity/Fragment  
