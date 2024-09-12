@@ -6,9 +6,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -23,9 +30,6 @@ import okhttp3.OkHttpClient;
 public class OkUtil {
 
     private static final long DEFAULT_MILLISECONDS = 50000;      //默认的超时时间
-
-    @SuppressLint("StaticFieldLeak")
-    private static OkUtil mInstance;
 
     private Application context;
     private Handler mDelivery;
@@ -44,18 +48,46 @@ public class OkUtil {
         builder.writeTimeout(OkUtil.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS);
         builder.connectTimeout(OkUtil.DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS);
 
+        try {
+            @SuppressLint("CustomX509TrustManager")
+            TrustManager[] trustManagers = {
+                    new X509TrustManager() {
+
+                        @SuppressLint("TrustAllX509TrustManager")
+                        @Override
+                        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+                        }
+
+                        @SuppressLint("TrustAllX509TrustManager")
+                        @Override
+                        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+                        }
+
+                        @Override
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[0];
+                        }
+                    }
+            };
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustManagers, new SecureRandom());
+            builder.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustManagers[0]);
+            builder.hostnameVerifier((hostname, session) -> true);
+        } catch (Exception ignored) {
+
+        }
         okHttpClient = builder.build();
     }
 
+    private static final class InstanceHolder {
+        @SuppressLint("StaticFieldLeak")
+        static final OkUtil mInstance = new OkUtil();
+    }
+
     public static OkUtil newInstance() {
-        if (mInstance == null) {
-            synchronized (OkUtil.class) {
-                if (mInstance == null) {
-                    mInstance = new OkUtil();
-                }
-            }
-        }
-        return mInstance;
+        return InstanceHolder.mInstance;
     }
 
     /**

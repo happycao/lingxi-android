@@ -13,7 +13,7 @@ public class Api {
      */
     public static final String X_APP_TOKEN = "X-App-Token";
 
-    private static String baseHost = "http://api.ihappyc.eu.org";
+    private static String baseHost = "https://api.ihappyc.eu.org:10514";
 
     /**
      * 收束gradle的flavor控制，将url变量在此接管

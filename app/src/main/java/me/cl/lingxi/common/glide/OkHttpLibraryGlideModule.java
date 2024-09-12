@@ -12,6 +12,8 @@ import com.bumptech.glide.module.LibraryGlideModule;
 
 import java.io.InputStream;
 
+import me.cl.lingxi.common.okhttp.OkUtil;
+
 /**
  * @author : happyc
  * e-mail : bafs.jy@live.com
@@ -24,6 +26,6 @@ public class OkHttpLibraryGlideModule extends LibraryGlideModule {
 
     @Override
     public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
-        registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory());
+        registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(OkUtil.newInstance().getOkHttpClient()));
     }
 }
