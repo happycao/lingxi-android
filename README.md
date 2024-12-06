@@ -9,8 +9,8 @@ Glide版本4.1.1，与之对应PhotoPicker版本0.9.12、glide-transformations�
 体验请直接点击下载打包版本[点击下载测试版](https://api.ihappyc.eu.org:10514/download/lingxi-test.apk)，非安全证书，同意即可，不放心可以不下载
 如果不是用于测试，欢迎来正式版一起玩耍[点击下载正式版](https://api.ihappyc.eu.org:10514/download/lingxi.apk)
 
-**[2024/09/12]**
-1、迁移服务器，旧版本已无法使用，但愿此次代理稳定
+**[2024/11/06]**
+1、提升gradle版本至7.5.1
 
 **[2021/05/30]**  
 1、采用viewmodel剥离网络请求，轻量化Activity/Fragment  

@@ -1,53 +1,28 @@
 buildscript {
     repositories {
-        maven { url "https://jitpack.io" }
         maven { url 'https://maven.aliyun.com/repository/public/' }
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url "https://jitpack.io" }
         google()
         mavenCentral()
     }
     dependencies {
         // https://developer.android.google.cn/studio/releases/gradle-plugin?hl=zh-cn
         // https://developer.android.google.cn/reference/tools/gradle-api
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.2'
     }
 }
 
 allprojects {
     repositories {
-        maven { url "https://jitpack.io" }
         maven { url 'https://maven.aliyun.com/repository/public/' }
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+        maven { url "https://jitpack.io" }
         google()
         mavenCentral()
     }
 }
 
-ext {
-    android = [
-            compileSdkVersion: 28,
-            minSdkVersion    : 21,
-            targetSdkVersion : 28
-    ]
-
-    dependencies = [
-            material                : 'com.google.android.material:material:1.0.0',
-            androidxAppcompat       : 'androidx.appcompat:appcompat:1.2.0',
-            androidxActivity        : 'androidx.activity:activity:1.1.0',
-            androidxFragment        : 'androidx.fragment:fragment:1.2.5',
-            androidxRecyclerview    : 'androidx.recyclerview:recyclerview:1.2.0',
-            androidxAnnotation      : 'androidx.annotation:annotation:1.1.0',
-            androidxConstraintlayout: 'androidx.constraintlayout:constraintlayout:2.0.0',
-            okhttp                  : 'com.squareup.okhttp3:okhttp:3.8.1',
-            gson                    : 'com.google.code.gson:gson:2.8.1',
-            glide                   : 'com.github.bumptech.glide:glide:4.1.1',
-            glideOkhttp             : 'com.github.bumptech.glide:okhttp3-integration:4.1.1',
-            glideCompiler           : 'com.github.bumptech.glide:compiler:4.1.1',
-            glideTransformations    : 'jp.wasabeef:glide-transformations:3.0.1',
-            compressor              : 'id.zelory:compressor:2.1.1',
-    ]
-}
-
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

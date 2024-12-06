@@ -1,14 +1,12 @@
 apply plugin: 'com.android.library'
 
-def configInfo = rootProject.ext.android
-def library = rootProject.ext.dependencies
-
 android {
-    compileSdkVersion configInfo.compileSdkVersion
+
+    compileSdkVersion libs.versions.compileSdk.get()
 
     defaultConfig {
-        minSdkVersion configInfo.minSdkVersion
-        targetSdkVersion configInfo.targetSdkVersion
+        minSdkVersion libs.versions.minSdk.get()
+        targetSdkVersion libs.versions.targetSdk.get()
         versionCode 1
         versionName "1.0"
 
@@ -24,11 +22,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation library.material
-    implementation library.androidxAppcompat
-    implementation library.androidxActivity
-    implementation library.androidxFragment
-    implementation library.androidxRecyclerview
-    implementation library.glide
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    api libs.android.material
+    api libs.androidx.appcompat
+    api libs.androidx.recyclerview
+    api libs.glide
 }
